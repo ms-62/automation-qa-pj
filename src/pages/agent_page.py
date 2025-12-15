@@ -20,7 +20,8 @@ class AgentPage(BasePage) :
             option="clickable",
             timeout=10
         )
-        
+       
+    # 에이전트 탐색창 - 검색 기능 
     def search_input(self, agents) :
         search = self.get_element_by_xpath(
             XPATH["AGENT_SEARCH"],
@@ -39,6 +40,7 @@ class AgentPage(BasePage) :
         result = self.get_element_by_xpath(XPATH["AGENT_SEARCH_NO_RESULT"])
         return result
     
+    # 에이전트 대화창 - 나중에 밑에거랑 합치기
     def talk_with_agent_screen(self) :
         element = self.get_element_by_xpath(XPATH["AGENT_TALK"])
         element.click()
@@ -51,6 +53,7 @@ class AgentPage(BasePage) :
         element = self.get_element_by_xpath(XPATH["AGENT_TALK_CARD"])
         element.click()
         
+    # 에이전트 만들기 - 설정 메뉴 관련
     def make_agent_screen(self) :
         element = self.get_element_by_xpath(XPATH["GO_MAKE_AGENT"])
         element.click()
@@ -118,12 +121,35 @@ class AgentPage(BasePage) :
                 element.click()
                 time.sleep(0.2)
                 
-    # Make Agent Screen Scroll
+    # 에이전트 만들기 - 이미지 업로드    
+    def upload_image(self, file_name: str):
+        file_input = self.get_element_by_css_selector(
+            SELECTORS["IMAGE_FILE_INPUT"]
+        )
+        self.fm.file_upload(file_input, file_name)
+        
+    def check_upload_image(self) :
+        uploaded = self.get_element_by_xpath(XPATH["UPLOADED_IMAGE_PREVIEW"])
+        return uploaded
+    
+    def check_upload_big_img(self) :
+        img = self.get_element_by_xpath(XPATH["UPLOADED_IMAGE_PREVIEW"])
+        src = img.get_attribute("src")
+        return src is not None and src.strip() != ""
+    
+    # 에이전트 만들기 - 이미지 생성기
+    def make_image(self) :
+        self.get_element_by_xpath(XPATH["BTN_ADD_IMAGE"]).click()
+        btns = self.get_elements_by_xpath(XPATH["BTN_MAKE_IMAGE"])
+        btn = btns[1]
+        btn.click()
+                
+    # 에이전트 만들기 - 설정 스크롤
     def scroll_down_setting(self) :
         area = self.get_elements_by_xpath(XPATH["SCROLL_MAKE_AGENT"])
         ScrollController.scroll_down(self.driver, area[0])
         
-    # Agent Talk Scroll
+    # 에이전트 대화창 - 스크롤
     def scroll_up_chat(self):
         area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
         ScrollController.scroll_up(self.driver, area)
@@ -151,11 +177,12 @@ class AgentPage(BasePage) :
 
         raise TimeoutError("스크롤 버튼 안보임")
     
+    # 에이전트 대화창 - 질문 내용 받기
     def check_my_talk_input(self) :
         text = self.get_element_by_xpath(XPATH["AGENT_INPUT_TEXT"])
         return text
     
-    # Agent Chat
+    # 에이전트 대화창 (중단 버튼)
     def click_send(self):
         btn = self.get_element_by_xpath(XPATH["BTN_SEND"])
         if btn.is_enabled():

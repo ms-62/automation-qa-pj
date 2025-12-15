@@ -1,5 +1,9 @@
 from utils.headers import *
 
+import os
+import requests
+
+from utils.defines import TARGET_URL
 ## csv, json read / save 등 파일을 관리 하는 곳입니다. 
 
 class FileManager:
@@ -17,9 +21,8 @@ class FileManager:
         
         self.report_log_dir = os.path.join(project_root, "reports", "logs")
         self.report_screenshot_dir = os.path.join(project_root, "reports", "screenshots")
-        self.report_screenshot_dir = os.path.join(project_root, "reports", "screenshots")
-        
-        
+
+    
     def read_json_file(self, file_name:str):
         file_path = os.path.join(self.testdata_dir, file_name)
         try: 
@@ -55,7 +58,7 @@ class FileManager:
 
         fieldnames = list(file_data[0].keys())
 
-        with open(file_path, mode="w", encoding="utf-8", newline="") as f:
+        with open(file_path, option, encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(file_data)
@@ -63,19 +66,28 @@ class FileManager:
         print(f"CSV 저장 완료: {file_path}")
 
         # 스크린샷 
-    def save_screenshot_png(self, mydriver, file_name: str):
-        if not file_name.endswith(".png"):
-            file_name += ".png"
-            
-        file_path = os.path.join(self.report_screenshot_dir, file_name)
-
+    def save_screenshot_png(self, mydriver, file_name: str):    
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = f"{file_name}_{timestamp}.png"
+        
+        file_name_with_ts = f"{file_name}_{timestamp}.png"
+        file_path = os.path.join(self.report_screenshot_dir, file_name_with_ts)
 
         mydriver.save_screenshot(file_path)
         print(f"Screenshot saved: {file_path}")
+
+        return file_path 
         
-    def file_upload(self, file_input, file_name):
+  
+    def file_upload(self, file_name):
         file_path = os.path.join(self.assets_dir, file_name)
-        file_input.send_keys(file_path)
         
+        files = {"file": (file_name, open(file_path, "rb"), "application/octet-stream")}
+        response = requests.post(TARGET_URL["MAIN_URL"], files=files)
+
+        # 결과 확인
+        if response.status_code == 200:
+            print(f"파일 업로드 성공: {file_name}")
+        else:
+            print(f"파일 업로드 실패 ({response.status_code}): {file_name}, {response.text}")
+
+        return response

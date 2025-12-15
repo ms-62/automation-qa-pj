@@ -25,7 +25,7 @@ class MainPage(BasePage):
         btn = self.get_element_by_xpath(xpath, option)
         if btn and btn.is_enabled():
             btn.click()
-        time.sleep(0.3)
+            time.sleep(0.5)
     # ================================================ #        
             
     def click_btn_home_menu(self, button_text: str):
@@ -175,35 +175,43 @@ class MainPage(BasePage):
         self.toggle_menu(btn_bar)
     
     #================ 파일 업로드 ================ 
-    def click_btn_upload_plus(self):
-        self.click_btn_by_xpath(XPATH["BTN_UPLOAD"], option = "presence")
-
+    def click_btn_upload_plus(self):       
+        plus = self.get_element_by_css_selector(SELECTORS["BTN_UPLOAD_PLUS_CSS"])
+        if plus and plus.is_enabled():
+            plus.click()
+            time.sleep(0.5)
+        
     def click_btn_upload_file(self):
-        self.click_btn_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "presence")
+        self.click_btn_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "visibility")
 
     def click_btn_gen_image(self):
-        self.click_btn_by_xpath(XPATH["BTN_GEN_IMAGE"], option = "presence")
+        self.click_btn_by_xpath(XPATH["BTN_GEN_IMAGE"], option = "visibility")
 
     def click_btn_search_web(self):
-        self.click_btn_by_xpath(XPATH["BTN_SEARCH_WEB"], option = "presence")
+        self.click_btn_by_xpath(XPATH["BTN_SEARCH_WEB"], option = "visibility")
         
 
     def upload_file(self, fm):
-        #file_input = self.get_element_by_xpath(XPATH["FILE_INPUT"])
-        #file_name = "test_asset.jpg"
-        # fm.file_upload(file_input, file_name = file_name)
-        # time.sleep(0.5)  
+        file_name = "test_asset.jpg"
+        
+        # 2. pyautogui로 경로 입력 후 Open
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        file_relative_path = "/Users/siyoung/Documents/GitHub/ai-heplychat-automation/src/resources/assets/test_asset.jpg"
+        absolute_path = os.path.join(project_root, file_relative_path)
+        
+        pyautogui.hotkey('COMMAND', 'SHIFT', 'G')  # 경로 입력창 열기
+        time.sleep(0.5)
+        pyautogui.write(absolute_path)  # 파일 경로 입력
+        pyautogui.press("enter")        # Open 클릭
+
+        # 3. 전송 버튼 클릭
+        self.click_send()
         
         #===== 테스트용 코드 =====#
-        file_name = "test upload successed"
-        file_data = [
-            {"message": "upload successed", "time": "12:00"},
-            {"message": "upload failed", "time": "12:05"}
-        ]
-
-
-        fm.save_log_file_to_csv(file_name = file_name, file_data=file_data)
-        fm.save_screenshot_png(self.driver, file_name = file_name)
+        #fm.save_log_file_to_csv(file_name = file_name, file_data=file_data)
+        save_name = "file_upload_test.png"
+        fm.save_screenshot_png(self.driver, file_name = save_name)
         
         #fm.save_screenshot(self.driver, f"{file_name} upload successed")
         #=======================

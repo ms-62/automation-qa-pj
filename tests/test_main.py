@@ -43,7 +43,9 @@ from utils.defines import DEFAULT_MODEL, DEFAULT_CHAT
 # 파일 업로드 
 def test_file_upload(logged_in_main, fm, driver):
     page = logged_in_main
-
+        
+    page.click_btn_upload_plus()
+    page.click_btn_upload_file()
     page.upload_file(fm)
 
 

@@ -29,6 +29,9 @@ SELECTORS = {
     "BTN_MENU_BAR" : "button.EliceLayoutSidenavHamburger-root",
     "BOX_LANG_KOR" : "ul[role='listbox'] li[data-value='ko-KR']",
     
+    # Agent 관련 파일 업로드 selector
+    "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']"
+    
 
 }
 
@@ -150,6 +153,9 @@ XPATH = {
     "DELETE_CARD" : "//button[contains(@class, 'css-fyycg6')]",
     "SELECT_FUNCTION" : "//input[@type = 'checkbox']",
     "SCROLL_MAKE_AGENT" : "//div[contains(@class, 'css-1q1j9cm')]",
+    "BTN_ADD_IMAGE" : "//button[contains(@class, 'css-807ylu')]",
+    "BTN_MAKE_IMAGE" : "//li[@role = 'menuitem']",
+    "UPLOADED_IMAGE_PREVIEW" : "//img[contains(@src, 'blob.core.windows.net')]",
     
     
     

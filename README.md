@@ -22,9 +22,8 @@ Selenium 기반 웹 자동화와 JSON 데이터 관리 기능을 제공하는 Py
    * 개인 브랜치에서 pull 
    * git hub desktop 쓰시는 분들 fetch -> pull 
 
-
-8. 12/12 코드 리뷰 받기 전 commit 하는 코드에 프로젝트 코드를 추가해주세요!<br>
-git commit -m "QHCQ-9 <message>" <br>
+8. 12/15 commit JIRA 프로젝트 키 업데이트<br>
+git commit -m "QHCQ-37 <message>" <br>
 
 
 # git사용시 유용한 것들

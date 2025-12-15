@@ -27,6 +27,7 @@ SELECTORS = {
     "INPUT_MOBILE" : "input[name='to'][autocomplete='tel']",
     "BOX_LANG_ENG" : "ul[role='listbox'] li[data-value='en-US']",
     "BTN_MENU_BAR" : "button.EliceLayoutSidenavHamburger-root",
+    "BOX_LANG_KOR" : "ul[role='listbox'] li[data-value='ko-KR']",
     
     # Agent 관련 파일 업로드 selector
     "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']"
@@ -88,11 +89,17 @@ XPATH = {
     "PWD_ROW" : "//table[contains(@class,'css-69t54h')]//tr[td[normalize-space(.)='비밀번호']]",
     "BTN_PWD_EDIT" : "//tr[td[normalize-space(.)='비밀번호']]//button[contains(@class,'MuiIconButton-root')]",
     "SUBMIT_PWD" : "//button[@type='submit' and normalize-space(.)='완료']",
-    "BTN_OAUTH_KKO" : "//li[.//p[normalize-space(.)='카카오']]//button[normalize-space(.)='연결하기']",
     "BTN_OAUTH_GOOGLE" : "//li[.//p[normalize-space(.)='구글']]//button[normalize-space(.)='연결하기']",
+    "BTN_OAUTH_NAVER" : "//li[.//p[normalize-space(.)='네이버']]//button[normalize-space(.)='연결하기']",
+    "BTN_OAUTH_KKO" : "//li[.//p[normalize-space(.)='카카오']]//button[normalize-space(.)='연결하기']",
     "BTN_OAUTH_GITHUB" : "//li[.//p[normalize-space(.)='깃허브']]//button[normalize-space(.)='연결하기']",
+    "BTN_OAUTH_APPLE" : "//li[.//p[normalize-space(.)='애플']]//button[normalize-space(.)='연결하기']",
+    "BTN_OAUTH_FACEBOOK" : "//li[.//p[normalize-space(.)='페이스북']]//button[normalize-space(.)='연결하기']",
+    "BTN_OAUTH_WHALESPACE" : "//li[.//p[normalize-space(.)='웨일스페이스']]//button[normalize-space(.)='연결하기']",
+    "BTN_OAUTH_MICROSOFT" : "//li[.//p[normalize-space(.)='마이크로소프트']]//button[normalize-space(.)='연결하기']",
     "LANG_ROW" :  "//div[contains(@class,'MuiStack-root')][.//h2[normalize-space(.)='선호 언어']]",
     "SOCIAL_ROW" :  "//h2[contains(@class,'MuiTypography-body1')][normalize-space(.)='소셜 연결 계정']",
+    "LANG_ROW_ENG" :  "//div[contains(@class,'MuiStack-root')][.//h2[normalize-space(.)='language']]",
     
     "BTN_COPY_QUESTION" : "//div[@data-floating='true'])[last()]",
     "BTN_STOP" : '//button[@aria-label="취소"]',

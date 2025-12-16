@@ -33,7 +33,7 @@ SELECTORS = {
     
     # Agent 관련 파일 업로드 selector
     "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']",
-    "FILE_INPUT" : "input[type='file'][accept*='.pdf']",,
+    "FILE_INPUT" : "input[type='file'][accept*='.pdf']",
     
 
     "BTNS_DISABLED" : "button.MuiIconButton-root:not([disabled])",

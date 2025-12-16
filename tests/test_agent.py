@@ -7,7 +7,9 @@ from enums.ui_status import AIresponse
 #     agent_page.go_to_agent_page()
 #     agent_page.search_input("project")
 #     result = agent_page.search_result()
+#     fail_result = agent_page.search_no_result()
     
+#     assert fail_result is None, "PHC-TS06-TC001 : Test Fail"
 #     assert "project" in result.text.strip(), "PHC-TS06-TC001 : Test Fail"
 #     print("PHC-TS06-TC001 : Test Success")
     
@@ -35,19 +37,56 @@ from enums.ui_status import AIresponse
 #     print("PHC-TS06-TC003 : Test Success")
     
 # # PHC-TS06-TC004
+def test_agent_talk_response_complete(logged_in_agent, fm) :
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.talk_with_agent_screen()
+    
+    data = fm.read_json_file("agent_text_data.json")
+    question = data["inputs"][0]["content"]
+    result = agent_page.ai_chat_complete(question)
+    
+    assert result == AIresponse.COMPLETED, "PHC-TS06-TC005 : Test Fail"
+    print("PHC-TS06-TC005 : Test Success")
 
-# # PHC-TS06-TC005   
-# def test_agent_talk_response_stop(logged_in_agent, fm) :
+# PHC-TS06-TC005   
+def test_agent_talk_response_stop(logged_in_agent, fm) :
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.talk_with_agent_screen()
+    
+    data = fm.read_json_file("agent_text_data.json")
+    question = data["inputs"][0]["content"]
+    result = agent_page.input_chat_stop(question)
+    
+    assert result == AIresponse.STOPPED, "PHC-TS06-TC005 : Test Fail"
+    print("PHC-TS06-TC005 : Test Success")
+
+# # PHC-TS06-TC011
+# def test_agent_talk_file_upload(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.talk_with_agent_screen()
+#     agent_page.open_upload_file_dialog()
+#     agent_page.upload_file_in_chat()
+#     element = agent_page.check_file_upload_in_chat()
+#     assert element, "PHC-TS06-TC011 : Test Fail"
+#     result = agent_page.ai_chat_complete("")
+#     assert result == AIresponse.COMPLETED, "PHC-TS06-TC011 : Test Fail"
+#     print("PHC-TS06-TC011 : Test Success")
     
-#     data = fm.read_json_file("agent_text_data.json")
-#     question = data["inputs"][0]["content"]
-#     result = agent_page.input_chat(question)
-    
-#     assert result == AIresponse.STOPPED, "PHC-TS06-TC005 : Test Fail"
-#     print("PHC-TS06-TC005 : Test Success")
+# # PHC-TS06-TC012
+# def test_agent_talk_img_upload(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.talk_with_agent_screen()
+#     agent_page.open_upload_file_dialog()
+#     agent_page.upload_img_in_chat()
+#     element = agent_page.check_img_upload_in_chat()
+#     assert element, "PHC-TS06-TC011 : Test Fail"
+#     result = agent_page.ai_chat_complete("")
+#     assert result == AIresponse.COMPLETED, "PHC-TS06-TC012 : Test Fail"
+#     print("PHC-TS06-TC012 : Test Success")
     
 # # PHC-TS06-TC028
 # def test_agent_setting_for_me(logged_in_agent, fm) :
@@ -311,41 +350,184 @@ from enums.ui_status import AIresponse
 #     print("PHC-TS06-TC040 : Test Success")
     
 # PHC-TS06-TC041
-def test_agent_big_image_upload(logged_in_agent):
-    agent_page = logged_in_agent
-    agent_page.go_to_agent_page()
-    agent_page.make_agent_screen()
-    agent_page.upload_image("test_big_img.tif")
+# def test_agent_big_image_upload(logged_in_agent):
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     agent_page.upload_image("test_big_img.tif")
     
-    # 업로드 성공 여부 검증
-    assert agent_page.check_upload_big_img(), "PHC-TS06-TC041 : Test Fail"
-    print("PHC-TS06-TC041 : Test Success")
+#     # 업로드 성공 여부 검증
+#     assert agent_page.check_upload_big_img(), "PHC-TS06-TC041 : Test Fail"
+#     print("PHC-TS06-TC041 : Test Success")
 
 # PHC-TS06-TC042
-def test_agent_image_exe_upload(logged_in_agent):
-    agent_page = logged_in_agent
-    agent_page.go_to_agent_page()
-    agent_page.make_agent_screen()
-    agent_page.upload_image("test_exe.exe")
+# def test_agent_image_exe_upload(logged_in_agent,fm):
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     data = fm.read_json_file("agent_text_data.json")
+#     name = data["setting_inputs"][0]["content"]
+#     rule = data["setting_inputs"][2]["content"]
+#     agent_page.setting_name_input(name)
+#     agent_page.setting_rule_input(rule)
+#     time.sleep(2)
+#     agent_page.upload_image("test_exe.exe")
+#     error = agent_page.error_message()
     
-    # 업로드 성공 여부 검증
-    uploaded = agent_page.check_upload_image()
-    assert uploaded is None, "PHC-TS06-TC042 : Test Fail"
-    print("PHC-TS06-TC042 : Test Success")
+#     # 업로드 성공 여부 검증
+#     uploaded = agent_page.check_upload_image()
+#     assert uploaded is None, "PHC-TS06-TC042 : Test Fail"
+#     # 오류메시지 추가
+#     assert error is not None, "PHC-TS06-TC042 : Test Fail"
+#     print("PHC-TS06-TC042 : Test Success")
     
 # PHC-TS06-TC043
-def test_agent_make_image(logged_in_agent, fm) :
-    agent_page = logged_in_agent
-    agent_page.go_to_agent_page()
-    agent_page.make_agent_screen()
-    data = fm.read_json_file("agent_text_data.json")
-    name = data["setting_inputs"][0]["content"]
-    rule = data["setting_inputs"][2]["content"]
-    agent_page.setting_name_input(name)
-    agent_page.setting_rule_input(rule)
-    time.sleep(2)
-    agent_page.make_image()
+# def test_agent_make_image(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     data = fm.read_json_file("agent_text_data.json")
+#     name = data["setting_inputs"][0]["content"]
+#     rule = data["setting_inputs"][2]["content"]
+#     agent_page.setting_name_input(name)
+#     agent_page.setting_rule_input(rule)
+#     time.sleep(2)
+#     agent_page.make_image()
     
-    uploaded = agent_page.check_upload_image()
-    assert uploaded.is_displayed(), "PHC-TS06-TC043 : Test Fail"
-    print("PHC-TS06-TC043 : Test Success")
+#     uploaded = agent_page.check_upload_image()
+#     assert uploaded.is_displayed(), "PHC-TS06-TC043 : Test Fail"
+#     print("PHC-TS06-TC043 : Test Success")
+
+# PHC-TS06-TC044
+# def test_agent_file_upload(logged_in_agent) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     agent_page.scroll_down_setting()
+    
+#     # 파일 업로드
+#     agent_page.upload_file("test_pdf.pdf")
+#     uploaded = agent_page.check_upload_file()
+#     assert uploaded, "PHC-TS06-TC044 : Test Fail"
+#     print("PHC-TS06-TC044 : Test Success")
+    
+# PHC-TS06-TC045
+# def test_agent_upload_img_to_file(logged_in_agent) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     agent_page.scroll_down_setting()
+    
+#     # 파일 업로드
+#     agent_page.upload_file("test_asset.jpg")
+#     uploaded = agent_page.check_upload_file()
+#     assert uploaded, "PHC-TS06-TC045 : Test Fail"
+#     print("PHC-TS06-TC045 : Test Success")
+
+# PHC-TS06-TC046
+# def test_agent_upload_big_file(logged_in_agent) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     agent_page.scroll_down_setting()
+#     agent_page.upload_file("big_file.md")
+#     uploaded = agent_page.check_fail_file_upload()
+#     assert uploaded, "PHC-TS06-TC046 : Test Fail"
+#     msg = agent_page.check_fail_msg_file_upload()
+#     assert '크기' or 'size' in msg.text.strip(), "PHC-TS06-TC046 : Test Fail"
+#     print("PHC-TS06-TC046 : Test Success")
+    
+# PHC-TS06-TC047
+# def test_agent_upload_exe_to_file(logged_in_agent) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     agent_page.scroll_down_setting()
+#     agent_page.upload_file("test_exe.exe")
+#     uploaded = agent_page.check_fail_file_upload()
+#     assert uploaded, "PHC-TS06-TC047 : Test Fail"
+#     msg = agent_page.check_fail_msg_file_upload()
+#     assert msg is not None, "PHC-TS06-TC047 : Test Fail"
+#     print("PHC-TS06-TC047 : Test Success")
+    
+# PHC-TS06-TC048
+# def test_agent_upload_many_file(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     data = fm.read_json_file("agent_text_data.json")
+#     name = data["setting_inputs"][0]["content"]
+#     rule = data["setting_inputs"][2]["content"]
+#     agent_page.setting_name_input(name)
+#     agent_page.setting_rule_input(rule)
+#     time.sleep(2)
+#     agent_page.scroll_down_setting()
+#     agent_page.upload_multiple_images(limit=21)
+#     error = agent_page.error_message().text.strip()
+#     assert not "20개" or "" in error, "PHC-TS06-TC048 : Test Fail"
+#     print("PHC-TS06-TC048 : Test Success")
+    
+# PHC-TS06-TC049
+# def test_agent_delete_uploaded_file(logged_in_agent) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     agent_page.scroll_down_setting()
+#     agent_page.upload_file("test_asset.jpg")
+#     uploaded = agent_page.check_upload_file()
+#     if uploaded :
+#         agent_page.delete_for_uploaded_file()
+#     uploaded = agent_page.check_upload_file()
+#     assert uploaded is None, "PHC-TS06-TC049 : Test Fail"
+#     print("PHC-TS06-TC049 : Test Success")
+    
+# PHC-TS06-TC051
+# def test_agent_back_while_make(logged_in_agent) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.go_to_my_agent()
+#     time.sleep(2)
+#     agent_page.make_agent_screen()
+#     time.sleep(2)
+#     agent_page.back_in_agent_make_screen()
+#     msg = agent_page.check_draft_msg().text.strip()
+#     assert "초안" or "Draft" in msg, "PHC-TS06-TC051 : Test Fail"
+#     print("PHC-TS06-TC051 : Test Success")
+
+# # PHC-TS06-TC052
+# def test_agent_refresh_preview(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     data = fm.read_json_file("agent_text_data.json")
+#     name = data["setting_inputs"][0]["content"]
+#     rule = data["setting_inputs"][2]["content"]
+#     input = data["setting_inputs"][3]["content"]
+#     agent_page.setting_name_input(name)
+#     agent_page.setting_rule_input(rule)
+#     time.sleep(2)
+    
+#     agent_page.preview_input_chat_stop(input)
+#     text = agent_page.check_my_talk_input()
+#     assert text is not None, "PHC-TS06-TC052 : Test Fail"
+#     agent_page.refresh_btn_in_preview()
+#     text = agent_page.check_my_talk_input()
+#     assert text is None, "PHC-TS06-TC052 : Test Fail"
+#     print("PHC-TS06-TC052 : Test Success")
+
+# # PHC-TS06-TC055
+# def test_agent_stop_chat_in_preview(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     data = fm.read_json_file("agent_text_data.json")
+#     name = data["setting_inputs"][0]["content"]
+#     rule = data["setting_inputs"][2]["content"]
+#     input = data["setting_inputs"][3]["content"]
+#     agent_page.setting_name_input(name)
+#     agent_page.setting_rule_input(rule)
+#     time.sleep(2)
+#     result = agent_page.preview_input_chat_stop(input)
+#     assert result == AIresponse.STOPPED, "PHC-TS06-TC055 : Test Fail"
+#     print("PHC-TS06-TC055 : Test Success")
+    

@@ -33,6 +33,8 @@ SELECTORS = {
     
     # Agent 관련 파일 업로드 selector
     "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']",
+    "FILE_INPUT" : "input[type='file'][accept*='.pdf']",
+    "FILE_INPUT_IN_CHAT" : "input[type='file']",
     
 
     "BTNS_DISABLED" : "button.MuiIconButton-root:not([disabled])",
@@ -163,6 +165,17 @@ XPATH = {
     "BTN_ADD_IMAGE" : "//button[contains(@class, 'css-807ylu')]",
     "BTN_MAKE_IMAGE" : "//li[@role = 'menuitem']",
     "UPLOADED_IMAGE_PREVIEW" : "//img[contains(@src, 'blob.core.windows.net')]",
+    "CHECK_UPLOADED_FILE" : "//*[name()='svg' and @data-testid='circle-checkIcon']",
+    "FAIL_UPLOAD_FILE" : "//*[name()='svg' and @data-testid='circle-exclamationIcon']",
+    "FAIL_UPLOAD_FILE_MSG" : "//p[contains(@class, 'css-wrn3u')]",
+    "BTN_FOR_UPLOADED_FILE" : "//button[contains(@class, 'css-1rssx7s')]",
+    "BTN_BACK_IN_MAKE_AGENT" : "//button[contains(@class, 'css-1p4tfme')]",
+    "CHECK_DRAFT" : "//div[contains(@class, 'css-1alszk2')]",
+    "PREVIEW_INPUT" :"//textarea[@data-gtm-form-interact-field-id = '5']",
+    "BTN_PREVIEW_SEND" : "//button[contains(@class, 'css-rhb320')]",
+    "BTN_PREVIEW_REFRESH" : "//div[contains(@class, 'css-16ypwk')]//button",
+    "CHECK_FILE_IN_CHAT" : "//div[contains(@class, 'css-1fth50j')]",
+    "CHECK_IMG_IN_CHAT" : "//img[contains(@class, 'MuiBox')]",
     
     
     

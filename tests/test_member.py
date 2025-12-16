@@ -212,4 +212,4 @@ def test_toast_save_info(member_page,test_cases):
     assert member_page.submit_name()
     assert member_page.click_to_promotion()
     assert member_page.toast_save_msg_compare()
-    
+    member_page.save_report_data()

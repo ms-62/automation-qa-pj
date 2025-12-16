@@ -30,7 +30,7 @@ from utils.defines import DEFAULT_MODEL, DEFAULT_CHAT
     # 사용자가 보낸 메시지 내용 편집 중 취소
     # 사용자가 보낸 메시지 복사  
     
-# def test_past_chats(logged_in_main, fm, driver):
+# def test_past_chats(logged_in_main):
 #     page = logged_in_main
     
 #     past_chat_page = PastChatsPage(driver)
@@ -41,12 +41,20 @@ from utils.defines import DEFAULT_MODEL, DEFAULT_CHAT
 
 
 # 파일 업로드 
-def test_file_upload(logged_in_main, fm, driver):
+def test_file_upload(logged_in_main, fm):
     page = logged_in_main
 
-    page.upload_file(fm)
+    images = fm.get_asset_files((".jpg", ".png"))
+    for img in images:
+        page.upload_file(os.path.basename(img))
+    
+    pdfs = fm.get_asset_files(".pdf")
+    for pdf in pdfs:
+        page.upload_file(os.path.basename(pdf))
 
-
+    not_allowed_files = fm.get_asset_files(".psd")
+    for file in not_allowed_files:
+        page.upload_file(os.path.basename(file))
 
 
 

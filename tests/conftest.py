@@ -73,7 +73,7 @@ def user_data(fm):
 
 @pytest.fixture
 
-def logged_in_main(driver, fm, user_data, login_page, main_page, member_page, agent_page):
+def logged_in_main(driver, fm, login_page, main_page, member_page, agent_page, user_data):
     ctx = LoginContext(
         driver=driver,
         fm=fm,
@@ -95,7 +95,7 @@ def test_cases(fm):
 
 # 수진 - 추가
 @pytest.fixture
-def logged_in_agent(driver, fm, user_data, login_page, main_page, member_page, agent_page):
+def logged_in_agent(driver, fm, login_page, main_page, member_page, agent_page, user_data):
     ctx = LoginContext(
         driver=driver,
         fm=fm,

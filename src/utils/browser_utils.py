@@ -5,47 +5,57 @@ from utils.defines import NAME, XPATH
 
 class BrowserUtils:
     
-    def save_cookies(self, driver, fm, file_name = "cookies.json"):
+    def save_cookies(self, driver, fm, file_name):
         cookies = driver.get_cookies()
-        fm.save_json_file(file_name, cookies)
+        data = {
+            "timestamp": time.time(),
+            "cookies": cookies
+        }
+        fm.save_json_file(file_name, data)
 
-    def load_cookies(self, driver, fm, url, file_name = "cookies.json"):
-        cookies = fm.read_json_file(file_name)
-        if not cookies:
-            print(f"쿠키 파일 없음")
+    def load_cookies(self, driver, fm, url, file_name):
+        data = fm.read_json_file(file_name)
+        if not data or "cookies" not in data:
             return False
 
-        # 여기 부분 driver manager로 뺄수도.
         driver.get(url)
-        time.sleep(0.5)
-        for cookie in cookies:
-            cookie.pop("domain", None)
-            driver.add_cookie(cookie)
-                
-        return True
+        WebDriverWait(driver, 10).until(
+            lambda d: d.execute_script("return document.readyState") == "complete"
+        )
 
-    #    loaded_cookies = self.load_cookies(ctx.driver, ctx.fm, ctx.url)
+        for cookie in data["cookies"]:
+            cookie_copy = cookie.copy()
+            cookie_copy.pop("sameSite", None)
+            cookie_copy.pop("domain", None)  # 도메인 제거
+            if "expiry" in cookie_copy:
+                cookie_copy["expiry"] = int(cookie_copy["expiry"])
+            try:
+                driver.add_cookie(cookie_copy)
+            except Exception as e:
+                print(f"쿠키 추가 실패: {cookie_copy.get('name')} -> {e}")
+
+        driver.refresh()
+        return True
     
     def auto_login(self, ctx: LoginContext):
         ctx.main_page.go_to_main_page()
+        #loaded_cookies = self.load_cookies(ctx.driver, ctx.fm, ctx.url, ctx.file_name)
 
-        # 로그인 여부를 dom 기반으로 확인
-        el_id = ctx.login_page.get_element_by_name(NAME["INPUT_ID"], option = "visibility")
-        el_pw = ctx.login_page.get_element_by_name(NAME["INPUT_PW"], option = "visibility")
-        
+        #if not loaded_cookies:
+        el_id = ctx.login_page.get_element_by_name(NAME["INPUT_ID"], option="visibility")
+        el_pw = ctx.login_page.get_element_by_name(NAME["INPUT_PW"], option="visibility")
+        user = ctx.user_data[-1]
         if el_id and el_pw:
-            user = ctx.user_data[-1]
             ctx.login_page.input_user_data(user)
             ctx.login_page.click_login_button()
             self.save_cookies(ctx.driver, ctx.fm, ctx.file_name)
         elif el_pw and not el_id:
-            user = ctx.user_data[-1]
             ctx.login_page.input_pw(user["password"])
             ctx.login_page.click_login_button()
             self.save_cookies(ctx.driver, ctx.fm, ctx.file_name)
-        # 이미 있다
         else:
             print("로그인 폼이 없으니까 로그인 스킵")
+
         return ctx.main_page
     
     # 수진 - 추가

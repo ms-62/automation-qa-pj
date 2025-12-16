@@ -6,7 +6,7 @@ from managers.file_manager import FileManager
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
-        self.fm = FileManager() # 수진 - 추가
+        self.fm = FileManager()
         
     def go_to_page(self, url):
         self.driver.get(url)
@@ -102,3 +102,13 @@ class BasePage:
         
         print("계정 창 없음")
         return False
+
+    # iframe 확인용
+    def get_iframes(self):
+        iframes = self.driver.find_elements(By.TAG_NAME, "iframe")
+        print(f"페이지 내 iframe 개수: {len(iframes)}")
+
+        for i, frame in enumerate(iframes):
+            print(f"iframe {i} id: {frame.get_attribute('id')}, name: {frame.get_attribute('name')}")
+            
+        return iframes

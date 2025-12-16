@@ -1,0 +1,36 @@
+{
+    "sql_injection_a": 
+    {
+      "sql_injection": "0' UNION SELECT NULL,NULL --",
+      "should_save": true
+    },
+    "sql_injection_b": {
+      "sql_injection": "admin' OR '1'='1",
+      "should_save": true
+    },
+    "sql_injection_c":  {
+      "sql_injection": "' OR '1'='1",
+      "should_save": true
+    },
+    "sql_injection_d":  {
+      "sql_injection": "' OR 1=1 --",
+      "should_save": true
+    },
+    "sql_injection_e":  {
+      "sql_injection": "' OR 1=1 #",
+      "should_save": true
+    },
+    "xss_scipt_a" : {
+      "xss_script_value_a": "<img src=x onerror='alert('xss')'>",
+      "should_save": true
+    },
+    "xss_scipt_b" : {
+      "xss_script_value_b": "<script>alert(1)</script>",
+      "should_save": true
+    },
+    "xss_scipt_c" : {
+      "xss_script_value_c": "</script><script>alert(1)</script>",
+      "should_save": true
+    }
+  
+}

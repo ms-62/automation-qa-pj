@@ -7,6 +7,7 @@ from utils.defines import TARGET_URL
 
 from managers.file_manager import FileManager
 from pages.signup_page import SignupPage
+from pages.security_page import SecurityPage
  
 from pages.main_page import MainPage
 from pages.login_page import LoginPage
@@ -50,6 +51,10 @@ def signup_page(signup_driver) :
     return SignupPage(signup_driver)
 
 @pytest.fixture
+def security_page(signup_driver) :
+    return SecurityPage(signup_driver)
+
+@pytest.fixture
 def member_page(driver):
     page = MemberPage(driver)
     return page
@@ -91,6 +96,12 @@ def logged_in_main(driver, fm, login_page, main_page, member_page, agent_page, u
 @pytest.fixture
 def test_cases(fm):
     data = fm.read_json_file("member_test_data.json")
+    return data or {}
+
+#보안 테스트 데이터 받는 fixture
+@pytest.fixture
+def security_cases(fm):
+    data = fm.read_json_file("security_data.json")
     return data or {}
 
 # 수진 - 추가

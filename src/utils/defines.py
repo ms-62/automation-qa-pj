@@ -5,8 +5,23 @@ import pyautogui
 # 예시입니다!!
 SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 FULLSCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-TIMEOUT_MAX = 10
-STOPPED_MAX = 7
+TIMEOUT_MAX = 15
+STOPPED_MAX = 10
+STEP = 500
+
+class ChatType:
+    TEXT = "text"               # 질문/일반 텍스트
+    IMAGE_REQUEST = "image"     # 이미지 요청
+    WEB_REQUEST = "websearch"   # 웹 검색 요청
+    
+class ChatKey:
+    INPUTS = "inputs"           # 유저 입력
+    REQUESTS = "requests"       # 요청 관련
+    
+class TestResult:
+    PASSED = "pass"
+    FAILED = "fail"
+    
 ACTIVE = "모델이 활성화되었습니다."
 DEACTIVE = "모델이 비활성화되었습니다."
 DEFAULT_MODEL = "Helpy Pro Agent"
@@ -40,7 +55,7 @@ SELECTORS = {
     "BTNS_DISABLED" : "button.MuiIconButton-root:not([disabled])",
     "BTN_PLUS" : "svg[data-icon='plus']",
     "BTN_UPLOAD_PLUS_CSS" : "button.MuiIconButton-root:not([disabled]) svg[data-icon='plus']",
-
+    #"BTN_MODEL_SETTING" : 'a[href="/ai-helpy-chat/admin/models"] span.MuiTypography-root',
 
 }
 
@@ -67,6 +82,8 @@ XPATH = {
     "BTN_LOGIN": "//button[normalize-space()='Login']",
     "BTN_CREATE_ACCOUNT" : "//a[contains(@href, 'signup')]",
     "BTN_CREATE_EMAIL" : "//button",
+    "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
+    "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
     "SIGNUP_AGREE" : "//input[contains(@class, 'PrivateSwitchBase')]",
     "CHECK_SIGNUP" : "//a[contains(@href, 'recover')]",
     "BTN_SIGNUP" : "//button[@type = 'submit']",
@@ -94,7 +111,7 @@ XPATH = {
     "MOBILE_ROW": "//table[contains(@class,'css-69t54h')]//tr[td[normalize-space(.)='휴대폰 번호']]",
     "BTN_MOBILE_EDIT" : "//tr[td[normalize-space(.)='휴대폰 번호']]//button[contains(@class,'MuiIconButton-root')]",
     "BTN_CERTI_MOBIL" : "//button[@type='submit' and contains(@class,'MuiLoadingButton-root')]",
-    "TOAST_CONTAINER" : "//div[@role='alert'][@aria-describedby='notistack-snackbar']",
+    "TOAST_CONTAINER" : "//div[@id='notistack-snackbar']",
     "PWD_ROW" : "//table[contains(@class,'css-69t54h')]//tr[td[normalize-space(.)='비밀번호']]",
     "BTN_PWD_EDIT" : "//tr[td[normalize-space(.)='비밀번호']]//button[contains(@class,'MuiIconButton-root')]",
     "SUBMIT_PWD" : "//button[@type='submit' and normalize-space(.)='완료']",
@@ -119,13 +136,13 @@ XPATH = {
         
     # ai 모델
     "BTN_MODEL_DROPDOWN" : '//button[.//p[normalize-space()="{model_name}"]]',
-    "MENU_PAPER": '//div[contains(@class,"MuiMenu-paper") and contains(@class,"MuiPopover-paper")]',  
+    "MENU_PAPER": '//div[contains(@class,"MuiMenu-paper") and contains(@class,"MuiPopover-paper")]',  # 왜 못찾냐
     "MODEL_ITEMS": '//div[contains(@class,"MuiMenu-paper")]//li[@role="menuitem"]',
     "SELECTED_MODEL": '//button//p[contains(@class,"MuiTypography-body2")]',
     "MODEL_BY_NAME":'//div[contains(@class,"MuiMenu-paper")]''//li[@role="menuitem"]''[.//span[normalize-space()="{model_name}"]]',
 
     # # 모델 설정 창
-    "BTN_MODEL_SETTING" : '//a[contains(@class,"MuiMenuItem-root") and .//span[normalize-space(text())="모델 설정"]]',
+    "BTN_MODEL_SETTING" : '//a[.//span[normalize-space(text())="모델 설정"]]',
     "MODEL_LI": "//div[contains(@class, 'MuiStack-root') and contains(@class, 'css-8g8ihq')]//li[contains(@class,'MuiListItem-root')]",
     "MODEL_NAME_IN_LI" : ".//span[contains(@class,'MuiListItemText-primary')]",
     "MODEL_LI_BY_NAME" : '//li[.//span[contains(@class,"MuiListItemText-primary") and text()="{model_name}"]]',

@@ -1,34 +1,45 @@
+# controllers/scroll_controller.py
 import time
+from time import perf_counter
 
-from utils.defines import STOPPED_MAX
-STEP = 500
+from utils.defines import STOPPED_MAX, STEP
+from utils.context import ActionResult
+from managers.file_manager import FileManager
+
+fm = FileManager()
 
 class ScrollController:
- 
+
     @staticmethod
     def scroll_up(driver, scroll_area, step=STEP, max_scroll_time=STOPPED_MAX):
+        start = perf_counter()
 
         if not scroll_area:
-            print("스크롤 영역을 찾을 수 없습니다.")
-            return
-        
+            return ActionResult(action="scroll_up",result="fail",elapsed_time=0,detail="scroll_area not found")
+
         start_time = time.time()
         prev_top = None
+
         while True:
-            current_top = driver.execute_script("return arguments[0].scrollTop;", scroll_area)
-            
+            current_top = driver.execute_script(
+                "return arguments[0].scrollTop;", scroll_area
+            )
+
             if time.time() - start_time >= max_scroll_time:
-                print(f"{max_scroll_time}초 경과, 스크롤 중단")
-                break
-        
-            if current_top == 0 or current_top == prev_top:
-                print("화면 맨 위 도착!")
-                break
-            
-            # 테스트 용 ===================================
-            print(f"[up] current_top :{current_top} == prev_top :{prev_top} ?")
-            #  ==========================================
-    
+                screenshot = fm.save_screenshot_png(driver, "scroll_up_timeout")
+                return ActionResult(
+                    action="scroll_up",
+                    result="timeout",
+                    elapsed_time=perf_counter() - start,
+                    screenshot=screenshot
+                )
+
+            if current_top == 0:
+                return ActionResult(action="scroll_up",result="success",elapsed_time=perf_counter() - start,detail="reach top")
+
+            if current_top == prev_top:
+                return ActionResult(action="scroll_up",result="success",elapsed_time=perf_counter() - start,detail="no more movement")
+
             driver.execute_script(
                 "arguments[0].scrollBy(0, arguments[1]);",
                 scroll_area, -step
@@ -37,33 +48,56 @@ class ScrollController:
             prev_top = current_top
 
     @staticmethod
-    def scroll_down(driver, scroll_area, step=STEP):
+    def scroll_down(driver, scroll_area, step=STEP, max_scroll_time=STOPPED_MAX):
+        start = perf_counter()
 
         if not scroll_area:
-            print("스크롤 영역을 찾을 수 없습니다.")
-            return
+            return ActionResult(
+                action="scroll_down",
+                result="fail",
+                elapsed_time=0,
+                detail="scroll_area not found"
+            )
 
         prev_btm = None
+        start_time = time.time()
+
         while True:
-            current_btm = driver.execute_script("return arguments[0].scrollTop;", scroll_area)
-            height = driver.execute_script("return arguments[0].scrollHeight;", scroll_area)
+            current_btm = driver.execute_script(
+                "return arguments[0].scrollTop;", scroll_area
+            )
+            height = driver.execute_script(
+                "return arguments[0].scrollHeight;", scroll_area
+            )
 
             if current_btm + scroll_area.size["height"] >= height:
-                print("화면 맨 아래 도착!")
-                break
-            
+                return ActionResult(
+                    action="scroll_down",
+                    result="success",
+                    elapsed_time=perf_counter() - start,
+                    detail="reach bottom"
+                )
+
             if current_btm == prev_btm:
-                print("화면 맨 아래 도착!")
-                break
-            
-            # 테스트 용 ====================================
-            print(f"[down] current_btm :{current_btm} + scroll_area.size['height']: {scroll_area.size['height']} >= scroll_height :{height} ?")
-            #  ==========================================
-        
+                return ActionResult(
+                    action="scroll_down",
+                    result="success",
+                    elapsed_time=perf_counter() - start,
+                    detail="no more movement"
+                )
+
+            if time.time() - start_time >= max_scroll_time:
+                screenshot = fm.save_screenshot_png(driver, "scroll timeout")
+                return ActionResult(
+                    action="scroll_down",
+                    result="timeout",
+                    elapsed_time=perf_counter() - start,
+                    screenshot=screenshot
+                )
+
             driver.execute_script(
                 "arguments[0].scrollBy(0, arguments[1]);",
                 scroll_area, step
             )
             time.sleep(0.3)
             prev_btm = current_btm
-            

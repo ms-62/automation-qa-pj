@@ -35,7 +35,28 @@ git diff <br>
 4. 특정 커밋 되돌리기 <br>
 git revert <commit_id>
 
+## coverage 사용 간단 가이드
+## report에서 
+### Stmts 명령문 수, Miss는 실행 X 명령문 수
+### Cover 커버리지 수, Missing은 Miss 명련문의 줄 번호
 
+1. 브랜치 커버리지 + app 패키지 기준 리포트용 git 명령어
+- coverage run -m pytest
+
+2. tests 폴더 기준 명령어(--source로 폴더 지정)
+- coverage run --source=tests -m pytest
+
+3. 특정 패키지만 보고 싶을 때
+- coverage report --include="app/*"
+
+4. 특정 패키지만 제외
+- coverage report --omit="tests/*"
+
+5. 상위 명령어 실행 후 터미널에서 간단 리포트 확인
+- coverage report
+
+6. 상위 명령어 html root에 htmlcov 경로에 html report 생성
+- coverage html
 
 ---
 

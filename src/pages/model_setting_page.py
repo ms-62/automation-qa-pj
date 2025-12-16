@@ -1,5 +1,5 @@
 from utils.headers import *
-from utils.defines import XPATH, ID, ACTIVE, DEACTIVE, DEFAULT_MODEL
+from utils.defines import XPATH, SELECTORS, ID, ACTIVE, DEACTIVE, DEFAULT_MODEL
 
 from pages.base_page import BasePage
 from enums.ui_status import ModelState
@@ -11,10 +11,10 @@ class ModelSettingPage(BasePage):
         
     # ================ 드롭다운 메뉴 ================ 
     def open_model_menu(self):
-        cur_model = self.get_current_model()
+        cur_model = self.get_current_model().strip()
         xpath = XPATH["BTN_MODEL_DROPDOWN"].format(model_name=cur_model)
-        self.get_element_by_xpath(xpath).click()
-        self.get_element_by_xpath(XPATH["MENU_PAPER"], option="visibility")
+        self.get_element_by_xpath(xpath, option="clickable").click()
+        time.sleep(0.5)
 
     def is_dropdown_closed(self):
         el = self.get_element_by_xpath(XPATH["MENU_PAPER"], option="visibility")
@@ -26,7 +26,6 @@ class ModelSettingPage(BasePage):
 
     def get_current_model(self): 
         el = self.get_element_by_xpath(XPATH["SELECTED_MODEL"])
-        time.sleep(0.3) 
         return el.text.strip()
 
     def select_last_model(self):       
@@ -41,17 +40,17 @@ class ModelSettingPage(BasePage):
         xpath = XPATH["MODEL_BY_NAME"].format(model_name = model_name)
         self.get_element_by_xpath(xpath).click()
         selected = self.get_current_model()
-        time.sleep(0.3) 
+        time.sleep(0.5) 
         
         assert self.is_dropdown_closed(), "메뉴 닫힘 확인"
         assert model_name in selected, "selected model 불일치"
     
     # ================ ai 모델 설정 화면 - 정보 가져오기 ================ 
     def go_to_model_setting(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_MODEL_SETTING"], option="visibility")
+        btn  = self.get_element_by_xpath(XPATH["BTN_MODEL_SETTING"], option="clickable")
         if btn and btn.is_enabled():
             btn.click()
-            time.sleep(0.3)
+            time.sleep(0.5) 
         
     def get_all_models_in_setting(self):
         items = self.get_elements_by_xpath(XPATH["MODEL_LI"]) 
@@ -81,14 +80,14 @@ class ModelSettingPage(BasePage):
         checkbox = li.find_element(By.XPATH, XPATH["MODEL_CHECKBOX"])
         if not checkbox.is_selected():
             checkbox.click()
-            time.sleep(0.3)  # UI 반영 대기
+            time.sleep(0.5)  
 
     def disable_model(self, model_name: str):
         li = self.get_model_li(model_name)
         checkbox = li.find_element(By.XPATH, XPATH["MODEL_CHECKBOX"])
         if checkbox.is_selected():
             checkbox.click()
-            time.sleep(0.3)  # UI 반영 대기
+            time.sleep(0.5)  
             
     def verify_snackbar_message(self, expected_msg: str):
         try:
@@ -134,8 +133,7 @@ class ModelSettingPage(BasePage):
 
     def compare_active_models(self):
         self.open_model_menu()
-        models = self.get_all_model_names() # 스샷으로 해도 좋을듯
-        
+        models = self.get_all_model_names() 
+        self.fm.save_screenshot_png(self.driver, "compare_activer_ai_models")
         assert models == self.active_models, f"active모델 일치하지 않음: {models} != {self.active_models}"
-        time.sleep(0.5)
         

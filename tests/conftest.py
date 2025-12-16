@@ -93,6 +93,12 @@ def test_cases(fm):
     data = fm.read_json_file("member_test_data.json")
     return data or {}
 
+#보안 테스트 데이터 받는 fixture
+@pytest.fixture
+def security_cases(fm):
+    data = fm.read_json_file("security_data.json")
+    return data or {}
+
 # 수진 - 추가
 @pytest.fixture
 def logged_in_agent(driver, fm, login_page, main_page, member_page, agent_page, user_data):

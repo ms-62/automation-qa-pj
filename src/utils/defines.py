@@ -31,7 +31,8 @@ SELECTORS = {
     "BOX_LANG_KOR" : "ul[role='listbox'] li[data-value='ko-KR']",
     
     # Agent 관련 파일 업로드 selector
-    "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']"
+    "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']",
+    "FILE_INPUT" : "input[type='file'][accept*='.pdf']",
     
 
 }
@@ -157,6 +158,9 @@ XPATH = {
     "BTN_ADD_IMAGE" : "//button[contains(@class, 'css-807ylu')]",
     "BTN_MAKE_IMAGE" : "//li[@role = 'menuitem']",
     "UPLOADED_IMAGE_PREVIEW" : "//img[contains(@src, 'blob.core.windows.net')]",
+    "CHECK_UPLOADED_FILE" : "//*[name()='svg' and @data-testid='circle-checkIcon']",
+    "FAIL_UPLOAD_FILE" : "//*[name()='svg' and @data-testid='circle-exclamationIcon']",
+    "FAIL_UPLOAD_FILE_MSG" : "//p[contains(@class, 'css-wrn3u')]",
     
     
     

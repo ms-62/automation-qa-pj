@@ -1,6 +1,7 @@
 from utils.headers import *
 
 from pages.base_page import BasePage
+from managers.file_manager import FileManager
 from utils.defines import TARGET_URL, SELECTORS, NAME, XPATH
 from utils.defines import TIMEOUT_MAX
 
@@ -12,6 +13,10 @@ from controllers.response_controller import ResponseController
 from controllers.scroll_controller import ScrollController
 
 class AgentPage(BasePage) :
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.fm = FileManager()
+        
     def go_to_agent_page(self):
         menu_btn = self.get_element_by_xpath(XPATH["AGENT_MENU_BTN"])
         menu_btn.click()
@@ -143,6 +148,25 @@ class AgentPage(BasePage) :
         btns = self.get_elements_by_xpath(XPATH["BTN_MAKE_IMAGE"])
         btn = btns[1]
         btn.click()
+        
+    # 에이전트 만들기 - 파일 업로드
+    def upload_file(self, file_name: str) :
+        file_input = self.get_element_by_css_selector(
+            SELECTORS["FILE_INPUT"]
+        )
+        self.fm.file_upload(file_input, file_name)
+        
+    def check_upload_file(self) :
+        uploaded = self.get_element_by_xpath(XPATH["CHECK_UPLOADED_FILE"])
+        return uploaded
+    
+    def check_fail_file_upload(self) :
+        uploaded = self.get_element_by_xpath(XPATH["FAIL_UPLOAD_FILE"])
+        return uploaded
+    
+    def check_fail_msg_file_upload(self) :
+        msg = self.get_element_by_xpath(XPATH["FAIL_UPLOAD_FILE_MSG"])
+        return msg
                 
     # 에이전트 만들기 - 설정 스크롤
     def scroll_down_setting(self) :

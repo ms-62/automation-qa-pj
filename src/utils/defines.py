@@ -82,6 +82,8 @@ XPATH = {
     "BTN_LOGIN": "//button[normalize-space()='Login']",
     "BTN_CREATE_ACCOUNT" : "//a[contains(@href, 'signup')]",
     "BTN_CREATE_EMAIL" : "//button",
+    "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
+    "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
     "SIGNUP_AGREE" : "//input[contains(@class, 'PrivateSwitchBase')]",
     "CHECK_SIGNUP" : "//a[contains(@href, 'recover')]",
     "BTN_SIGNUP" : "//button[@type = 'submit']",

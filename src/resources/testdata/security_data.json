@@ -1,0 +1,30 @@
+{
+    "sql_injection": [
+    {
+      "value": "0' UNION SELECT NULL,NULL --"
+    },
+    {
+      "value": "admin' OR '1'='1"
+    },
+    {
+      "value": "' OR '1'='1"
+    },
+    {
+      "value": "' OR 1=1 --"
+    },
+    {
+      "value": "' OR 1=1 #"
+    }
+  ],
+  "xss_script": [
+    {
+      "value": "<img src=x onerror='alert('xss')'>"
+    },
+    {
+      "value": "<script>alert(1)</script>"
+    },
+    {
+      "value": "</script><script>alert(1)</script>"
+    }
+  ]
+}

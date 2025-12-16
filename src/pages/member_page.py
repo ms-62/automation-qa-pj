@@ -2,7 +2,6 @@ from utils.headers import *
 
 from pages.base_page import BasePage
 from utils.defines import TARGET_URL, SELECTORS, NAME, XPATH
-from managers.file_manager import FileManager
 
 class MemberPage(BasePage):
     #로그인 > 메인 페이지 이동
@@ -23,7 +22,7 @@ class MemberPage(BasePage):
         return True
     
     #계정 페이지 새로고침
-    def refresh_member_account_page(self):
+    def refresh_member_account_page(self) -> bool:
         if "accounts.elice.io/members/account" not in self.driver.current_url:
             if not self.go_to_member_page():
                 return False
@@ -32,7 +31,7 @@ class MemberPage(BasePage):
         return True
 
     #이름 관련 테스트 케이스를 위한 메서드
-    def open_name_edit_form(self, timeout=5):
+    def open_name_edit_form(self, timeout=5) -> bool:
         print("open_name_edit_form 시작")
 
         # 0) '이름' 행 스크롤 위치 맞추기
@@ -82,7 +81,7 @@ class MemberPage(BasePage):
         return True
 
 
-    def member_name(self, name):
+    def member_name(self, name) -> bool:
         input_name = self.get_element_by_name(NAME["INPUT_NAME"], option="visibility", timeout=3)
         if not input_name:
             print("이름 입력란 못 찾음")
@@ -109,7 +108,7 @@ class MemberPage(BasePage):
         return True
 
 
-    def submit_name(self):
+    def submit_name(self) -> bool:
         """저장 버튼 JS 클릭 + '이름' 행으로 스크롤 복귀 + enabled 상태로 성공/실패 판단."""
         xpath = XPATH["SUBMIT_NAME"] 
 
@@ -156,7 +155,7 @@ class MemberPage(BasePage):
             return False
     
     #메일 관련 테스트를 위한 메서드
-    def open_email_edit_form(self, timeout=5):
+    def open_email_edit_form(self, timeout=5) -> bool:
         print("open_mail_edit_form 시작")
 
         # 0) '이메일' 행 스크롤 위치 맞추기
@@ -205,7 +204,7 @@ class MemberPage(BasePage):
         print("이메일 수정 폼 열림")
         return True
     
-    def member_email(self, email):
+    def member_email(self, email) -> bool:
         input_email = self.get_element_by_name(NAME["INPUT_EMAIL"], option="visibility", timeout=3)
         if not input_email:
             print("이메일 입력란 못 찾음")
@@ -231,7 +230,7 @@ class MemberPage(BasePage):
         print(f"테스트 내용 입력 완료: {repr(email)}")
         return True
     
-    def certification_email(self):
+    def certification_email(self) -> bool:
         """인증 메일 발송 JS 클릭 + '이메일' 행으로 스크롤 복귀 + enabled 상태가 기본, 실패 테스트: 비활성화가 성공"""
         xpath = XPATH["BTN_CERTI_MAIL"] 
 
@@ -274,7 +273,7 @@ class MemberPage(BasePage):
             return False
     
     #휴대폰 번호 관련 테스트 메서드
-    def open_mobile_edit_form(self, timeout=5):
+    def open_mobile_edit_form(self, timeout=5) -> bool:
         print("open_mobile_edit_form 시작")
 
         # 0) 휴대폰번호 행 스크롤 위치 맞추기
@@ -323,7 +322,7 @@ class MemberPage(BasePage):
         print("휴대폰 번호 수정 폼 열림")
         return True
     
-    def member_mobile(self, mobile):
+    def member_mobile(self, mobile) -> bool:
         input_mobile = self.get_element_by_css_selector(SELECTORS["INPUT_MOBILE"], option="visibility", timeout=3)
         if not input_mobile:
             print("휴대폰 번호 입력란 못 찾음")
@@ -349,7 +348,7 @@ class MemberPage(BasePage):
         print(f"테스트 내용 입력 완료: {repr(mobile)}")
         return True
     
-    def certification_mobile(self):
+    def certification_mobile(self) -> bool:
         """4시간 내 최대 5회 발송 시도 후 확인"""
         certi_btn = self.get_element(By.XPATH, XPATH["BTN_CERTI_MOBIL"] , option="visibility", timeout=3)
         if not certi_btn:
@@ -384,7 +383,7 @@ class MemberPage(BasePage):
             return False
         
     #비밀번호 관련 테스트 메서드
-    def open_pwd_edit_form(self, timeout=5):
+    def open_pwd_edit_form(self, timeout=5) -> bool:
         print("open_pwd_edit_form 시작")
 
         # 0) 비밀번호 행 스크롤 위치 맞추기
@@ -433,7 +432,7 @@ class MemberPage(BasePage):
         print("비밀번호 수정 폼 열림")
         return True
     
-    def member_fail_pwd(self, pwd):
+    def member_fail_pwd(self, pwd) -> bool:
         input_pwd = self.get_element_by_name(NAME["INPUT_PWD"], option="visibility", timeout=3)
         input_new_pwd = self.get_element_by_name(NAME["INPUT_NEW_PWD"], option="visibility", timeout=3)
         
@@ -494,7 +493,7 @@ class MemberPage(BasePage):
             print(f"예외 발생: {e}")
             return False
     
-    def member_success_pwd(self, pwd , pwd_new):
+    def member_success_pwd(self, pwd , pwd_new) -> bool:
         input_pwd = self.get_element_by_name(NAME["INPUT_PWD"], option="visibility", timeout=3)
         input_new_pwd = self.get_element_by_name(NAME["INPUT_NEW_PWD"], option="visibility", timeout=3)
         
@@ -533,7 +532,7 @@ class MemberPage(BasePage):
         print(f"신규 비밀번호 입력 완료: {repr(pwd_new)}")
         return True
     
-    def change_success_pwd(self):
+    def change_success_pwd(self) -> bool:
         """비밀번호 변경 성공"""
         submit_pwd = self.get_element(By.XPATH, XPATH["SUBMIT_PWD"] , option="visibility", timeout=3)
         if not submit_pwd:
@@ -558,7 +557,7 @@ class MemberPage(BasePage):
             return False
     
     #선호 언어 변경 메서드
-    def open_lang_edit_form(self, timeout=5):
+    def open_lang_edit_form(self, timeout=5) -> bool:
         print("open_lang_edit_form 시작")
 
         # 0) 선호언어 행 스크롤 위치 맞추기
@@ -581,27 +580,35 @@ class MemberPage(BasePage):
         print("선호 언어 행 찾음")
         return True
         
-    def choose_lang_dropbox(self):
+    def choose_lang_dropbox(self) -> bool:
         lang_box = self.get_element_by_xpath(XPATH["BOX_LANG"])
         lang_box.click()
         time.sleep(2)
         print("선호 언어 행 클릭")
-        
         choose_eng =  self.get_element_by_css_selector(SELECTORS["BOX_LANG_ENG"])
         choose_eng.click()
         time.sleep(2)
-        return True
+        return choose_eng
     
-    def choose_lang_check(self): #언어변경 확인을 위한 계정관리 창 종료 후 다시 접속
+    def choose_lang_check(self) -> bool: #언어변경 확인을 위한 계정관리 창 종료 후 다시 접속
         handles = self.driver.window_handles
         original_window = handles[0] 
         self.driver.close()
         self.driver.switch_to.window(original_window)
         self.go_to_member_page()
-        print("계정 창 돌아와서 언어 변경 확인")
-        return True
+        current_url = self.driver.current_url
+        try:
+            if'lang=en-US' in current_url:
+                print("선호 언어 변경 성공")
+                return True
+            else:
+                print(f"선호 언어 변경 실패:{current_url}")
+                return False
+        except Exception as e:
+            print(f"예외 발생: {e}")
+            return False
     
-    def revoke_lang_kor(self):
+    def revoke_lang_kor(self) -> bool:
         handles = self.driver.window_handles
         original_window = handles[0] 
         #다음 테스트를 위한 한국어 변경
@@ -616,10 +623,10 @@ class MemberPage(BasePage):
         self.driver.switch_to.window(original_window)
         self.go_to_member_page()
         print("한국어 원복")
-        return True
+        return choose_kor
         
     #oauth 계정 연동 테스트 메서드
-    def open_oauth_edit_form(self, timeout=5):
+    def open_oauth_edit_form(self, timeout=5) -> bool:
         print("open_oauth_edit_form 시작")
 
         # 0) 선호언어 행 스크롤 위치 맞추기
@@ -642,21 +649,21 @@ class MemberPage(BasePage):
         print("소셜 계정 연동 행 찾음")
         return True
     
-    def oauth_google_click(self):
+    def oauth_google_click(self) -> bool:
         btn_oauth_google = self.get_element_by_xpath(XPATH["BTN_OAUTH_GOOGLE"])
         btn_oauth_google.click()
         time.sleep(4)
         print("구글 연결하기 클릭")
         return btn_oauth_google
     
-    def oauth_naver_click(self):
+    def oauth_naver_click(self) -> bool:
         btn_oauth_naver = self.get_element_by_xpath(XPATH["BTN_OAUTH_NAVER"])
         btn_oauth_naver.click()
         time.sleep(4)
         print("네이버 연결하기 클릭")
         return btn_oauth_naver
 
-    def oauth_kko_click(self):
+    def oauth_kko_click(self) -> bool:
         btn_oauth_kko = self.get_element_by_xpath(XPATH["BTN_OAUTH_KKO"])
         btn_oauth_kko.click()
         time.sleep(4)
@@ -664,7 +671,7 @@ class MemberPage(BasePage):
         self.oauth_popup_open_close()
         return btn_oauth_kko
     
-    def oauth_github_click(self):
+    def oauth_github_click(self) -> bool:
         btn_oauth_github = self.get_element_by_xpath(XPATH["BTN_OAUTH_GITHUB"])
         btn_oauth_github.click()
         time.sleep(4)
@@ -672,7 +679,7 @@ class MemberPage(BasePage):
         self.oauth_popup_open_close()
         return btn_oauth_github
 
-    def oauth_apple_click(self):
+    def oauth_apple_click(self) -> bool:
         btn_oauth_apple = self.get_element_by_xpath(XPATH["BTN_OAUTH_APPLE"])
         btn_oauth_apple.click()
         time.sleep(7)
@@ -680,7 +687,7 @@ class MemberPage(BasePage):
         self.oauth_popup_open_close()
         return btn_oauth_apple
     
-    def oauth_facebook_click(self):
+    def oauth_facebook_click(self) -> bool:
         btn_oauth_facebook = self.get_element_by_xpath(XPATH["BTN_OAUTH_FACEBOOK"])
         btn_oauth_facebook.click()
         time.sleep(4)
@@ -688,7 +695,7 @@ class MemberPage(BasePage):
         self.oauth_popup_open_close()
         return True
 
-    def oauth_whalespace_click(self):
+    def oauth_whalespace_click(self) -> bool:
         btn_oauth_whalespace = self.get_element_by_xpath(XPATH["BTN_OAUTH_WHALESPACE"])
         btn_oauth_whalespace.click()
         time.sleep(4)
@@ -696,7 +703,7 @@ class MemberPage(BasePage):
         self.oauth_popup_open_close()
         return True
     
-    def oauth_microsoft_click(self):
+    def oauth_microsoft_click(self) -> bool:
         btn_oauth_microsoft = self.get_element_by_xpath(XPATH["BTN_OAUTH_MICROSOFT"])
         btn_oauth_microsoft.click()
         time.sleep(4)
@@ -704,7 +711,7 @@ class MemberPage(BasePage):
         self.oauth_popup_open_close()
         return True    
         
-    def oauth_popup_open_close(self):
+    def oauth_popup_open_close(self) -> bool:
         handles = self.driver.window_handles
         original_account_window = handles[1] #계정관리창 순서 고정해서 찾기
         # 연동 관련 페이지 URL 패턴
@@ -731,7 +738,7 @@ class MemberPage(BasePage):
 
     #항목 별 저장 시 토스트 팝업 문구 비교 메서드
         
-    def toast_save_msg_compare(self):
+    def toast_save_msg_compare(self) -> bool:
         #toast 문구 확인
         toast_containers = self.get_elements(By.XPATH,XPATH["TOAST_CONTAINER"],option="visibility", timeout=5 )
         for toast_container in toast_containers:
@@ -740,7 +747,7 @@ class MemberPage(BasePage):
             print(f"{toast_msg}")
             return True
     
-    def click_to_promotion(self):
+    def click_to_promotion(self) -> bool:
         element = self.get_element_by_name(NAME["BTN_MKT"])
         element.click()
         time.sleep(4)

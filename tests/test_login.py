@@ -6,8 +6,8 @@ from utils.defines import TARGET_URL
 # PHC-TS01-TC001: Login 테스트
 def test_login(login_page):
     login_page.go_to_login_page()
-    login_page.input_id("") # 데이터 입력
-    login_page.input_pw("") # 데이터 입력
+    login_page.input_id("qa3team0202@elicer.com") 
+    login_page.input_pw("team02fighting!") 
     login_page.click_login_button()
     assert login_page.is_main_page(), "로그인이 실행되지 않음"
     print("PHC-TS01-TC001 : Test success")
@@ -15,8 +15,8 @@ def test_login(login_page):
 # PHC-TS01-TC002: 유효하지 않은 아이디 테스트
 def test_login(login_page):
     login_page.go_to_login_page()
-    login_page.input_id("") # 데이터 입력
-    login_page.input_pw("") # 데이터 입력
+    login_page.input_id("wrongtest@gmail.com") 
+    login_page.input_pw("team02fighting!") 
     login_page.click_login_button()
     assert login_page.is_error_msg_displayed(), "에러메시지 출력 안됨"
     assert login_page.get_error_msg() == "Email or password does not match", "에러메시지 오류"
@@ -25,8 +25,8 @@ def test_login(login_page):
 # PHC-TS01-TC003: 유효하지 않은 비밀번호 테스트
 def test_login(login_page):
     login_page.go_to_login_page()
-    login_page.input_id("") # 데이터 입력
-    login_page.input_pw("") # 데이터 입력
+    login_page.input_id("qa3team0202@elicer.com") 
+    login_page.input_pw("validpass123!")
     login_page.click_login_button()
     assert login_page.is_error_msg_displayed(), "에러메시지 출력 안됨"
     assert login_page.get_error_msg() == "Email or password does not match", "에러메시지 오류"
@@ -35,8 +35,8 @@ def test_login(login_page):
 # PHC-TS01-TC004: 유효하지 않은 아이디, 비밀번호 테스트
 def test_login(login_page):
     login_page.go_to_login_page()
-    login_page.input_id("") # 데이터 입력
-    login_page.input_pw("") # 데이터 입력
+    login_page.input_id("wrongtest@gmail.com")
+    login_page.input_pw("validpass123!")
     login_page.click_login_button()
     assert login_page.is_error_msg_displayed(), "에러메시지 출력 안됨"
     assert login_page.get_error_msg() == "Email or password does not match", "에러메시지 오류"
@@ -46,7 +46,7 @@ def test_login(login_page):
 def test_login(login_page):
     login_page.go_to_login_page()
     login_page.clear_id()
-    login_page.input_pw("") # 데이터 입력
+    login_page.input_pw("team02fighting!")
     login_page.click_login_button()
     assert login_page.is_id_invalid(), "아이디 입력값이 invalid 상태가 아님"
     print("PHC-TS01-TC005 : Test success")
@@ -54,7 +54,7 @@ def test_login(login_page):
 # PHC-TS01-TC006: 비밀번호 빈값 테스트
 def test_login(login_page):
     login_page.go_to_login_page()
-    login_page.input_id("") # 데이터 입력
+    login_page.input_id("qa3team0202@elicer.com")
     login_page.clear_pw()
     login_page.click_login_button()
     assert login_page.is_pw_invalid(), "비밀번호 입력값이 invalid 상태가 아님"

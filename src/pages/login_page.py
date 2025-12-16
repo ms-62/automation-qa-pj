@@ -6,8 +6,7 @@ from utils.defines import NAME, XPATH,SELECTORS, TARGET_URL
 class LoginPage(BasePage):
     def go_to_login_page(self):
         self.go_to_page(TARGET_URL["LOGIN_URL"])
-
-
+        
     # 입력값 제어 메서드
     def input_id(self, username):
         element = self.get_element_by_name(NAME["INPUT_ID"])
@@ -29,6 +28,22 @@ class LoginPage(BasePage):
             user_data = user_data[0]
         self.input_id(user_data["username"])
         self.input_pw(user_data["password"])
+        
+    def clear_id(self):
+        element = self.get_element_by_name(NAME["INPUT_ID"])
+        element.click()
+        element.clear()
+        time.sleep(0.1)
+
+    def clear_pw(self):
+        element = self.get_element_by_name(NAME["INPUT_PW"])
+        element.click()
+        element.clear()
+        time.sleep(0.1)
+
+    def clear_all_inputs(self):
+        self.clear_id()
+        self.clear_pw()
 
     # 버튼 제어 메서드
     def click_login_button(self):
@@ -37,8 +52,36 @@ class LoginPage(BasePage):
         time.sleep(0.3)
         
     # 로그인 실패/유효성 검증 메서드
+    def is_error_msg_displayed(self):
+        element = self.get_element_by_xpath(XPATH["TXT_LOGIN_ERROR"])
+        return element is not None and element.is_displayed()
     
+    def get_error_msg(self):
+        element = self.get_element_by_xpath(XPATH["TXT_LOGIN_ERROR"])
+        if element is None:
+            return ""
+        return element.text
     
+    def is_id_invalid(self) -> bool:
+        id_input = self.get_element_by_name(NAME["INPUT_ID"])
+        if id_input is None:
+            return False
+        return id_input.get_attribute("aria-invalid") == "true"
+    
+    def is_pw_invalid(self) -> bool:
+        pw_input = self.get_element_by_name(NAME["INPUT_PW"])
+        if pw_input is None:
+            return False
+        return pw_input.get_attribute("aria-invalid") == "true"
+    
+    def is_main_page(self):
+        url = self.driver.current_url
+        return "qaproject.elice.io/ai-helpy-chat" in url
+    
+    def is_history_signin_page(self):
+        url = self.driver.current_url
+        return "/accounts/signin/history" in url
+        
     # 로그아웃 기능 메서드
     def click_account_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_ACCOUNT"]) # 아직 안됨
@@ -94,9 +137,7 @@ class LoginPage(BasePage):
     def click_diff_account_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_DIFF_ACCOUNT"]) # 아직 안됨
         btn.click()
-        time.sleep(0.3)
-        
-    
+        time.sleep(0.3)   
     
     # Remove history 기능 메서드
     def click_remove_history_button(self):

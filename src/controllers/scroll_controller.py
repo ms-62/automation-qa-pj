@@ -4,8 +4,7 @@ from utils.defines import STOPPED_MAX
 STEP = 500
 
 class ScrollController:
-    # scroll_area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
-        
+ 
     @staticmethod
     def scroll_up(driver, scroll_area, step=STEP, max_scroll_time=STOPPED_MAX):
 

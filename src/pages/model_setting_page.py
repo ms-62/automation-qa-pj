@@ -9,7 +9,7 @@ class ModelSettingPage(BasePage):
         super().__init__(driver)
         self.active_models = None
         
-    # 드롭 다운 확인용
+    # ================ 드롭다운 메뉴 ================ 
     def open_model_menu(self):
         cur_model = self.get_current_model()
         xpath = XPATH["BTN_MODEL_DROPDOWN"].format(model_name=cur_model)
@@ -46,7 +46,7 @@ class ModelSettingPage(BasePage):
         assert self.is_dropdown_closed(), "메뉴 닫힘 확인"
         assert model_name in selected, "selected model 불일치"
     
-    # 모델 설정화면 
+    # ================ ai 모델 설정 화면 - 정보 가져오기 ================ 
     def go_to_model_setting(self):
         btn = self.get_element_by_xpath(XPATH["BTN_MODEL_SETTING"], option="visibility")
         if btn and btn.is_enabled():
@@ -65,6 +65,7 @@ class ModelSettingPage(BasePage):
         xpath = XPATH["MODEL_LI_BY_NAME"].format(model_name=model_name)
         return self.driver.find_element(By.XPATH, xpath)
 
+    # ================ ai 모델 설정 화면 - 활성화 및 비활성화 ================ 
     def get_model_state(self, model_name: str):
         li = self.get_model_li(model_name)
 
@@ -104,7 +105,8 @@ class ModelSettingPage(BasePage):
     def go_back(self):
         self.driver.back()
         time.sleep(0.5)         
-            
+    
+    # ================== E2E - 버튼 클릭 후 정말로 정보가 변경되었는지 확인 ====================
     def toggle_all_models_and_verify(self):
         models = self.get_all_models_in_setting()
 

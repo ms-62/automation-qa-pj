@@ -16,3 +16,6 @@ __pycache__/
 
 # 마스터 브랜치에 쿠키파일 안올라가게
 cookies.json
+
+# 스크린샷
+screenshots/

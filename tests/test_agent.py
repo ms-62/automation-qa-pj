@@ -1,5 +1,6 @@
 from utils.headers import *
 from enums.ui_status import AIresponse
+import re
 
 # PHC-TS06-TC001
 # def test_search_agent_list(logged_in_agent):
@@ -37,30 +38,62 @@ from enums.ui_status import AIresponse
 #     print("PHC-TS06-TC003 : Test Success")
     
 # # PHC-TS06-TC004
-def test_agent_talk_response_complete(logged_in_agent, fm) :
-    agent_page = logged_in_agent
-    agent_page.go_to_agent_page()
-    agent_page.talk_with_agent_screen()
+# def test_agent_talk_response_complete(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.talk_with_agent_screen()
     
-    data = fm.read_json_file("agent_text_data.json")
-    question = data["inputs"][0]["content"]
-    result = agent_page.ai_chat_complete(question)
+#     data = fm.read_json_file("agent_text_data.json")
+#     question = data["inputs"][0]["content"]
+#     result = agent_page.ai_chat_complete(question)
     
-    assert result == AIresponse.COMPLETED, "PHC-TS06-TC005 : Test Fail"
-    print("PHC-TS06-TC005 : Test Success")
+#     assert result == AIresponse.COMPLETED, "PHC-TS06-TC005 : Test Fail"
+#     print("PHC-TS06-TC005 : Test Success")
 
-# PHC-TS06-TC005   
-def test_agent_talk_response_stop(logged_in_agent, fm) :
-    agent_page = logged_in_agent
-    agent_page.go_to_agent_page()
-    agent_page.talk_with_agent_screen()
+# # PHC-TS06-TC005   
+# def test_agent_talk_response_stop(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.talk_with_agent_screen()
     
-    data = fm.read_json_file("agent_text_data.json")
-    question = data["inputs"][0]["content"]
-    result = agent_page.input_chat_stop(question)
+#     data = fm.read_json_file("agent_text_data.json")
+#     question = data["inputs"][0]["content"]
+#     result = agent_page.input_chat_stop(question)
     
-    assert result == AIresponse.STOPPED, "PHC-TS06-TC005 : Test Fail"
-    print("PHC-TS06-TC005 : Test Success")
+#     assert result == AIresponse.STOPPED, "PHC-TS06-TC005 : Test Fail"
+#     print("PHC-TS06-TC005 : Test Success")
+    
+# # PHC-TS06-TC006
+# def test_agent_talk_create_again(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.talk_with_agent_screen()
+#     data = fm.read_json_file("agent_text_data.json")
+#     question = data["inputs"][0]["content"]
+#     result = agent_page.ai_chat_complete(question)
+#     assert result == AIresponse.COMPLETED, "PHC-TS06-TC006 : Test Fail"
+#     again_result = agent_page.create_again_response()
+#     assert again_result == AIresponse.COMPLETED, "PHC-TS06-TC006 : Test Fail"
+#     element = agent_page.check_create_again_response()
+#     assert element is not None, "PHC-TS06-TC005 : Test Fail"
+#     print("PHC-TS06-TC006 : Test Success")
+  
+# # PHC-TS06-TC009  
+# def test_agent_talk_copy_and_paste(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.talk_with_agent_screen()
+#     data = fm.read_json_file("agent_text_data.json")
+#     question = data["inputs"][0]["content"]
+#     result = agent_page.ai_chat_complete(question)
+#     assert result == AIresponse.COMPLETED, "PHC-TS06-TC009 : Test Fail"
+#     copy_text = agent_page.copy_last_response()
+#     agent_page.paste_last_response()
+#     paste_text = agent_page.check_paste()
+#     def normalize_text(text: str) -> str:
+#         return re.sub(r'\s+', ' ', text).strip()
+#     assert normalize_text(copy_text) in normalize_text(paste_text), "PHC-TS06-TC009 : Test Fail"
+#     print("PHC-TS06-TC010 : Test Success")
 
 # # PHC-TS06-TC011
 # def test_agent_talk_file_upload(logged_in_agent, fm) :
@@ -87,9 +120,16 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     result = agent_page.ai_chat_complete("")
 #     assert result == AIresponse.COMPLETED, "PHC-TS06-TC012 : Test Fail"
 #     print("PHC-TS06-TC012 : Test Success")
+
+# # PHC-TS06-TC022
+# def test_make_agent_chat_stop(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     agent_page.go_to_make_chat()
     
 # # PHC-TS06-TC028
-# def test_agent_setting_for_me(logged_in_agent, fm) :
+# def test_make_agent_setting_for_me(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -109,7 +149,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC028 : Test Success")
     
 # # PHC-TS06-TC029
-# def test_agent_setting_for_agency(logged_in_agent, fm) :
+# def test_make_agent_setting_for_agency(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -129,7 +169,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC029 : Test Success")
 
 # # PHC-TS06-TC030  
-# def test_agent_setting_no_name(logged_in_agent, fm) :
+# def test_make_agent_setting_no_name(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -150,7 +190,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC030 : Test Success")
 
 # # PHC-TS06-TC031 
-# def test_agent_setting_long_name(logged_in_agent, fm) :
+# def test_make_agent_setting_long_name(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -172,7 +212,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC031 : Test Success")
     
 # # PHC-TS06-TC032 
-# def test_agent_setting_no_intro(logged_in_agent, fm) :
+# def test_make_agent_setting_no_intro(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -192,7 +232,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC032 : Test Success")
     
 # # PHC-TS06-TC033
-# def test_agent_setting_long_intro(logged_in_agent, fm) :
+# def test_make_agent_setting_long_intro(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -214,7 +254,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC033 : Test Success")
     
 # # PHC-TS06-TC034  
-# def test_agent_setting_no_rule(logged_in_agent, fm) :
+# def test_make_agent_setting_no_rule(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -235,7 +275,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC034 : Test Success")
     
 # # PHC-TS06-TC035  
-# def test_agent_setting_long_rule(logged_in_agent, fm) :
+# def test_make_agent_setting_long_rule(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -256,7 +296,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC035 : Test Success")
 
 # # PHC-TS06-TC036  
-# def test_agent_setting_delete_card(logged_in_agent, fm) :
+# def test_make_agent_setting_delete_card(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -272,7 +312,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC036 : Test Success")
 
 # # PHC-TS06-TC037 
-# def test_agent_setting_no_card(logged_in_agent, fm) :
+# def test_make_agent_setting_no_card(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -292,7 +332,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC037 : Test Success")
     
 # # PHC-TS06-TC038 
-# def test_agent_setting_long_card(logged_in_agent, fm) :
+# def test_make_agent_setting_long_card(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -313,7 +353,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC038 : Test Success")
 
 # # PHC-TS06-TC039
-# def test_agent_setting_many_option(logged_in_agent, fm) :
+# def test_make_agent_setting_many_option(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -338,7 +378,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC039 : Test Success")
 
 # # PHC-TS06-TC040
-# def test_agent_image_upload(logged_in_agent):
+# def test_make_agent_image_upload(logged_in_agent):
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -350,7 +390,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC040 : Test Success")
     
 # PHC-TS06-TC041
-# def test_agent_big_image_upload(logged_in_agent):
+# def test_make_agent_big_image_upload(logged_in_agent):
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -361,7 +401,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC041 : Test Success")
 
 # PHC-TS06-TC042
-# def test_agent_image_exe_upload(logged_in_agent,fm):
+# def test_make_agent_exe_to_img_upload(logged_in_agent,fm):
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -382,7 +422,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC042 : Test Success")
     
 # PHC-TS06-TC043
-# def test_agent_make_image(logged_in_agent, fm) :
+# def test_make_agent_make_image(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -399,7 +439,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC043 : Test Success")
 
 # PHC-TS06-TC044
-# def test_agent_file_upload(logged_in_agent) :
+# def test_make_agent_file_upload(logged_in_agent) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -412,7 +452,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC044 : Test Success")
     
 # PHC-TS06-TC045
-# def test_agent_upload_img_to_file(logged_in_agent) :
+# def test_make_agent_upload_img_to_file(logged_in_agent) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -425,7 +465,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC045 : Test Success")
 
 # PHC-TS06-TC046
-# def test_agent_upload_big_file(logged_in_agent) :
+# def test_make_agent_upload_big_file(logged_in_agent) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -438,7 +478,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC046 : Test Success")
     
 # PHC-TS06-TC047
-# def test_agent_upload_exe_to_file(logged_in_agent) :
+# def test_make_agent_upload_exe_to_file(logged_in_agent) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -451,7 +491,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC047 : Test Success")
     
 # PHC-TS06-TC048
-# def test_agent_upload_many_file(logged_in_agent, fm) :
+# def test_make_agent_upload_many_file(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -468,7 +508,7 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     print("PHC-TS06-TC048 : Test Success")
     
 # PHC-TS06-TC049
-# def test_agent_delete_uploaded_file(logged_in_agent) :
+# def test_make_agent_delete_uploaded_file(logged_in_agent) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
 #     agent_page.make_agent_screen()
@@ -494,40 +534,75 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
 #     assert "초안" or "Draft" in msg, "PHC-TS06-TC051 : Test Fail"
 #     print("PHC-TS06-TC051 : Test Success")
 
-# # PHC-TS06-TC052
-# def test_agent_refresh_preview(logged_in_agent, fm) :
-#     agent_page = logged_in_agent
-#     agent_page.go_to_agent_page()
-#     agent_page.make_agent_screen()
-#     data = fm.read_json_file("agent_text_data.json")
-#     name = data["setting_inputs"][0]["content"]
-#     rule = data["setting_inputs"][2]["content"]
-#     input = data["setting_inputs"][3]["content"]
-#     agent_page.setting_name_input(name)
-#     agent_page.setting_rule_input(rule)
-#     time.sleep(2)
+# PHC-TS06-TC052
+def test_agent_refresh_preview(logged_in_agent, fm) :
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.make_agent_screen()
+    data = fm.read_json_file("agent_text_data.json")
+    name = data["setting_inputs"][0]["content"]
+    rule = data["setting_inputs"][2]["content"]
+    input = data["setting_inputs"][3]["content"]
+    agent_page.setting_name_input(name)
+    agent_page.setting_rule_input(rule)
+    time.sleep(2)
     
-#     agent_page.preview_input_chat_stop(input)
-#     text = agent_page.check_my_talk_input()
-#     assert text is not None, "PHC-TS06-TC052 : Test Fail"
-#     agent_page.refresh_btn_in_preview()
-#     text = agent_page.check_my_talk_input()
-#     assert text is None, "PHC-TS06-TC052 : Test Fail"
-#     print("PHC-TS06-TC052 : Test Success")
+    agent_page.preview_input_chat(input)
+    text = agent_page.preview_check_my_talk_input()
+    assert text is not None, "PHC-TS06-TC052 : Test Fail"
+    agent_page.refresh_btn_in_preview()
+    text = agent_page.preview_check_my_talk_input()
+    assert text is None, "PHC-TS06-TC052 : Test Fail"
+    print("PHC-TS06-TC052 : Test Success")
+    
+# PHC-TS06-TC053
+def test_agent_chat_card_preview(logged_in_agent, fm) :
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.make_agent_screen()
+    data = fm.read_json_file("agent_text_data.json")
+    name = data["setting_inputs"][0]["content"]
+    rule = data["setting_inputs"][2]["content"]
+    card = data["setting_inputs"][3]["content"]
+    agent_page.setting_name_input(name)
+    agent_page.setting_rule_input(rule)
+    agent_page.setting_card_input(card)
+    time.sleep(2)
+    
+    agent_page.preview_agent_talk_card_click()
+    text = agent_page.preview_check_my_talk_input().text.strip()
+    assert text == card, "PHC-TS06-TC052 : Test Fail"
+    print("PHC-TS06-TC052 : Test Success")
+    
+# PHC-TS06-TC054
+def test_agent_chat_in_preview(logged_in_agent, fm) :
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.make_agent_screen()
+    data = fm.read_json_file("agent_text_data.json")
+    name = data["setting_inputs"][0]["content"]
+    rule = data["setting_inputs"][2]["content"]
+    input = data["setting_inputs"][3]["content"]
+    agent_page.setting_name_input(name)
+    agent_page.setting_rule_input(rule)
+    time.sleep(2)
+    result = agent_page.preview_input_chat(input)
+    assert result == AIresponse.COMPLETED, "PHC-TS06-TC052 : Test Fail"
+    print("PHC-TS06-TC052 : Test Success")
 
-# # PHC-TS06-TC055
-# def test_agent_stop_chat_in_preview(logged_in_agent, fm) :
-#     agent_page = logged_in_agent
-#     agent_page.go_to_agent_page()
-#     agent_page.make_agent_screen()
-#     data = fm.read_json_file("agent_text_data.json")
-#     name = data["setting_inputs"][0]["content"]
-#     rule = data["setting_inputs"][2]["content"]
-#     input = data["setting_inputs"][3]["content"]
-#     agent_page.setting_name_input(name)
-#     agent_page.setting_rule_input(rule)
-#     time.sleep(2)
-#     result = agent_page.preview_input_chat_stop(input)
-#     assert result == AIresponse.STOPPED, "PHC-TS06-TC055 : Test Fail"
-#     print("PHC-TS06-TC055 : Test Success")
+# PHC-TS06-TC055
+def test_agent_stop_chat_in_preview(logged_in_agent, fm) :
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.make_agent_screen()
+    data = fm.read_json_file("agent_text_data.json")
+    name = data["setting_inputs"][0]["content"]
+    rule = data["setting_inputs"][2]["content"]
+    input = data["setting_inputs"][3]["content"]
+    agent_page.setting_name_input(name)
+    agent_page.setting_rule_input(rule)
+    time.sleep(2)
+    result = agent_page.preview_input_chat_stop(input)
+    assert result == AIresponse.STOPPED, "PHC-TS06-TC055 : Test Fail"
+    print("PHC-TS06-TC055 : Test Success")
     

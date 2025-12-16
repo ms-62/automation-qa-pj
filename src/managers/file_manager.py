@@ -1,6 +1,11 @@
 from utils.headers import *
 
-## csv, json read / save 등 파일을 관리 하는 곳입니다. 
+import os
+import requests
+
+from utils.defines import TARGET_URL
+
+from controllers.clipboard_controller import ClipboardController
 
 class FileManager:
     def __init__(self):
@@ -17,9 +22,20 @@ class FileManager:
         
         self.report_log_dir = os.path.join(project_root, "reports", "logs")
         self.report_screenshot_dir = os.path.join(project_root, "reports", "screenshots")
-        self.report_screenshot_dir = os.path.join(project_root, "reports", "screenshots")
-        
-        
+
+    # =================== 파일 가져오기 =========================
+    def get_asset_path(self, file_name: str):
+        return os.path.join(self.assets_dir, file_name)
+    
+    def get_asset_files(self, extensions=None):
+        files = os.listdir(self.assets_dir)
+
+        if extensions:
+            files = [f for f in files if f.lower().endswith(extensions)]
+
+        return [os.path.join(self.assets_dir, f) for f in files]
+    
+    # =================== 파일 읽기 및 쓰기 =========================
     def read_json_file(self, file_name:str):
         file_path = os.path.join(self.testdata_dir, file_name)
         try: 
@@ -42,7 +58,7 @@ class FileManager:
         except Exception as e:
             print(f"{file_path} 저장 실패!: {e}")
             
-        # to_csv
+        # 로그를 어떻게 적을지, 로그 형식(날짜, 작성자, 내용 등) 정한 후에 
     def save_log_file_to_csv(self, file_name, file_data, option="w"):
         if not file_name.endswith(".csv"):
             file_name += ".csv"
@@ -55,27 +71,21 @@ class FileManager:
 
         fieldnames = list(file_data[0].keys())
 
-        with open(file_path, mode="w", encoding="utf-8", newline="") as f:
+        with open(file_path, option, encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(file_data)
 
         print(f"CSV 저장 완료: {file_path}")
 
-        # 스크린샷 
-    def save_screenshot_png(self, mydriver, file_name: str):
-        if not file_name.endswith(".png"):
-            file_name += ".png"
-            
-        file_path = os.path.join(self.report_screenshot_dir, file_name)
-
+    # =================== 스크린샷 =========================
+    def save_screenshot_png(self, mydriver, file_name: str):    
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = f"{file_name}_{timestamp}.png"
+        
+        file_name_with_ts = f"{file_name}_{timestamp}.png"
+        file_path = os.path.join(self.report_screenshot_dir, file_name_with_ts)
 
         mydriver.save_screenshot(file_path)
         print(f"Screenshot saved: {file_path}")
-        
-    def file_upload(self, file_input, file_name):
-        file_path = os.path.join(self.assets_dir, file_name)
-        file_input.send_keys(file_path)
-        
+
+        return file_path 

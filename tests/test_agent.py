@@ -49,7 +49,7 @@ from enums.ui_status import AIresponse
 #     assert result == AIresponse.STOPPED, "PHC-TS06-TC005 : Test Fail"
 #     print("PHC-TS06-TC005 : Test Success")
     
-# PHC-TS06-TC028
+# # PHC-TS06-TC028
 # def test_agent_setting_for_me(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -89,7 +89,7 @@ from enums.ui_status import AIresponse
 #     assert "기관 공개" or "Organization" in check, "PHC-TS06-TC029 : Test Fail"
 #     print("PHC-TS06-TC029 : Test Success")
 
-# PHC-TS06-TC030  
+# # PHC-TS06-TC030  
 # def test_agent_setting_no_name(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -110,7 +110,7 @@ from enums.ui_status import AIresponse
 #     assert "이름" or "Name" in error, "PHC-TS06-TC030 : Test Fail"
 #     print("PHC-TS06-TC030 : Test Success")
 
-# PHC-TS06-TC031 
+# # PHC-TS06-TC031 
 # def test_agent_setting_long_name(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -132,7 +132,7 @@ from enums.ui_status import AIresponse
 #     assert "이름" or "Name" in error, "PHC-TS06-TC031 : Test Fail"
 #     print("PHC-TS06-TC031 : Test Success")
     
-# PHC-TS06-TC032 
+# # PHC-TS06-TC032 
 # def test_agent_setting_no_intro(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -152,7 +152,7 @@ from enums.ui_status import AIresponse
 #     assert btn.get_attribute("disabled") is None, "PHC-TS06-TC032 : Test Fail"
 #     print("PHC-TS06-TC032 : Test Success")
     
-# PHC-TS06-TC033
+# # PHC-TS06-TC033
 # def test_agent_setting_long_intro(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -174,7 +174,7 @@ from enums.ui_status import AIresponse
 #     assert "한줄" or "Description" in error, "PHC-TS06-TC033 : Test Fail"
 #     print("PHC-TS06-TC033 : Test Success")
     
-# PHC-TS06-TC034  
+# # PHC-TS06-TC034  
 # def test_agent_setting_no_rule(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -195,7 +195,7 @@ from enums.ui_status import AIresponse
 #     assert "규칙" or "prompt" in error, "PHC-TS06-TC034 : Test Fail"
 #     print("PHC-TS06-TC034 : Test Success")
     
-# PHC-TS06-TC035  
+# # PHC-TS06-TC035  
 # def test_agent_setting_long_rule(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -216,7 +216,7 @@ from enums.ui_status import AIresponse
 #     assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC035 : Test Fail"
 #     print("PHC-TS06-TC035 : Test Success")
 
-# PHC-TS06-TC036  
+# # PHC-TS06-TC036  
 # def test_agent_setting_delete_card(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -232,7 +232,7 @@ from enums.ui_status import AIresponse
 #     assert len(elements) == 1, "PHC-TS06-TC036 : Test Fail"
 #     print("PHC-TS06-TC036 : Test Success")
 
-# PHC-TS06-TC037 
+# # PHC-TS06-TC037 
 # def test_agent_setting_no_card(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -252,7 +252,7 @@ from enums.ui_status import AIresponse
 #     assert btn.get_attribute("disabled") is None, "PHC-TS06-TC037 : Test Fail"
 #     print("PHC-TS06-TC037 : Test Success")
     
-# PHC-TS06-TC038 
+# # PHC-TS06-TC038 
 # def test_agent_setting_long_card(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -273,7 +273,7 @@ from enums.ui_status import AIresponse
 #     assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC038 : Test Fail"
 #     print("PHC-TS06-TC038 : Test Success")
 
-# PHC-TS06-TC039
+# # PHC-TS06-TC039
 # def test_agent_setting_many_option(logged_in_agent, fm) :
 #     agent_page = logged_in_agent
 #     agent_page.go_to_agent_page()
@@ -298,4 +298,54 @@ from enums.ui_status import AIresponse
 #     assert btn.get_attribute("disabled") is None, "PHC-TS06-TC039 : Test Fail"
 #     print("PHC-TS06-TC039 : Test Success")
 
-# PHC-TS06-TC040
+# # PHC-TS06-TC040
+# def test_agent_image_upload(logged_in_agent):
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.make_agent_screen()
+#     agent_page.upload_image("test_asset.jpg")
+
+#     # 업로드 성공 여부 검증
+#     uploaded = agent_page.check_upload_image()
+#     assert uploaded.is_displayed(), "PHC-TS06-TC040 : Test Fail"
+#     print("PHC-TS06-TC040 : Test Success")
+    
+# PHC-TS06-TC041
+def test_agent_big_image_upload(logged_in_agent):
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.make_agent_screen()
+    agent_page.upload_image("test_big_img.tif")
+    
+    # 업로드 성공 여부 검증
+    assert agent_page.check_upload_big_img(), "PHC-TS06-TC041 : Test Fail"
+    print("PHC-TS06-TC041 : Test Success")
+
+# PHC-TS06-TC042
+def test_agent_image_exe_upload(logged_in_agent):
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.make_agent_screen()
+    agent_page.upload_image("test_exe.exe")
+    
+    # 업로드 성공 여부 검증
+    uploaded = agent_page.check_upload_image()
+    assert uploaded is None, "PHC-TS06-TC042 : Test Fail"
+    print("PHC-TS06-TC042 : Test Success")
+    
+# PHC-TS06-TC043
+def test_agent_make_image(logged_in_agent, fm) :
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.make_agent_screen()
+    data = fm.read_json_file("agent_text_data.json")
+    name = data["setting_inputs"][0]["content"]
+    rule = data["setting_inputs"][2]["content"]
+    agent_page.setting_name_input(name)
+    agent_page.setting_rule_input(rule)
+    time.sleep(2)
+    agent_page.make_image()
+    
+    uploaded = agent_page.check_upload_image()
+    assert uploaded.is_displayed(), "PHC-TS06-TC043 : Test Fail"
+    print("PHC-TS06-TC043 : Test Success")

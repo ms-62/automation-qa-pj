@@ -6,7 +6,7 @@ import pyautogui
 SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 FULLSCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 TIMEOUT_MAX = 10
-STOPPED_MAX = 5
+STOPPED_MAX = 7
 ACTIVE = "모델이 활성화되었습니다."
 DEACTIVE = "모델이 비활성화되었습니다."
 DEFAULT_MODEL = "Helpy Pro Agent"
@@ -14,6 +14,7 @@ DEFAULT_CHAT = "새 대화"
 
 TARGET_URL = {
     "MAIN_URL": "https://qaproject.elice.io/ai-helpy-chat",
+    "LOGIN_URL": "https://accounts.elice.io/accounts/signin/me?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat&lang=en-US&org=qaproject"
 }
 
 
@@ -27,8 +28,17 @@ SELECTORS = {
     "INPUT_MOBILE" : "input[name='to'][autocomplete='tel']",
     "BOX_LANG_ENG" : "ul[role='listbox'] li[data-value='en-US']",
     "BTN_MENU_BAR" : "button.EliceLayoutSidenavHamburger-root",
+
     "BOX_LANG_KOR" : "ul[role='listbox'] li[data-value='ko-KR']",
     
+    # Agent 관련 파일 업로드 selector
+    "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']",
+    
+
+    "BTNS_DISABLED" : "button.MuiIconButton-root:not([disabled])",
+    "BTN_PLUS" : "svg[data-icon='plus']",
+    "BTN_UPLOAD_PLUS_CSS" : "button.MuiIconButton-root:not([disabled]) svg[data-icon='plus']",
+
 
 }
 
@@ -61,7 +71,7 @@ XPATH = {
     "BTN_MEMBER" : "//a[contains(@href,'account')]",
     "SIGNUP_FAIL" : "//p",
     "SCROLL_MAIN_CHAT" : "//div[contains(@class,'css-ovflmb')]",
-    "BTN_UPLOAD" : "//svg[@data-testid='plusIcon']/parent::button",
+    "BTN_UPLOAD_PLUS" : "//button[contains(@class,'MuiIconButton-root') and .//svg[@data-icon='plus']]",
     "BTN_SEND" : "//button[@aria-label='보내기']",
     "PASS_ELEMENT" : "//p[contains(text(), '통신사')]",
     "PASS_IFRAME" : "//iframe[contains(@src, 'certificates')]",
@@ -98,7 +108,7 @@ XPATH = {
     "SOCIAL_ROW" :  "//h2[contains(@class,'MuiTypography-body1')][normalize-space(.)='소셜 연결 계정']",
     "LANG_ROW_ENG" :  "//div[contains(@class,'MuiStack-root')][.//h2[normalize-space(.)='language']]",
     
-    "BTN_COPY_QUESTION" : "//div[@data-floating='true'])[last()]",
+    "BTN_COPY_QUESTION" : "//div[@data-floating='true'])[last()]",  # 이거 해야함 
     "BTN_STOP" : '//button[@aria-label="취소"]',
     
     # 메인 화면 '메뉴' 확인용
@@ -150,6 +160,9 @@ XPATH = {
     "DELETE_CARD" : "//button[contains(@class, 'css-fyycg6')]",
     "SELECT_FUNCTION" : "//input[@type = 'checkbox']",
     "SCROLL_MAKE_AGENT" : "//div[contains(@class, 'css-1q1j9cm')]",
+    "BTN_ADD_IMAGE" : "//button[contains(@class, 'css-807ylu')]",
+    "BTN_MAKE_IMAGE" : "//li[@role = 'menuitem']",
+    "UPLOADED_IMAGE_PREVIEW" : "//img[contains(@src, 'blob.core.windows.net')]",
     
     
     

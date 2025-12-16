@@ -19,3 +19,6 @@ cookies.json
 
 #coverage 개별 폴더 업로드 방지
 htmlcov/
+
+# 스크린샷
+screenshots/

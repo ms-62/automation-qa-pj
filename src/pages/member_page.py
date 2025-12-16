@@ -2,6 +2,7 @@ from utils.headers import *
 
 from pages.base_page import BasePage
 from utils.defines import TARGET_URL, SELECTORS, NAME, XPATH
+from managers.file_manager import FileManager
 
 class MemberPage(BasePage):
     #로그인 > 메인 페이지 이동
@@ -470,7 +471,7 @@ class MemberPage(BasePage):
         print(f"비밀번호 입력 완료: {repr(pwd)}")
         return True
     
-    def change_fail_pwd(self):
+    def change_fail_pwd(self) -> bool :
         """동일한 비밀번호 기입한 상태로 변경 시도 : 테스트 내용 실패가 성공"""
         submit_pwd = self.get_element(By.XPATH, XPATH["SUBMIT_PWD"] , option="visibility", timeout=3)
         if not submit_pwd:
@@ -646,14 +647,14 @@ class MemberPage(BasePage):
         btn_oauth_google.click()
         time.sleep(4)
         print("구글 연결하기 클릭")
-        return True
+        return btn_oauth_google
     
     def oauth_naver_click(self):
         btn_oauth_naver = self.get_element_by_xpath(XPATH["BTN_OAUTH_NAVER"])
         btn_oauth_naver.click()
         time.sleep(4)
         print("네이버 연결하기 클릭")
-        return True
+        return btn_oauth_naver
 
     def oauth_kko_click(self):
         btn_oauth_kko = self.get_element_by_xpath(XPATH["BTN_OAUTH_KKO"])
@@ -661,7 +662,7 @@ class MemberPage(BasePage):
         time.sleep(4)
         print("카카오 연결하기 클릭")
         self.oauth_popup_open_close()
-        return True
+        return btn_oauth_kko
     
     def oauth_github_click(self):
         btn_oauth_github = self.get_element_by_xpath(XPATH["BTN_OAUTH_GITHUB"])
@@ -669,7 +670,7 @@ class MemberPage(BasePage):
         time.sleep(4)
         print("깃허브 연결하기 클릭")
         self.oauth_popup_open_close()
-        return True
+        return btn_oauth_github
 
     def oauth_apple_click(self):
         btn_oauth_apple = self.get_element_by_xpath(XPATH["BTN_OAUTH_APPLE"])
@@ -677,7 +678,7 @@ class MemberPage(BasePage):
         time.sleep(7)
         print("애플 연결하기 클릭")
         self.oauth_popup_open_close()
-        return True
+        return btn_oauth_apple
     
     def oauth_facebook_click(self):
         btn_oauth_facebook = self.get_element_by_xpath(XPATH["BTN_OAUTH_FACEBOOK"])
@@ -744,3 +745,4 @@ class MemberPage(BasePage):
         element.click()
         time.sleep(4)
         return True
+    

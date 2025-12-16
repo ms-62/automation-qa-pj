@@ -6,7 +6,7 @@ from managers.file_manager import FileManager
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
-        self.fm = FileManager() # 수진 - 추가
+        self.fm = FileManager()
         
     def go_to_page(self, url):
         self.driver.get(url)

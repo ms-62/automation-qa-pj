@@ -6,7 +6,7 @@ import pyautogui
 SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 FULLSCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 TIMEOUT_MAX = 10
-STOPPED_MAX = 5
+STOPPED_MAX = 7
 ACTIVE = "모델이 활성화되었습니다."
 DEACTIVE = "모델이 비활성화되었습니다."
 DEFAULT_MODEL = "Helpy Pro Agent"

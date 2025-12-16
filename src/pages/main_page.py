@@ -1,4 +1,7 @@
 from utils.headers import *
+import subprocess
+
+
 from pages.base_page import BasePage
 from utils.defines import SELECTORS, XPATH, TARGET_URL
 from utils.defines import TIMEOUT_MAX
@@ -10,12 +13,11 @@ from controllers.clipboard_controller import ClipboardController
 from controllers.response_controller import ResponseController
 from controllers.scroll_controller import ScrollController
 
-
-
 class MainPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)  
         self.menu_status = MenuStatus.OPENED
+
         
     def go_to_main_page(self):
         self.go_to_page(TARGET_URL["MAIN_URL"])
@@ -26,8 +28,8 @@ class MainPage(BasePage):
         if btn and btn.is_enabled():
             btn.click()
             time.sleep(0.5)
-    # ================================================ #        
             
+    # ================================================ #        
     def click_btn_home_menu(self, button_text: str):
         try:
             buttons = self.get_elements_by_css_selector(SELECTORS["BTNS_HOME_MENU"])
@@ -44,7 +46,7 @@ class MainPage(BasePage):
             print(f"[ERROR] 버튼 '{button_text}' 요소 자체를 찾을 수 없음")
             return False
         
-    #================ 추후 past_chat_page로 뺄 예정 ================ 
+    # ================ 추후 past_chat_page로 뺄 예정 ================ 
     def click_on_past_chat(self):
         items = self.get_elements_by_css_selector(SELECTORS["CHAT_LIST_ITEMS"])
         if not items:
@@ -86,6 +88,7 @@ class MainPage(BasePage):
     # ================  Chat ================ 
     def click_send(self):
         self.click_btn_by_xpath(XPATH["BTN_SEND"], option = "presence")
+        time.sleep(0.5)
 
     def input_chat(self, text: str):
         textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
@@ -175,45 +178,37 @@ class MainPage(BasePage):
         self.toggle_menu(btn_bar)
     
     #================ 파일 업로드 ================ 
-    def click_btn_upload_plus(self):       
+    def open_upload_file_dialog(self):
         plus = self.get_element_by_css_selector(SELECTORS["BTN_UPLOAD_PLUS_CSS"])
         if plus and plus.is_enabled():
             plus.click()
             time.sleep(0.5)
-        
-    def click_btn_upload_file(self):
         self.click_btn_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "visibility")
 
+    def paste_file_path_and_send(self, file_name):   
+        file_path = self.fm.get_asset_path(file_name = file_name)
+        ClipboardController.copy(file_path)
+        ClipboardController.paste_file_path()
+        self.click_send()
+        ResponseController.wait_for_resp(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]))
+    
+    def upload_file(self, file_name):
+        self.open_upload_file_dialog()
+        self.paste_file_path_and_send(file_name)
+
+        #===== 테스트용 코드 =====#
+        #self.fm.save_log_file_to_csv(file_name = file_name, file_data=file_data)
+        save_name = "file_upload_test.png"
+        self.fm.save_screenshot_png(self.driver, file_name = save_name)
+        #=======================
+        
+        
+    #================ 이미지 생성 ================ 
     def click_btn_gen_image(self):
         self.click_btn_by_xpath(XPATH["BTN_GEN_IMAGE"], option = "visibility")
 
+
+    #================ 웹 검색 ================ 
     def click_btn_search_web(self):
         self.click_btn_by_xpath(XPATH["BTN_SEARCH_WEB"], option = "visibility")
         
-
-    def upload_file(self, fm):
-        file_name = "test_asset.jpg"
-        
-        # 2. pyautogui로 경로 입력 후 Open
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        
-        file_relative_path = "/Users/siyoung/Documents/GitHub/ai-heplychat-automation/src/resources/assets/test_asset.jpg"
-        absolute_path = os.path.join(project_root, file_relative_path)
-        
-        pyautogui.hotkey('COMMAND', 'SHIFT', 'G')  # 경로 입력창 열기
-        time.sleep(0.5)
-        pyautogui.write(absolute_path)  # 파일 경로 입력
-        pyautogui.press("enter")        # Open 클릭
-
-        # 3. 전송 버튼 클릭
-        self.click_send()
-        
-        #===== 테스트용 코드 =====#
-        #fm.save_log_file_to_csv(file_name = file_name, file_data=file_data)
-        save_name = "file_upload_test.png"
-        fm.save_screenshot_png(self.driver, file_name = save_name)
-        
-        #fm.save_screenshot(self.driver, f"{file_name} upload successed")
-        #=======================
-        
-        time.sleep(0.5)

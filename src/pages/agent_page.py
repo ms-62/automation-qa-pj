@@ -45,24 +45,14 @@ class AgentPage(BasePage) :
         result = self.get_element_by_xpath(XPATH["AGENT_SEARCH_NO_RESULT"])
         return result
     
-    # 에이전트 대화창 - 나중에 밑에거랑 합치기
-    def talk_with_agent_screen(self) :
-        element = self.get_element_by_xpath(XPATH["AGENT_TALK"])
-        element.click()
+#===========================에이전트 만들기 관련==================================
         
-    def agent_talk_card_text(self):
-        element_text = self.get_element_by_xpath(XPATH["AGENT_TALK_CARD_TEXT"])
-        return element_text
-        
-    def agent_talk_card_click(self) :
-        element = self.get_element_by_xpath(XPATH["AGENT_TALK_CARD"])
-        element.click()
-        
-    # 에이전트 만들기 - 설정 메뉴 관련
+    # 에이전트 만들기 창 들어가기
     def make_agent_screen(self) :
         element = self.get_element_by_xpath(XPATH["GO_MAKE_AGENT"])
         element.click()
         
+    # 설정 메뉴 관련
     def setting_name_input(self, text: str) :
         namearea = self.get_element_by_xpath(XPATH["NAME_SETT"])
         ChatInputController.send_text(namearea, text)
@@ -241,6 +231,8 @@ class AgentPage(BasePage) :
         element = self.get_element_by_xpath(XPATH["BTN_PREVIEW_REFRESH"])
         element.click()
         
+#======================대화 관련==============================================
+        
     # 에이전트 대화창 - 스크롤
     def scroll_up_chat(self):
         area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
@@ -269,17 +261,50 @@ class AgentPage(BasePage) :
 
         raise TimeoutError("스크롤 버튼 안보임")
     
+    # 에이전트 대화창 들어가기
+    def talk_with_agent_screen(self) :
+        element = self.get_element_by_xpath(XPATH["AGENT_TALK"])
+        element.click()
+    
+    # 에이전트 대화창 대화 카드 관련
+    def agent_talk_card_text(self):
+        element_text = self.get_element_by_xpath(XPATH["AGENT_TALK_CARD_TEXT"])
+        return element_text
+        
+    def agent_talk_card_click(self) :
+        element = self.get_element_by_xpath(XPATH["AGENT_TALK_CARD"])
+        element.click()
+    
     # 에이전트 대화창 - 질문 내용 받기
     def check_my_talk_input(self) :
         text = self.get_element_by_xpath(XPATH["AGENT_INPUT_TEXT"])
         return text
     
-    # 에이전트 대화창 (중단 버튼)
+    # 에이전트 대화창 보내기 버튼
     def click_send(self):
         btn = self.get_element_by_xpath(XPATH["BTN_SEND"])
         if btn.is_enabled():
             btn.click()
-
+    
+    # 에이전트 대화창 (응답 완료 상황)
+    def get_ai_response_area(self) :
+        try :
+            return self.get_element_by_css_selector(SELECTORS["CHECK_CHAT_COMPLETE"])
+        except :
+            return None
+        
+    def ai_chat_complete(self, text: str, timeout=20) :
+        textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
+        ChatInputController.send_text(textarea, text)
+        self.click_send()
+        
+        result = ResponseController.wait_for_complete(
+            ai_response_area_getter=self.get_ai_response_area,
+            timeout=timeout
+        )
+        return result
+    
+    # 에이전트 대화창 (중단 버튼 상황)
     def input_chat_stop(self, text: str):
         textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
         ChatInputController.send_text(textarea, text)
@@ -311,4 +336,16 @@ class AgentPage(BasePage) :
         
     def check_file_upload_in_chat(self) :
         element = self.get_element_by_xpath(XPATH["CHECK_FILE_IN_CHAT"])
+        return element
+    
+    # 에이전트 대화창 사진 업로드
+    def upload_img_in_chat(self) :
+        file_path = r"D:\elice_python\.myenv\project\ai-heplychat-automation\src\resources\assets\test_asset.jpg"
+        pyautogui.write(file_path)  # 파일 경로 입력
+        time.sleep(0.5)
+        pyautogui.press('enter')  # 열기 버튼 클릭
+        time.sleep(3)
+        
+    def check_img_upload_in_chat(self) :
+        element = self.get_element_by_xpath(XPATH["CHECK_IMG_IN_CHAT"])
         return element

@@ -175,6 +175,7 @@ XPATH = {
     "BTN_PREVIEW_SEND" : "//button[contains(@class, 'css-rhb320')]",
     "BTN_PREVIEW_REFRESH" : "//div[contains(@class, 'css-16ypwk')]//button",
     "CHECK_FILE_IN_CHAT" : "//div[contains(@class, 'css-1fth50j')]",
+    "CHECK_IMG_IN_CHAT" : "//img[contains(@class, 'MuiBox')]",
     
     
     

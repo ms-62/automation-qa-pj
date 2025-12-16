@@ -6,7 +6,7 @@ from utils.defines import TARGET_URL, SELECTORS, NAME, XPATH
 from utils.defines import TIMEOUT_MAX
 
 from enums.ui_status import MenuStatus
-
+from selenium.webdriver.common.action_chains import ActionChains
 from controllers.chat_input_controller import ChatInputController
 from controllers.clipboard_controller import ClipboardController
 from controllers.response_controller import ResponseController
@@ -26,7 +26,8 @@ class AgentPage(BasePage) :
             timeout=10
         )
        
-    # 에이전트 탐색창 - 검색 기능 
+#========================= 에이전트 검색 ================================================================================
+
     def search_input(self, agents) :
         search = self.get_element_by_xpath(
             XPATH["AGENT_SEARCH"],
@@ -45,14 +46,43 @@ class AgentPage(BasePage) :
         result = self.get_element_by_xpath(XPATH["AGENT_SEARCH_NO_RESULT"])
         return result
     
-#===========================에이전트 만들기 관련==================================
-        
     # 에이전트 만들기 창 들어가기
     def make_agent_screen(self) :
         element = self.get_element_by_xpath(XPATH["GO_MAKE_AGENT"])
         element.click()
+    
+#============================= 에이전트 대화로 만들기 ==========================================================================
         
-    # 설정 메뉴 관련
+    # !!!!!!!!!!!!!!!!에이전트 만들기 대화창!!!!!!!!!!!!!!!!!!!!!!!! 다시 해야됌!!!!!!!!!!!!
+    def go_to_make_chat(self) :
+        self.get_element_by_xpath(XPATH["GO_TO_MAKE_CHAT"]).click()
+        
+    def make_agent_input_chat_stop(self, text: str):
+        # 1. 전체 영역 안에서 만들기 영역 찾기
+        preview_area = self.get_element_by_xpath(
+            "//div[contains(@class,'css-1r7pci0')]//div[contains(@class,'css-ml5yxu')]",
+            option="presence",  # 존재 여부만 확인
+            timeout=5
+        )
+        
+        textarea = preview_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
+        ChatInputController.send_text(textarea, text)
+        
+        send_btn = preview_area.find_element(By.XPATH, ".//button[@aria-label='보내기']")
+        if send_btn.is_enabled():
+            send_btn.click()
+        else:
+            raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
+    
+        result = ResponseController.wait_for_resp(
+            btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]')
+        )
+        time.sleep(1)
+        return result
+    
+#========================= 에이전트 설정으로 만들기 ===========================================================================
+        
+    # 설정 메뉴 입력
     def setting_name_input(self, text: str) :
         namearea = self.get_element_by_xpath(XPATH["NAME_SETT"])
         ChatInputController.send_text(namearea, text)
@@ -116,7 +146,9 @@ class AgentPage(BasePage) :
                 element.click()
                 time.sleep(0.2)
                 
-    # 에이전트 만들기 - 이미지 업로드    
+#======================= 에이전트 설정으로 만들기 - 이미지 ==============================================
+                
+    # 이미지 업로드    
     def upload_image(self, file_name: str):
         file_input = self.get_element_by_css_selector(
             SELECTORS["IMAGE_FILE_INPUT"]
@@ -134,14 +166,16 @@ class AgentPage(BasePage) :
         src = img.get_attribute("src")
         return src is not None and src.strip() != ""
     
-    # 에이전트 만들기 - 이미지 생성기
+    # 이미지 생성기
     def make_image(self) :
         self.get_element_by_xpath(XPATH["BTN_ADD_IMAGE"]).click()
         btns = self.get_elements_by_xpath(XPATH["BTN_MAKE_IMAGE"])
         btn = btns[1]
         btn.click()
         
-    # 에이전트 만들기 - 파일 업로드
+#======================= 에이전트 설정으로 만들기 - 파일 ==============================================
+        
+    # 파일 업로드
     def upload_file(self, file_name: str) :
         file_input = self.get_element_by_css_selector(
             SELECTORS["FILE_INPUT"]
@@ -149,7 +183,7 @@ class AgentPage(BasePage) :
         file_path = self.fm.get_asset_path(file_name)
         file_input.send_keys(file_path)
         
-    # 에이전트 만들기 - 다중 파일 업로드
+    # 다중 파일 업로드
     def upload_multiple_images(self, extensions=(".pdf"), limit=None):
         file_input = self.get_element_by_css_selector(
             SELECTORS["FILE_INPUT"]
@@ -175,22 +209,26 @@ class AgentPage(BasePage) :
         msg = self.get_element_by_xpath(XPATH["FAIL_UPLOAD_FILE_MSG"])
         return msg
     
-    # 파일 삭제 for uploaded file
+    # 파일 삭제
     def delete_for_uploaded_file(self) :
         btns = self.get_elements_by_xpath(XPATH["BTN_FOR_UPLOADED_FILE"])
         btn = btns[1]
         btn.click()
+        
+#========================== 에이전트 만들기 - 스크롤 ============================================================
+        
+    # 설정 스크롤
+    def scroll_down_setting(self) :
+        area = self.get_elements_by_xpath(XPATH["SCROLL_MAKE_AGENT"])
+        ScrollController.scroll_down(self.driver, area[0])
+        
+#========================== 에이전트 만들기 - 뒤로가기 관련 ============================================================
     
     # 에이전트 만들기 뒤로가기 버튼
     def back_in_agent_make_screen(self) :
         btns = self.get_elements_by_xpath(XPATH["BTN_BACK_IN_MAKE_AGENT"])
         btn = btns[1]
         btn.click()
-                
-    # 에이전트 만들기 - 설정 스크롤
-    def scroll_down_setting(self) :
-        area = self.get_elements_by_xpath(XPATH["SCROLL_MAKE_AGENT"])
-        ScrollController.scroll_down(self.driver, area[0])
         
     # 내 에이전트 창 이동
     def go_to_my_agent(self) :
@@ -201,15 +239,49 @@ class AgentPage(BasePage) :
     def check_draft_msg(self) :
         msg = self.get_element_by_xpath(XPATH["CHECK_DRAFT"])
         return msg
+    
+#=================== 에이전트 만들기 - 미리보기 ==========================================================
         
-    # 에이전트 미리보기 대화창(중단)
-    def preview_input_chat_stop(self, text: str):
-        # 1. 전체 영역 안에서 미리보기 영역 찾기
-        preview_area = self.get_element_by_xpath(
+    # 미리보기 대화창 찾기
+    def get_preview_area(self):
+        return self.get_element_by_xpath(
             "//div[contains(@class,'css-1r7pci0')]//div[contains(@class,'css-ml5yxu')]",
-            option="presence",  # 존재 여부만 확인
+            option="presence",
             timeout=5
         )
+        
+    # 에이전트 미리보기 대화 카드 클릭
+    def preview_agent_talk_card_click(self) :
+        preview_area = self.get_preview_area()
+        element = preview_area.find_element(By.XPATH, "//button[contains(@class, 'uy7nb7')]")
+        element.click()
+    
+    # 에이전트 대화창 - 질문 내용 받기
+    def preview_check_my_talk_input(self) :
+        preview_area = self.get_preview_area()
+        text = preview_area.find_element(By.XPATH, "//span[@data-status = 'complete']")
+        return text
+    
+    # 에이전트 미리보기 대화창 응답 완료
+    def preview_input_chat(self, text: str, timeout=20) :
+        preview_area = self.get_preview_area()
+        textarea = preview_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
+        ChatInputController.send_text(textarea, text)
+        send_btn = preview_area.find_element(By.XPATH, ".//button[@aria-label='보내기']")
+        if send_btn.is_enabled():
+            send_btn.click()
+        else:
+            raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
+        
+        result = ResponseController.wait_for_complete(
+            ai_response_area_getter=preview_area.get_ai_response_area,
+            timeout=timeout
+        )
+        return result
+        
+    # 에이전트 미리보기 대화창 응답 중지
+    def preview_input_chat_stop(self, text: str):
+        preview_area = self.get_preview_area()
         
         textarea = preview_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
         ChatInputController.send_text(textarea, text)
@@ -225,15 +297,30 @@ class AgentPage(BasePage) :
         )
         time.sleep(1)
         return result
+    
+    # 에이전트 미리보기 다시 생성
+    def preview_create_again_response(self, timeout=20) :
+        preview_area = self.get_preview_area()
+        preview_area.find_element(By.XPATH, '//button[@aria-label="다시 생성"]')
+        result = ResponseController.wait_for_complete(
+            ai_response_area_getter=preview_area.get_ai_response_area,
+            timeout=timeout
+        )
+        return result
+    
+    def check_preview_create_again_response(self) :
+        preview_area = self.get_preview_area()
+        element = preview_area.find_element(By.XPATH, "//p[contains(@class, 'css-3uvjx')]")
+        return element
         
     # 에이전트 미리보기 새로고침
     def refresh_btn_in_preview(self) :
         element = self.get_element_by_xpath(XPATH["BTN_PREVIEW_REFRESH"])
         element.click()
         
-#======================대화 관련==============================================
+#====================== 에이전트와 대화 ============================================================
         
-    # 에이전트 대화창 - 스크롤
+    # 스크롤
     def scroll_up_chat(self):
         area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
         ScrollController.scroll_up(self.driver, area)
@@ -266,7 +353,7 @@ class AgentPage(BasePage) :
         element = self.get_element_by_xpath(XPATH["AGENT_TALK"])
         element.click()
     
-    # 에이전트 대화창 대화 카드 관련
+    # 대화 카드 관련
     def agent_talk_card_text(self):
         element_text = self.get_element_by_xpath(XPATH["AGENT_TALK_CARD_TEXT"])
         return element_text
@@ -275,24 +362,25 @@ class AgentPage(BasePage) :
         element = self.get_element_by_xpath(XPATH["AGENT_TALK_CARD"])
         element.click()
     
-    # 에이전트 대화창 - 질문 내용 받기
+    # 질문 내용 받기
     def check_my_talk_input(self) :
         text = self.get_element_by_xpath(XPATH["AGENT_INPUT_TEXT"])
         return text
     
-    # 에이전트 대화창 보내기 버튼
+    # 보내기 버튼
     def click_send(self):
         btn = self.get_element_by_xpath(XPATH["BTN_SEND"])
         if btn.is_enabled():
             btn.click()
     
-    # 에이전트 대화창 (응답 완료 상황)
+    # 에이전트가 응답하는 부분
     def get_ai_response_area(self) :
         try :
             return self.get_element_by_css_selector(SELECTORS["CHECK_CHAT_COMPLETE"])
         except :
             return None
-        
+    
+    # 응답 완료 상황  
     def ai_chat_complete(self, text: str, timeout=20) :
         textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
         ChatInputController.send_text(textarea, text)
@@ -304,7 +392,7 @@ class AgentPage(BasePage) :
         )
         return result
     
-    # 에이전트 대화창 (중단 버튼 상황)
+    # 중단 버튼 상황
     def input_chat_stop(self, text: str):
         textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
         ChatInputController.send_text(textarea, text)
@@ -316,7 +404,56 @@ class AgentPage(BasePage) :
         time.sleep(1)
         return result
     
-    # 에이전트 대화창 파일 업로드
+    # 다시 생성 버튼
+    def create_again_response(self, timeout=20) :
+        self.get_element_by_xpath(XPATH["BTN_RETRY"]).click()
+        result = ResponseController.wait_for_complete(
+            ai_response_area_getter=self.get_ai_response_area,
+            timeout=timeout
+        )
+        return result
+    
+    def check_create_again_response(self) :
+        element = self.get_element_by_xpath(XPATH["CHECK_CREATE_AGAIN_RESPONSE"])
+        return element
+    
+    # AI 응답 내용 복사
+    def copy_last_response(self):
+        btns = self.get_elements_by_xpath(XPATH["BTN_COPY_RESPONE"])
+        if not btns:
+            raise Exception("복사 버튼이 없음.")
+
+        btns[-1].click()
+        time.sleep(0.5)
+        print("복사 완성")
+        return ClipboardController.read()
+    
+    def paste_last_response(self):
+        textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
+        ClipboardController.paste(textarea)   # 클립보드에서만 붙여넣기
+        time.sleep(0.5)
+        
+    def check_paste(self) :
+        text = self.get_element_by_css_selector(SELECTORS["TEXTAREA"]).text.strip()
+        return text
+    
+    def reset_chat(self):
+        textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
+        ChatInputController.reset_text(textarea)
+        time.sleep(0.5)
+        
+    # !!!!!!!!!!!!!!!파일 업로드!!!!!!!!!!!!!!!!-얘로 수정 해야됌
+    # def get_asset_path(self, file_name: str):
+    #     return os.path.join(self.assets_dir, file_name)
+
+    # def get_asset_files(self, extensions=None):
+    #     files = os.listdir(self.assets_dir)
+
+    #     if extensions:
+    #         files = [f for f in files if f.lower().endswith(extensions)]
+
+    #     return [os.path.join(self.assets_dir, f) for f in files]
+    
     def open_upload_file_dialog(self):
         plus = self.get_element_by_css_selector(SELECTORS["BTN_UPLOAD_PLUS_CSS"])
         if plus and plus.is_enabled():
@@ -338,7 +475,7 @@ class AgentPage(BasePage) :
         element = self.get_element_by_xpath(XPATH["CHECK_FILE_IN_CHAT"])
         return element
     
-    # 에이전트 대화창 사진 업로드
+    # 사진 업로드
     def upload_img_in_chat(self) :
         file_path = r"D:\elice_python\.myenv\project\ai-heplychat-automation\src\resources\assets\test_asset.jpg"
         pyautogui.write(file_path)  # 파일 경로 입력
@@ -349,3 +486,5 @@ class AgentPage(BasePage) :
     def check_img_upload_in_chat(self) :
         element = self.get_element_by_xpath(XPATH["CHECK_IMG_IN_CHAT"])
         return element
+    
+    # 사진 옵션

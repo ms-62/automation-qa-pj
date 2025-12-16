@@ -7,6 +7,7 @@ from utils.defines import TARGET_URL
 
 from managers.file_manager import FileManager
 from pages.signup_page import SignupPage
+from pages.security_page import SecurityPage
  
 from pages.main_page import MainPage
 from pages.login_page import LoginPage
@@ -48,6 +49,10 @@ def login_page(driver):
 @pytest.fixture
 def signup_page(signup_driver) :
     return SignupPage(signup_driver)
+
+@pytest.fixture
+def security_page(signup_driver) :
+    return SecurityPage(signup_driver)
 
 @pytest.fixture
 def member_page(driver):

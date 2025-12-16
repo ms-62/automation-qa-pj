@@ -22,3 +22,6 @@ htmlcov/
 
 # 스크린샷
 screenshots/
+
+# 로그
+logs/

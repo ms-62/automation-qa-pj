@@ -5,8 +5,23 @@ import pyautogui
 # 예시입니다!!
 SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 FULLSCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-TIMEOUT_MAX = 10
-STOPPED_MAX = 7
+TIMEOUT_MAX = 15
+STOPPED_MAX = 10
+STEP = 500
+
+class ChatType:
+    TEXT = "text"               # 질문/일반 텍스트
+    IMAGE_REQUEST = "image"     # 이미지 요청
+    WEB_REQUEST = "websearch"   # 웹 검색 요청
+    
+class ChatKey:
+    INPUTS = "inputs"           # 유저 입력
+    REQUESTS = "requests"       # 요청 관련
+    
+class TestResult:
+    PASSED = "pass"
+    FAILED = "fail"
+    
 ACTIVE = "모델이 활성화되었습니다."
 DEACTIVE = "모델이 비활성화되었습니다."
 DEFAULT_MODEL = "Helpy Pro Agent"
@@ -34,12 +49,13 @@ SELECTORS = {
     # Agent 관련 파일 업로드 selector
     "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']",
     "FILE_INPUT" : "input[type='file'][accept*='.pdf']",
+    "FILE_INPUT_IN_CHAT" : "input[type='file']",
     
 
     "BTNS_DISABLED" : "button.MuiIconButton-root:not([disabled])",
     "BTN_PLUS" : "svg[data-icon='plus']",
     "BTN_UPLOAD_PLUS_CSS" : "button.MuiIconButton-root:not([disabled]) svg[data-icon='plus']",
-
+    #"BTN_MODEL_SETTING" : 'a[href="/ai-helpy-chat/admin/models"] span.MuiTypography-root',
 
 }
 
@@ -95,7 +111,7 @@ XPATH = {
     "MOBILE_ROW": "//table[contains(@class,'css-69t54h')]//tr[td[normalize-space(.)='휴대폰 번호']]",
     "BTN_MOBILE_EDIT" : "//tr[td[normalize-space(.)='휴대폰 번호']]//button[contains(@class,'MuiIconButton-root')]",
     "BTN_CERTI_MOBIL" : "//button[@type='submit' and contains(@class,'MuiLoadingButton-root')]",
-    "TOAST_CONTAINER" : "//div[@role='alert'][@aria-describedby='notistack-snackbar']",
+    "TOAST_CONTAINER" : "//div[@id='notistack-snackbar']",
     "PWD_ROW" : "//table[contains(@class,'css-69t54h')]//tr[td[normalize-space(.)='비밀번호']]",
     "BTN_PWD_EDIT" : "//tr[td[normalize-space(.)='비밀번호']]//button[contains(@class,'MuiIconButton-root')]",
     "SUBMIT_PWD" : "//button[@type='submit' and normalize-space(.)='완료']",
@@ -120,13 +136,13 @@ XPATH = {
         
     # ai 모델
     "BTN_MODEL_DROPDOWN" : '//button[.//p[normalize-space()="{model_name}"]]',
-    "MENU_PAPER": '//div[contains(@class,"MuiMenu-paper") and contains(@class,"MuiPopover-paper")]',  
+    "MENU_PAPER": '//div[contains(@class,"MuiMenu-paper") and contains(@class,"MuiPopover-paper")]',  # 왜 못찾냐
     "MODEL_ITEMS": '//div[contains(@class,"MuiMenu-paper")]//li[@role="menuitem"]',
     "SELECTED_MODEL": '//button//p[contains(@class,"MuiTypography-body2")]',
     "MODEL_BY_NAME":'//div[contains(@class,"MuiMenu-paper")]''//li[@role="menuitem"]''[.//span[normalize-space()="{model_name}"]]',
 
     # # 모델 설정 창
-    "BTN_MODEL_SETTING" : '//a[contains(@class,"MuiMenuItem-root") and .//span[normalize-space(text())="모델 설정"]]',
+    "BTN_MODEL_SETTING" : '//a[.//span[normalize-space(text())="모델 설정"]]',
     "MODEL_LI": "//div[contains(@class, 'MuiStack-root') and contains(@class, 'css-8g8ihq')]//li[contains(@class,'MuiListItem-root')]",
     "MODEL_NAME_IN_LI" : ".//span[contains(@class,'MuiListItemText-primary')]",
     "MODEL_LI_BY_NAME" : '//li[.//span[contains(@class,"MuiListItemText-primary") and text()="{model_name}"]]',
@@ -169,6 +185,14 @@ XPATH = {
     "CHECK_UPLOADED_FILE" : "//*[name()='svg' and @data-testid='circle-checkIcon']",
     "FAIL_UPLOAD_FILE" : "//*[name()='svg' and @data-testid='circle-exclamationIcon']",
     "FAIL_UPLOAD_FILE_MSG" : "//p[contains(@class, 'css-wrn3u')]",
+    "BTN_FOR_UPLOADED_FILE" : "//button[contains(@class, 'css-1rssx7s')]",
+    "BTN_BACK_IN_MAKE_AGENT" : "//button[contains(@class, 'css-1p4tfme')]",
+    "CHECK_DRAFT" : "//div[contains(@class, 'css-1alszk2')]",
+    "PREVIEW_INPUT" :"//textarea[@data-gtm-form-interact-field-id = '5']",
+    "BTN_PREVIEW_SEND" : "//button[contains(@class, 'css-rhb320')]",
+    "BTN_PREVIEW_REFRESH" : "//div[contains(@class, 'css-16ypwk')]//button",
+    "CHECK_FILE_IN_CHAT" : "//div[contains(@class, 'css-1fth50j')]",
+    "CHECK_IMG_IN_CHAT" : "//img[contains(@class, 'MuiBox')]",
     
     
     

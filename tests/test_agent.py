@@ -37,32 +37,56 @@ from enums.ui_status import AIresponse
 #     print("PHC-TS06-TC003 : Test Success")
     
 # # PHC-TS06-TC004
-
-# # PHC-TS06-TC005   
-# def test_agent_talk_response_stop(logged_in_agent, fm) :
-#     agent_page = logged_in_agent
-#     agent_page.go_to_agent_page()
-#     agent_page.talk_with_agent_screen()
-    
-#     data = fm.read_json_file("agent_text_data.json")
-#     question = data["inputs"][0]["content"]
-#     result = agent_page.input_chat_stop(question)
-    
-#     assert result == AIresponse.STOPPED, "PHC-TS06-TC005 : Test Fail"
-#     print("PHC-TS06-TC005 : Test Success")
-
-# PHC-TS06-TC011
-def test_agent_talk_file_upload(logged_in_agent, fm) :
+def test_agent_talk_response_complete(logged_in_agent, fm) :
     agent_page = logged_in_agent
     agent_page.go_to_agent_page()
     agent_page.talk_with_agent_screen()
-    agent_page.open_upload_file_dialog()
-    agent_page.upload_file_in_chat()
-    element = agent_page.check_file_upload_in_chat()
-    assert element, "PHC-TS06-TC011 : Test Fail"
-    result = agent_page.input_chat_stop("")
-    assert result == AIresponse.STOPPED, "PHC-TS06-TC011 : Test Fail"
-    print("PHC-TS06-TC011 : Test Success")
+    
+    data = fm.read_json_file("agent_text_data.json")
+    question = data["inputs"][0]["content"]
+    result = agent_page.ai_chat_complete(question)
+    
+    assert result == AIresponse.COMPLETED, "PHC-TS06-TC005 : Test Fail"
+    print("PHC-TS06-TC005 : Test Success")
+
+# PHC-TS06-TC005   
+def test_agent_talk_response_stop(logged_in_agent, fm) :
+    agent_page = logged_in_agent
+    agent_page.go_to_agent_page()
+    agent_page.talk_with_agent_screen()
+    
+    data = fm.read_json_file("agent_text_data.json")
+    question = data["inputs"][0]["content"]
+    result = agent_page.input_chat_stop(question)
+    
+    assert result == AIresponse.STOPPED, "PHC-TS06-TC005 : Test Fail"
+    print("PHC-TS06-TC005 : Test Success")
+
+# # PHC-TS06-TC011
+# def test_agent_talk_file_upload(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.talk_with_agent_screen()
+#     agent_page.open_upload_file_dialog()
+#     agent_page.upload_file_in_chat()
+#     element = agent_page.check_file_upload_in_chat()
+#     assert element, "PHC-TS06-TC011 : Test Fail"
+#     result = agent_page.ai_chat_complete("")
+#     assert result == AIresponse.COMPLETED, "PHC-TS06-TC011 : Test Fail"
+#     print("PHC-TS06-TC011 : Test Success")
+    
+# # PHC-TS06-TC012
+# def test_agent_talk_img_upload(logged_in_agent, fm) :
+#     agent_page = logged_in_agent
+#     agent_page.go_to_agent_page()
+#     agent_page.talk_with_agent_screen()
+#     agent_page.open_upload_file_dialog()
+#     agent_page.upload_img_in_chat()
+#     element = agent_page.check_img_upload_in_chat()
+#     assert element, "PHC-TS06-TC011 : Test Fail"
+#     result = agent_page.ai_chat_complete("")
+#     assert result == AIresponse.COMPLETED, "PHC-TS06-TC012 : Test Fail"
+#     print("PHC-TS06-TC012 : Test Success")
     
 # # PHC-TS06-TC028
 # def test_agent_setting_for_me(logged_in_agent, fm) :

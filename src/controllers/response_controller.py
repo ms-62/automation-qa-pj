@@ -32,3 +32,25 @@ class ResponseController:
         )
 
         return state.result if finished else AIresponse.TIMEOUT
+    
+    # 수진 추가
+    @staticmethod
+    def wait_for_complete(ai_response_area_getter, timeout=TIMEOUT_MAX):
+        """
+        AI 응답 영역이 완료될 때까지 대기
+        ai_response_area_getter: AI 응답 영역을 반환하는 함수
+        """
+        result_state = {"result": AIresponse.TIMEOUT}
+
+        def condition():
+            try:
+                area = ai_response_area_getter()
+                if area and area.get_attribute("data-status") == "complete":
+                    result_state["result"] = AIresponse.COMPLETED
+                    return True
+            except:
+                pass
+            return False
+
+        finished = ResponseController.until(condition=condition, timeout=timeout)
+        return result_state["result"]

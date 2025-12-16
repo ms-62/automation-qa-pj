@@ -1,12 +1,10 @@
 from utils.headers import *
-import subprocess
-
 
 from pages.base_page import BasePage
-from utils.defines import SELECTORS, XPATH, TARGET_URL
-from utils.defines import TIMEOUT_MAX
+from utils.defines import SELECTORS, XPATH, TARGET_URL, TIMEOUT_MAX
 
 from enums.ui_status import MenuStatus
+
 
 from controllers.chat_input_controller import ChatInputController
 from controllers.clipboard_controller import ClipboardController
@@ -18,7 +16,6 @@ class MainPage(BasePage):
         super().__init__(driver)  
         self.menu_status = MenuStatus.OPENED
 
-        
     def go_to_main_page(self):
         self.go_to_page(TARGET_URL["MAIN_URL"])
 
@@ -28,7 +25,9 @@ class MainPage(BasePage):
         if btn and btn.is_enabled():
             btn.click()
             time.sleep(0.5)
-            
+            return True
+        return False
+        
     # ================================================ #        
     def click_btn_home_menu(self, button_text: str):
         try:
@@ -38,54 +37,58 @@ class MainPage(BasePage):
                 if btn.text.strip() == button_text:
                     btn.click()
                     return True  
-                
-            print(f"[WARN] 버튼 '{button_text}'를 찾지 못함")
             return False
         
         except NoSuchElementException:
-            print(f"[ERROR] 버튼 '{button_text}' 요소 자체를 찾을 수 없음")
             return False
         
     # ================ 추후 past_chat_page로 뺄 예정 ================ 
     def click_on_past_chat(self):
-        items = self.get_elements_by_css_selector(SELECTORS["CHAT_LIST_ITEMS"])
-        if not items:
-            raise Exception("대화 내역이 없습니다.")
+        try:
+            items = self.get_elements_by_css_selector(SELECTORS["CHAT_LIST_ITEMS"])
+            if not items:
+                raise Exception("대화 내역이 없습니다.")
 
-        # 인덱스 접근방식 대신, data-item들중 가장 큰 index를 선택하도록. (즉, 가장 밑 대화 클릭)
-        latest = max(items, key=lambda x: int(x.get_attribute("data-item-index")))
-        latest.click()
-        time.sleep(1)
-
+            latest = min(items, key=lambda x: int(x.get_attribute("data-item-index")))
+            latest.click()
+            time.sleep(1)
+            return False
+        
+        except NoSuchElementException:
+            return False
+        
     # ================  Scroll ================ 
     def scroll_up_chat(self):
         area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
-        ScrollController.scroll_up(self.driver, area)
+        return ScrollController.scroll_up(self.driver, area)
 
     def scroll_down_chat(self):
         area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
-        ScrollController.scroll_down(self.driver, area)
+        return ScrollController.scroll_down(self.driver, area)
 
     def click_btn_scroll_to_bottom(self, timeout = TIMEOUT_MAX):
         start = time.time()
 
         while time.time() - start < timeout:
             btn = self.get_element_by_css_selector(SELECTORS["BTN_SCROLL_TO_BOTTOM"])
-
             if btn and btn.is_enabled():
                 try:
                     btn.click()
-                    print("맨 밑으로 이동스크롤 클릭")
+                    time.sleep(3)
                     return True
                 except Exception:
                     pass
 
             self.scroll_up_chat()
-            time.sleep(0.3)
-
-        raise TimeoutError("스크롤 버튼 안보임")
 
     # ================  Chat ================ 
+    def action_user_chat(self, chat_key ,chat_type):
+        ai_input_lst = self.fm.read_json_file("ai_text_data.json")[chat_key]   
+        for item in ai_input_lst:
+            if item["type"] != chat_type:
+                continue   
+            self.input_chat(item["content"])  
+    
     def click_send(self):
         self.click_btn_by_xpath(XPATH["BTN_SEND"], option = "presence")
         time.sleep(0.5)
@@ -95,10 +98,7 @@ class MainPage(BasePage):
         ChatInputController.send_text(textarea, text)
         self.click_send()
     
-        result = ResponseController.wait_for_resp(
-            btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"])
-        )
-        time.sleep(1)
+        ResponseController.wait_for_resp(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]))
     
     def click_btn_retry(self):
         btns = self.get_elements_by_xpath(XPATH["BTN_RETRY"])
@@ -106,9 +106,7 @@ class MainPage(BasePage):
             raise Exception("다시 생성하기 버튼이 없음.")
         btns[-1].click()
 
-        result = ResponseController.wait_for_resp(
-            btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"])
-        )
+        ResponseController.wait_for_resp(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]))
         time.sleep(1)
 
     # ================ Clipboard ================ 
@@ -131,7 +129,7 @@ class MainPage(BasePage):
         textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
         ChatInputController.reset_text(textarea)
         time.sleep(0.5)
-    
+
     # ================  메뉴 ================ 
     def sync_menu_status(self):
         try:
@@ -183,32 +181,40 @@ class MainPage(BasePage):
         if plus and plus.is_enabled():
             plus.click()
             time.sleep(0.5)
-        self.click_btn_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "visibility")
 
-    def paste_file_path_and_send(self, file_name):   
-        file_path = self.fm.get_asset_path(file_name = file_name)
+    def paste_file_path_and_send(self, file_path):   
         ClipboardController.copy(file_path)
         ClipboardController.paste_file_path()
         self.click_send()
         ResponseController.wait_for_resp(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]))
-    
-    def upload_file(self, file_name):
+
+    def action_upload_file(self, file_path):
         self.open_upload_file_dialog()
-        self.paste_file_path_and_send(file_name)
-
-        #===== 테스트용 코드 =====#
-        #self.fm.save_log_file_to_csv(file_name = file_name, file_data=file_data)
-        save_name = "file_upload_test.png"
-        self.fm.save_screenshot_png(self.driver, file_name = save_name)
-        #=======================
+        self.click_btn_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "visibility")
+        self.paste_file_path_and_send(file_path)
         
+    def upload_files(self):
+        images = self.fm.get_asset_files((".jpg", ".png"))
+        for img in images:
+            self.action_upload_file(file_path = img)
+            
+        allowed_files = self.fm.get_asset_files((".md", ".pdf", ".csv"))
+        for file in allowed_files:
+            self.action_upload_file(file_path = file)
         
-    #================ 이미지 생성 ================ 
-    def click_btn_gen_image(self):
+        not_allowed_files = self.fm.get_asset_files((".psd", ".exe", ".zip"))
+        for file in not_allowed_files:
+            self.action_upload_file(file_path = file)
+        
+    # ================ 이미지 생성 ================ 
+    def action_gen_image(self):
+        self.open_upload_file_dialog()
         self.click_btn_by_xpath(XPATH["BTN_GEN_IMAGE"], option = "visibility")
+        
+        
 
-
-    #================ 웹 검색 ================ 
-    def click_btn_search_web(self):
+    # ================ 웹 검색 ================== 
+    def action_search_web(self):
+        self.open_upload_file_dialog()
         self.click_btn_by_xpath(XPATH["BTN_SEARCH_WEB"], option = "visibility")
         

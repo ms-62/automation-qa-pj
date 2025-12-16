@@ -21,7 +21,7 @@ class BrowserUtils:
         for cookie in cookies:
             cookie.pop("domain", None)
             driver.add_cookie(cookie)
-
+                
         return True
 
     #    loaded_cookies = self.load_cookies(ctx.driver, ctx.fm, ctx.url)

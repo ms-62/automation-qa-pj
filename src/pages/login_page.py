@@ -75,8 +75,11 @@ class LoginPage(BasePage):
         return pw_input.get_attribute("aria-invalid") == "true"
     
     def is_main_page(self):
-        url = self.driver.current_url
-        return "qaproject.elice.io/ai-helpy-chat" in url
+        try:
+            self.get_element_by_xpath(XPATH["AGENT_MENU_BTN"])
+            return True
+        except:
+            return False
     
     def is_history_signin_page(self):
         url = self.driver.current_url

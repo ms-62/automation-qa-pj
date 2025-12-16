@@ -12,6 +12,7 @@ from pages.main_page import MainPage
 from pages.login_page import LoginPage
 from pages.member_page import MemberPage
 from pages.agent_page import AgentPage
+from pages.tools_page import ToolsPage
 
 # 모든 fixture를 관리하는 곳
 # session = 하나의 드라이버 공유
@@ -56,6 +57,11 @@ def member_page(driver):
 @pytest.fixture
 def agent_page(driver) :
     page = AgentPage(driver)
+    return page
+
+@pytest.fixture
+def tools_page(driver) :
+    page = ToolsPage(driver)
     return page
 
 

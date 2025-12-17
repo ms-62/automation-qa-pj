@@ -28,7 +28,7 @@ def test_go_to(logged_in_main):
     page = logged_in_main
 
 @pytest.mark.parametrize("case_key", ["sql_injection_a","sql_injection_b","sql_injection_c","sql_injection_d","sql_injection_e"])    
-def test__main_security_sql(security_main_page,security_cases,case_key):    
+def test_main_security_sql(security_main_page,security_cases,case_key):    
     data = security_cases[case_key]
     assert security_main_page.input_chat(data["sql_injection"]), "검색 안됨 혹은 에러 발생"
     
@@ -48,7 +48,7 @@ def test_member_security_sql(security_main_page, security_cases, case_key):
 #xss
 #로그인페이지 xss PHC-TS07-TC005
 @pytest.mark.parametrize("case_key", ["xss_scipt_a","xss_scipt_b","xss_scipt_c"])
-def test_login_xss(security_signup_page,security_cases,case_key):
+def test_login_security_xss(security_signup_page,security_cases,case_key):
     data = security_cases[case_key]
     security_signup_page.go_to_login_page()
     security_signup_page.input_id(data["xss_script"]) 
@@ -72,7 +72,7 @@ def test_go_to(logged_in_main):
     page = logged_in_main
 
 @pytest.mark.parametrize("case_key", ["xss_scipt_a","xss_scipt_b","xss_scipt_c"])    
-def test__main_security_xss(security_main_page,security_cases,case_key):    
+def test_main_security_xss(security_main_page,security_cases,case_key):    
     data = security_cases[case_key]
     assert security_main_page.input_chat(data["xss_script"]), "검색 안됨 혹은 에러 발생"
     

@@ -18,11 +18,11 @@
   "requests" : [
     {
       "type": "image",
-      "content": "짱구 이미지 만들어줘"
+      "content": "사과 그려줘"
     },
     {
       "type": "image",
-      "content": "크리스마스 이미지 만들어줘"
+      "content": "짱구 그려줘"
     },
     {
       "type": "websearch",
@@ -31,6 +31,17 @@
     {
       "type": "websearch",
       "content": "짱구에 대한 정보를 구글에서 찾아줄래?"
+    }
+  ],
+
+  "rename" : [
+    {
+      "type": "chat_ai",
+      "content": "마라탕탕탕후루후루"
+    },
+    {
+      "type": "chat_ai",
+      "content": "짱구"
     }
   ]
 }

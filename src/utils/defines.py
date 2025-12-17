@@ -1,22 +1,22 @@
 import pyautogui
-# define를 모으는 곳입니다.
-# 각자 사용해야하는 selector나 xpath를 작성해주세요!
 
-# 예시입니다!!
+
 SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 FULLSCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-TIMEOUT_MAX = 15
-STOPPED_MAX = 10
+TIMEOUT_MAX = 20
+STOPPED_MAX = 15
 STEP = 500
 
 class ChatType:
     TEXT = "text"               # 질문/일반 텍스트
     IMAGE_REQUEST = "image"     # 이미지 요청
     WEB_REQUEST = "websearch"   # 웹 검색 요청
+    CHAT_AI = "chat_ai"         # name
     
 class ChatKey:
     INPUTS = "inputs"           # 유저 입력
     REQUESTS = "requests"       # 요청 관련
+    RENAME = "rename"           # 이름 변경
     
 class TestResult:
     PASSED = "pass"
@@ -25,8 +25,13 @@ class TestResult:
 ACTIVE = "모델이 활성화되었습니다."
 DEACTIVE = "모델이 비활성화되었습니다."
 DEFAULT_MODEL = "Helpy Pro Agent"
-DEFAULT_CHAT = "새 대화"
 
+class ChatMenu:
+    DEFAULT_CHAT = "새 대화"
+    SEARCH_CHAT = "검색"
+    TOOLS_CHAT = "도구"
+    AGENT_CHAT = "에이전트 탐색"
+    
 TARGET_URL = {
     "MAIN_URL": "https://qaproject.elice.io/ai-helpy-chat",
     "LOGIN_URL": "https://accounts.elice.io/accounts/signin/me?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat&lang=en-US&org=qaproject"
@@ -34,7 +39,7 @@ TARGET_URL = {
 
 
 SELECTORS = {
-    "BTNS_HOME_MENU" : 'a[href="/ai-helpy-chat"]',
+    #"BTNS_HOME_MENU" : 'a[href="/ai-helpy-chat"]',
     "MEMBER_MODAL" : "button.MuiAvatar-root.MuiAvatar-circular",
     "CHAT_LIST_ITEMS" : "a[data-item-index]",
     "BTN_SCROLL_TO_BOTTOM" : 'button[aria-label="맨 아래로 스크롤"]',
@@ -56,6 +61,14 @@ SELECTORS = {
     "BTN_PLUS" : "svg[data-icon='plus']",
     "BTN_UPLOAD_PLUS_CSS" : "button.MuiIconButton-root:not([disabled]) svg[data-icon='plus']",
     #"BTN_MODEL_SETTING" : 'a[href="/ai-helpy-chat/admin/models"] span.MuiTypography-root',
+
+    "SELECTED_CHAT" : "a.Mui-selected",
+    "SELECTED_CHAT_TEXT": "a.Mui-selected p.MuiTypography-root",
+
+    "BTN_EDIT_NOWCHAT" : "button[data-testid='ellipsis-verticalIcon']",
+    "BTN_EDIT_PASTCHAT": "div.menu-button button",
+    "INPUT_CHAT_NAME" : "input[name='name']",
+
 
 }
 
@@ -192,6 +205,9 @@ XPATH = {
     "BTN_PREVIEW_REFRESH" : "//div[contains(@class, 'css-16ypwk')]//button",
     "CHECK_FILE_IN_CHAT" : "//div[contains(@class, 'css-1fth50j')]",
     "CHECK_IMG_IN_CHAT" : "//img[contains(@class, 'MuiBox')]",
+    "CHECK_CREATE_AGAIN_RESPONSE" : "//p[contains(@class, 'css-3uvjx')]",
+    "GO_TO_MAKE_CHAT" : "//button[@value = 'chat']",
+    "LOADING_ICON" : "//div[contains(@class, 'css-1jkab21')]",
     
     
     
@@ -202,6 +218,7 @@ XPATH = {
     "BTN_SEARCH_WEB": "//li[.//span[text()='웹 검색']]",
     "FILE_INPUT" : "//input[@type='file']",
     
+<<<<<<< HEAD
     # 도구 탭 관련
     "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
     "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
@@ -221,5 +238,33 @@ XPATH = {
     "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
     "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
     
+=======
+    # 기존 대화창
+    "SCROLL_PAST_CHATS" : "//div[@data-testid='virtuoso-scroller']",
+    "CHANGE_NOWCHAT_NAME" : "//li[.//span[text()='이름 변경']]",
+    "DELETE_NOWCHAT" : "//li[.//p[text()='삭제']]",
+
+    "BTN_CHANGE_PAST_NAME" : ".//li[.//span[text()='이름 변경']]",
+    "BTN_DELETE_PAST" : ".//li[.//p[text()='삭제']]",
+    
+    "BTN_CANCLE_EDIT" : "//button[text()='취소']",
+    "BTN_SAVE_EDIT" : "//button[text()='저장']",
+    "BTN_DELETE_CONFIRM" : "//button[normalize-space()='삭제']",
+    "INPUT_SEARCH_CHAT" : '//input[@placeholder="Search"]',
+    
+    
+    # 메뉴 버튼 다시 정리
+    "BTNS_HOME_MENU" : '//ul[contains(@class,"MuiList-root") and contains(@class,"EliceLayoutList-root")]',
+    "MENU_ITEM_BY_TEXT" : './/li[.//span[normalize-space()="{text}"]]',
+    "BTN_EACH_MENU" : './/*[self::a or @role="button"]',
+    
+    "SEARCH_CHAT_LIST": '//div[contains(@class,"MuiBox-root") and .//ul[contains(@class,"MuiList-root")]]/ul',
+    "SEARCH_CHAT_ITEMS": (
+        '//div[contains(@class,"MuiBox-root") and .//ul[contains(@class,"MuiList-root")]]'
+        '//ul/li/a[starts-with(@href,"/ai-helpy-chat/chats/")]'
+    ),
+    "SEARCH_CHAT_ITEM_TEXT": './/div[contains(@class,"MuiListItemText-root")]/span[contains(@class,"MuiListItemText-primary")]',
+
+>>>>>>> master
 }
 

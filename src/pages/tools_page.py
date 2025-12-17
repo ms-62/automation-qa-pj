@@ -25,20 +25,20 @@ class ToolsPage(BasePage):
     
     # 학교 급 입력
     def select_school_class(self,school_class):
-        btn = self.get_element_by_xpath(XPATH["SCHOOL_CLASS"]) # 정의 필요
+        btn = self.get_element_by_xpath(XPATH["SCHOOL_CLASS_DROPDOWN"])
         btn.click()
         time.sleep(0.3)
 
         if school_class == "초등":
-            btn = self.get_element_by_xpath(XPATH["ELEMENTARY_SCHOOL_CLASS"]) # 정의 필요
+            btn = self.get_element_by_xpath(XPATH["ELEMENTARY_SCHOOL_CLASS"])
             btn.click()
             time.sleep(0.3)
         elif school_class == "중등":
-            btn = self.get_element_by_xpath(XPATH["MIDDLE_SCHOOL_CLASS"]) # 정의 필요
+            btn = self.get_element_by_xpath(XPATH["MIDDLE_SCHOOL_CLASS"])
             btn.click()
             time.sleep(0.3)
         elif school_class == "고등":
-            btn = self.get_element_by_xpath(XPATH["HIGH_SCHOOL_CLASS"]) # 정의 필요
+            btn = self.get_element_by_xpath(XPATH["HIGH_SCHOOL_CLASS"])
             btn.click()
             time.sleep(0.3)
         else:
@@ -47,7 +47,7 @@ class ToolsPage(BasePage):
     # 과목 입력    
     def select_subject(self,school_class,subject_name):
         self.select_school_class(school_class)
-        self.get_element_by_xpath(XPATH["SUBJECT_DROPDOWN"]).click() # 정의 필요
+        self.get_element_by_xpath(XPATH["SUBJECT_DROPDOWN"]).click()
         time.sleep(0.3)
         
         subject_xpath = f"//li[normalize-space()='{subject_name}']"
@@ -61,8 +61,8 @@ class ToolsPage(BasePage):
         time.sleep(0.3)
     
     # 추가입력 칸 내용 입력
-    def input_add_data(self, add_data):
-        element = self.get_element_by_name(NAME["ADD_DATA_AREA"])   # 정의 필요
+    def input_teacher_comment(self, add_data):
+        element = self.get_element_by_name(NAME["TEACHER_COMMENT_AREA"])
         element.click()
         element.clear()
         element.send_keys(add_data)
@@ -70,13 +70,35 @@ class ToolsPage(BasePage):
                 
     # 자동생성 버튼 클릭
     def click_auto_create_button(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_AUTO_CREATE"])   # 정의 필요
+        btn = self.get_element_by_xpath(XPATH["BTN_AUTO_CREATE"])
         btn.click()
         time.sleep(0.3)
+        
+    # 생성 중지 버튼 클릭
+    def click_create_abort_button(self):
+        self.get_element_by_xpath(XPATH["BTN_CREATE_ABORT"])
+        time.sleep(0.3)
+    
+    def is_create_abort_page(self):
+        try:
+            self.get_element_by_xpath(XPATH["CREATE_ABORT_MESSAGE"]) ##
+            return True
+        except:
+            return False
     
     # 다시생성 버튼 클릭
-    def click_re_create_button(self):
-        self.get_element_by_xpath(XPATH["BTN_RE_CREATE"])  # 정의 필요
+    def click_recreate_button(self):
+        self.get_element_by_xpath(XPATH["BTN_RECREATE"])
+        time.sleep(0.3)
+        
+    # 결과 다시 생성하기 페이지 후 취소
+    def click_create_reject_button(self):
+        self.get_element_by_xpath(XPATH["BTN_CREATE_REJECT"])
+        time.sleep(0.3)
+        
+    # 결과 다시 생성하기 페이지 후 다시 생성
+    def click_sure_recreate_button(self):
+        self.get_element_by_xpath(XPATH["BTN_SURE_RECREATE"])
         time.sleep(0.3)
     
     # 생성 결과 다운로드 버튼 클릭
@@ -86,31 +108,25 @@ class ToolsPage(BasePage):
         
     # 지원되지 않는 파일 메서드 -> 근데 지금 웹 상에서 반응이 없음
     def get_upload_error_text(self):
-        el = self.get_element_by_xpath(XPATH["UPLOAD_ERROR"])
+        el = self.get_element_by_xpath(XPATH["UPLOAD_ERROR"])  # 정의 필요 에러 토스트/헬퍼텍스트 xpath
         return el.text
     
     def is_upload_error_visible(self):
         try:
-            self.get_element_by_xpath(XPATH["UPLOAD_ERROR"])  # 정의 필요 에러 토스트/헬퍼텍스트 xpath
+            self.get_element_by_xpath(XPATH["UPLOAD_ERROR"]) 
             return True
         except:
             return False
-    
-    
-    # 최대 파일 크기 초과 업로드 
-    # def is_upload_progress_visible(self):
-         
+       
     # 입력 양식 다운로드 버튼
     def click_download_template(self):
         btn = self.get_element_by_xpath(XPATH["DOWNLOAD_TEMPLATE"])
         btn.click()
         time.sleep(0.3)
-        
-    # 다운로드 확인 메서드
-    
+            
     # 성취기준 검색하기 이동 버튼
     def click_achievement_button(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_ACHIEVEMENT"])   # 정의 필요
+        btn = self.get_element_by_xpath(XPATH["BTN_ACHIEVEMENT"])
         btn.click()
         time.sleep(0.3)
     

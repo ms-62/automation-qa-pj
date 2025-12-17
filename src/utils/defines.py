@@ -75,6 +75,7 @@ NAME = {
     "INPUT_EMAIL" : "to",
     "INPUT_PWD" :"password",
     "INPUT_NEW_PWD" : "newPassword",
+    "TEACHER_COMMENT_AREA" : "teacher_comment",
 }
 
 # By.XPATH
@@ -82,10 +83,6 @@ XPATH = {
     "BTN_LOGIN": "//button[normalize-space()='Login']",
     "BTN_CREATE_ACCOUNT" : "//a[contains(@href, 'signup')]",
     "BTN_CREATE_EMAIL" : "//button",
-    "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
-    "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
-    "SPECIAL_NOTE_PAGE_TITLE" : "//span[contains(text(),'세부 특기사항')]",
-    "BTN_ACHIEVEMENT" : "//a[contains(@href, '/stas.moe.go.kr/')]",
     "SIGNUP_AGREE" : "//input[contains(@class, 'PrivateSwitchBase')]",
     "CHECK_SIGNUP" : "//a[contains(@href, 'recover')]",
     "BTN_SIGNUP" : "//button[@type = 'submit']",
@@ -204,6 +201,25 @@ XPATH = {
     "BTN_GEN_IMAGE": "//li[.//span[text()='이미지 생성']]",
     "BTN_SEARCH_WEB": "//li[.//span[text()='웹 검색']]",
     "FILE_INPUT" : "//input[@type='file']",
+    
+    # 도구 탭 관련
+    "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
+    "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
+    "SPECIAL_NOTE_PAGE_TITLE" : "//span[contains(text(),'세부 특기사항')]",
+    "SCHOOL_CLASS_DROPDOWN" : "//div[normalize-space()='학교급을 선택해주세요.']",
+    "ELEMENTARY_SCHOOL_CLASS" : "//li[normalize-space()='초등']",
+    "MIDDLE_SCHOOL_CLASS" : "//li[normalize-space()='중등']",
+    "HIGH_SCHOOL_CLASS" : "//li[normalize-space()='고등']",
+    "SUBJECT_DROPDOWN" : "//div[normalize-space()='과목을 선택해주세요.']",
+    "FILE_UPLOAD_INPUT" : "//input[@type='file']",
+    "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",   
+    "BTN_ACHIEVEMENT" : "//a[contains(@href, '/stas.moe.go.kr/')]",
+    "DOWNLOAD_TEMPLATE" : "//a[contains(@href, 'student_evaluation_template.xlsx')]",
+    "BTN_AUTO_CREATE" : "//button[normalize-space()='자동 생성']",
+    "BTN_RECREATE" : "//button[contains(@class, 'css-1az3dby') and normalize-space()='다시 생성']",         # 다른 도구에서도 같은지 확인 필요
+    "BTN_SURE_RECREATE" : "//button[contains(@class, 'css-1thd9aa') and normalize-space()='다시 생성']",    # 다른 도구에서도 같은지 확인 필요
+    "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
+    "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
     
 }
 

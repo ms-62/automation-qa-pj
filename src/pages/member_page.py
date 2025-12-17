@@ -4,11 +4,6 @@ from pages.base_page import BasePage
 from utils.defines import TARGET_URL, SELECTORS, NAME, XPATH
 
 class MemberPage(BasePage):
-    #로그인 > 메인 페이지 이동
-    def go_to_main_page(self):
-        self.go_to_page(TARGET_URL["MAIN_URL"])
-        time.sleep(4) 
-
     #우측 사람 이미지 > 계정관리 순차 클릭 > 새 창 이동
     def go_to_member_page(self):
         modal_btn = self.get_element_by_css_selector(SELECTORS["MEMBER_MODAL"])

@@ -57,7 +57,6 @@ class FileManager:
         except Exception as e:
             print(f"{file_path} 저장 실패!: {e}")
             
-        # 로그를 어떻게 적을지, 로그 형식(날짜, 작성자, 내용 등) 정한 후에 
     def save_log_file_to_csv(self, file_name, file_data, option="a"):
         if not file_name.endswith(".csv"):
             file_name += ".csv"

@@ -18,7 +18,6 @@ class ResponseState:
 
         if passed >= self.timeout:
             self.result = AIresponse.TIMEOUT
-            print("타임 아웃")
             return True
 
         if passed >= self.stop_time and not self.stop_clicked:
@@ -28,7 +27,6 @@ class ResponseState:
                     btn.click()
                     self.stop_clicked = True
                     self.result = AIresponse.STOPPED
-                    print("취소 버튼 클릭")
                     return True
             except:
                 pass

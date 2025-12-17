@@ -1,4 +1,5 @@
 from utils.headers import *
+from selenium.webdriver.common.action_chains import ActionChains
 
 from pages.base_page import BasePage
 from managers.file_manager import FileManager
@@ -20,11 +21,6 @@ class AgentPage(BasePage) :
     def go_to_agent_page(self):
         menu_btn = self.get_element_by_xpath(XPATH["AGENT_MENU_BTN"])
         menu_btn.click()
-        self.get_element_by_xpath(
-            XPATH["MY_AGENT_BTN"],
-            option="clickable",
-            timeout=10
-        )
        
 #========================= 에이전트 검색 ================================================================================
 
@@ -103,7 +99,7 @@ class AgentPage(BasePage) :
         else:
             raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
     
-        result = ResponseController.wait_for_resp(
+        result = ResponseController.wait_for_response_with_timeout(
             btn_stop=lambda: chat_area.find_element(By.XPATH, './/button[@aria-label="취소"]'),
             stop_time=3
         )
@@ -321,6 +317,7 @@ class AgentPage(BasePage) :
     def go_to_my_agent(self) :
         element = self.get_element_by_xpath(XPATH["MY_AGENT_BTN"])
         element.click()
+        time.sleep(1)
         
     # 초안 메시지 확인
     def check_draft_msg(self) :
@@ -386,9 +383,10 @@ class AgentPage(BasePage) :
             send_btn.click()
         else:
             raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
-
+    
         result = ResponseController.wait_for_response_with_timeout(
-            btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]')
+            btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]'),
+            stop_time=3
         )
         time.sleep(1)
         return result
@@ -605,6 +603,45 @@ class AgentPage(BasePage) :
         return element
     
     # 사진 옵션
+    def download_img_in_chat(self) :
+        area = self.get_element_by_xpath(XPATH["IMG_AREA"])
+
+        ActionChains(self.driver) \
+            .move_to_element(area) \
+            .pause(0.3) \
+            .perform()
+
+        btns = self.get_elements_by_xpath(XPATH["IMG_BTNS"])
+        btn = btns[1]
+        btn.click()
+
+        return True
+    
+    def expand_img_in_chat(self) :
+        area = self.get_element_by_xpath(XPATH["IMG_AREA"])
+
+        ActionChains(self.driver) \
+            .move_to_element(area) \
+            .pause(0.3) \
+            .perform()
+
+        btns = self.get_elements_by_xpath(XPATH["IMG_BTNS"])
+        btn = btns[2]
+        btn.click()
+
+        return True
+    
+    def downsize_img_in_chat(self) :
+        btn = self.get_element_by_xpath(XPATH["DOWNSIZE_BTN"])
+        btn.click()
+        time.sleep(1)
+        element = self.get_element_by_xpath(XPATH["DOWNSIZE_BTN"])
+        return element
+        
+    
+    # 파일 옵션 
+    def delete_file_in_chat(self) :
+        self.get_element_by_xpath(XPATH["DELETE_FILE"]).click()
     
     # 용량 큰 단일 파일
     def upload_big_file_in_chat(self) :
@@ -637,3 +674,102 @@ class AgentPage(BasePage) :
             time.sleep(0.5)
             pyautogui.press('enter')
             self.wait_until_loading_disappear()
+            
+# ====================== 에이전트 수정 & 삭제 ===================================
+
+    # 에이전트 수정
+    def go_to_modify_in_agents(self) :
+        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"])
+        if element and element.is_enabled():
+            element.click()
+            time.sleep(0.5)
+        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"])
+        if btns :
+            btns[0].click()
+            time.sleep(0.5)
+        
+    def go_to_modify_in_my_agent(self) :
+        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"])
+        btns[0].click()
+        time.sleep(0.5)
+            
+    def modify_name(self, text: str) :
+        namearea = self.get_element_by_xpath(XPATH["NAME_SETT"])
+        ChatInputController.reset_text(namearea)
+        ChatInputController.send_text(namearea, text)
+        
+    def modify_intro(self, text: str) :
+        introarea = self.get_element_by_xpath(XPATH["INTRO_SETT"])
+        ChatInputController.reset_text(introarea)
+        ChatInputController.send_text(introarea, text)
+        
+    def modify_rule(self, text: str) :
+        rulearea = self.get_element_by_xpath(XPATH["RULE_SETT"])
+        ChatInputController.reset_text(rulearea)
+        ChatInputController.send_text(rulearea, text)
+        
+    def modify_card(self, text: str) :
+        cardarea = self.get_element_by_xpath(XPATH["CARD_SETT"])
+        ChatInputController.reset_text(cardarea)
+        ChatInputController.send_text(cardarea, text)
+        time.sleep(2)
+    
+    def modify_and_check(self) :
+        self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"]).click()
+        time.sleep(0.5)
+        self.get_element_by_xpath(XPATH["BTN_AGENT_PUBLISH"]).click()
+        time.sleep(0.5)
+        element = self.get_element_by_css_selector(SELECTORS["UPDATE_CHECK"])
+        return element
+        
+# =========================== 에이전트 삭제 ===================================================================
+
+    def check_delete_in_agents(self) :
+        text = self.get_element_by_xpath(XPATH["CHECK_DELETE"]).text.strip()
+        return text
+        
+    def go_to_delete_in_agents(self) :
+        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"])
+        if element and element.is_enabled():
+            element.click()
+            time.sleep(0.5)
+        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"])
+        if btns :
+            btns[1].click()
+            time.sleep(0.5)
+        options = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_AGENTS"])
+        if options :
+            options[1].click()
+            time.sleep(2)
+        
+    def go_to_not_delete_in_agents(self) :
+        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"])
+        if element and element.is_enabled():
+            element.click()
+            time.sleep(0.5)
+        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"])
+        if btns :
+            btns[1].click()
+            time.sleep(0.5)
+            options = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_AGENTS"])
+        if options :
+            options[0].click()
+            time.sleep(0.5)
+        
+    def go_to_delete_in_my_agent(self) :
+        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"])
+        btns[1].click()
+        time.sleep(0.5)
+        btns = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_MY_AGENT"])
+        if btns :
+            btns[1].click()
+            time.sleep(2)
+        
+    def go_to_not_delete_in_my_agent(self) :
+        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"])
+        btns[1].click()
+        time.sleep(0.5)
+        btns = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_MY_AGENT"])
+        if btns :
+            btns[0].click()
+            time.sleep(0.5)

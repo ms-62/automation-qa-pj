@@ -55,6 +55,7 @@ SELECTORS = {
     "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']",
     "FILE_INPUT" : "input[type='file'][accept*='.pdf']",
     "FILE_INPUT_IN_CHAT" : "input[type='file']",
+    "UPDATE_CHECK" : "div.go946087465",
     
 
     "BTNS_DISABLED" : "button.MuiIconButton-root:not([disabled])",
@@ -208,8 +209,16 @@ XPATH = {
     "CHECK_CREATE_AGAIN_RESPONSE" : "//p[contains(@class, 'css-3uvjx')]",
     "GO_TO_MAKE_CHAT" : "//button[@value = 'chat']",
     "LOADING_ICON" : "//div[contains(@class, 'css-1jkab21')]",
-    
-    
+    "DELETE_FILE" : "//button[contains(@class, 'css-1a4ukef')]",
+    "IMG_AREA" : "//img[contains(@src, 'blob')]",
+    "IMG_BTNS" : "//button[contains(@class, 'css-1p4tfme')]",
+    "DOWNSIZE_BTN" : "//div[contains(@class, 'container')]//button[contains(@class, 'css-fyycg6')]",
+    "DOT_IN_AGENTS" : "//div[contains(@class, 'css-1vk042g')]//button[contains(@class, 'css-9jgcee')]",
+    "BTNS_IN_MY_AGENT" : "//div[contains(@class, 'css-lyiuww')]//button",
+    "MODIFY_AND_DELETE_IN_DOT" : "//li[contains(@class, 'css-1i1rqyx')]",
+    "DELETE_OPTIONS_IN_AGENTS" : "//div[contains(@class, 'css-1l2ou4k')]//button",
+    "CHECK_DELETE" : "//p[contains(@class, 'css-to37at')]",
+    "DELETE_OPTIONS_IN_MY_AGENT" : "//div[contains(@class, 'css-xawzel')]//button",
     
     
     # 업로드 버튼
@@ -218,7 +227,6 @@ XPATH = {
     "BTN_SEARCH_WEB": "//li[.//span[text()='웹 검색']]",
     "FILE_INPUT" : "//input[@type='file']",
     
-<<<<<<< HEAD
     # 도구 탭 관련
     "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
     "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
@@ -238,7 +246,6 @@ XPATH = {
     "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
     "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
     
-=======
     # 기존 대화창
     "SCROLL_PAST_CHATS" : "//div[@data-testid='virtuoso-scroller']",
     "CHANGE_NOWCHAT_NAME" : "//li[.//span[text()='이름 변경']]",
@@ -265,6 +272,5 @@ XPATH = {
     ),
     "SEARCH_CHAT_ITEM_TEXT": './/div[contains(@class,"MuiListItemText-root")]/span[contains(@class,"MuiListItemText-primary")]',
 
->>>>>>> master
 }
 

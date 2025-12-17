@@ -53,32 +53,119 @@ class AgentPage(BasePage) :
     
 #============================= 에이전트 대화로 만들기 ==========================================================================
         
-    # !!!!!!!!!!!!!!!!에이전트 만들기 대화창!!!!!!!!!!!!!!!!!!!!!!!! 다시 해야됌!!!!!!!!!!!!
+    # 대화로 만들기 메뉴 버튼 클릭
     def go_to_make_chat(self) :
         self.get_element_by_xpath(XPATH["GO_TO_MAKE_CHAT"]).click()
         
-    def make_agent_input_chat_stop(self, text: str):
-        # 1. 전체 영역 안에서 만들기 영역 찾기
-        preview_area = self.get_element_by_xpath(
-            "//div[contains(@class,'css-1r7pci0')]//div[contains(@class,'css-ml5yxu')]",
-            option="presence",  # 존재 여부만 확인
+    # 대화로 만들기 창 찾기
+    def get_chat_area(self):
+        return self.get_element_by_xpath(
+            "//div[contains(@class,'css-1r7pci0')]//div[contains(@class, 'css-ogm1eb')]",
+            option="presence",
             timeout=5
         )
         
-        textarea = preview_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
+    # 대화로 만들기 응답 부분 추출
+    def get_chatmake_ai_response_area(self) :
+        chat_area = self.get_chat_area()
+        try :
+            return chat_area.find_element(By.CSS_SELECTOR, 'div[data-status="complete"]')
+        except :
+            return None
+    
+    # 대화로 만들기 응답 완료
+    def chatmake_input_chat(self, text: str, timeout=20) :
+        chat_area = self.get_chat_area()
+        textarea = chat_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
+        ChatInputController.send_text(textarea, text)
+        send_btn = chat_area.find_element(By.XPATH, ".//button[@aria-label='보내기']")
+        if send_btn.is_enabled():
+            send_btn.click()
+        else:
+            raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
+        
+        result = ResponseController.wait_for_complete(
+            ai_response_area_getter=self.get_chatmake_ai_response_area,
+            timeout=timeout
+        )
+        return result
+        
+    # 대화로 만들기 응답 중지
+    def chatmake_input_chat_stop(self, text: str):
+        chat_area = self.get_chat_area()
+        
+        textarea = chat_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
         ChatInputController.send_text(textarea, text)
         
-        send_btn = preview_area.find_element(By.XPATH, ".//button[@aria-label='보내기']")
+        send_btn = chat_area.find_element(By.XPATH, ".//button[@aria-label='보내기']")
         if send_btn.is_enabled():
             send_btn.click()
         else:
             raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
     
         result = ResponseController.wait_for_resp(
-            btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]')
+            btn_stop=lambda: chat_area.find_element(By.XPATH, './/button[@aria-label="취소"]'),
+            stop_time=3
         )
         time.sleep(1)
         return result
+    
+    # 대화로 만들기 다시 생성
+    def chatmake_create_again_response(self, timeout=20):
+        chat_area = self.get_chat_area()
+        btn = WebDriverWait(chat_area, timeout).until(
+            lambda area: (
+                (btns := area.find_elements(By.XPATH, './/button[@aria-label="다시 생성"]'))
+                and btns[-1].is_enabled()
+                and btns[-1]
+            )
+        )
+        btn.click()
+
+        WebDriverWait(chat_area, timeout).until(
+            lambda area: (
+                elems := area.find_elements(By.CSS_SELECTOR, 'div[data-status]')
+            ) and elems[-1].get_attribute("data-status") == "running"
+        )
+
+        WebDriverWait(chat_area, timeout).until(
+            lambda area: (
+                elems := area.find_elements(By.CSS_SELECTOR, 'div[data-status]')
+            ) and elems[-1].get_attribute("data-status") == "complete"
+        )
+        return True
+    
+    def check_chatmake_create_again_response(self) :
+        chat_area = self.get_chat_area()
+        element = chat_area.find_element(By.XPATH, ".//p[contains(@class, 'css-3uvjx')]")
+        return element
+    
+    # 대화로 만들기 응답 부분 복사
+    def copy_last_response_in_chatmake(self, timeout=20) :
+        chat_area = self.get_chat_area()
+        btn = WebDriverWait(chat_area, timeout).until(
+            lambda area: (
+                (btns := area.find_elements(By.XPATH, './/button[@aria-label="복사"]'))
+                and btns[-1].is_displayed()
+                and btns[-1].is_enabled()
+                and btns[-1]
+            )
+        )
+
+        btn.click()
+        print("복사 완성")
+        return ClipboardController.read()
+    
+    def paste_last_response_in_chatmake(self):
+        chat_area = self.get_chat_area()
+        textarea = chat_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
+        ClipboardController.paste(textarea)   # 클립보드에서만 붙여넣기
+        time.sleep(0.5)
+        
+    def check_paste_in_chatmake(self) :
+        chat_area = self.get_chat_area()
+        text = chat_area.find_element(By.CSS_SELECTOR, "textarea[name='input']").text.strip()
+        return text
     
 #========================= 에이전트 설정으로 만들기 ===========================================================================
         
@@ -262,6 +349,14 @@ class AgentPage(BasePage) :
         text = preview_area.find_element(By.XPATH, "//span[@data-status = 'complete']")
         return text
     
+    # 미리보기 대화창 응답 부분 추출
+    def get_preview_ai_response_area(self) :
+        preview_area = self.get_preview_area()
+        try :
+            return preview_area.find_element(By.CSS_SELECTOR, 'div[data-status="complete"]')
+        except :
+            return None
+    
     # 에이전트 미리보기 대화창 응답 완료
     def preview_input_chat(self, text: str, timeout=20) :
         preview_area = self.get_preview_area()
@@ -274,7 +369,7 @@ class AgentPage(BasePage) :
             raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
         
         result = ResponseController.wait_for_complete(
-            ai_response_area_getter=preview_area.get_ai_response_area,
+            ai_response_area_getter=self.get_preview_ai_response_area,
             timeout=timeout
         )
         return result
@@ -293,30 +388,66 @@ class AgentPage(BasePage) :
             raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
     
         result = ResponseController.wait_for_resp(
-            btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]')
+            btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]'),
+            stop_time=3
         )
         time.sleep(1)
         return result
     
     # 에이전트 미리보기 다시 생성
-    def preview_create_again_response(self, timeout=20) :
+    def preview_create_again_response(self, timeout=20):
         preview_area = self.get_preview_area()
-        preview_area.find_element(By.XPATH, '//button[@aria-label="다시 생성"]')
-        result = ResponseController.wait_for_complete(
-            ai_response_area_getter=preview_area.get_ai_response_area,
+
+        btn = WebDriverWait(preview_area, timeout).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, './/button[@aria-label="다시 생성"]')
+            )
+        )
+        btn.click()
+
+        return ResponseController.wait_for_complete(
+            ai_response_area_getter=self.get_preview_ai_response_area,
             timeout=timeout
         )
-        return result
     
     def check_preview_create_again_response(self) :
         preview_area = self.get_preview_area()
-        element = preview_area.find_element(By.XPATH, "//p[contains(@class, 'css-3uvjx')]")
+        element = preview_area.find_element(By.XPATH, ".//p[contains(@class, 'css-3uvjx')]")
         return element
         
     # 에이전트 미리보기 새로고침
     def refresh_btn_in_preview(self) :
         element = self.get_element_by_xpath(XPATH["BTN_PREVIEW_REFRESH"])
         element.click()
+        
+    # 미리보기 새로고침 확인
+    def check_refresh_in_preview(self) :
+        preview_area = self.get_preview_area()
+        element = preview_area.find_element(By.XPATH, "//div[contains(@class, 'css-j7q6vj')]")
+        return element
+    
+    # 미리보기 응답 부분 복사
+    def copy_last_response_in_preview(self) :
+        preview_area = self.get_preview_area()
+        btns = preview_area.find_elements(By.XPATH, '//button[@aria-label="복사"]')
+        if not btns:
+            raise Exception("복사 버튼이 없음.")
+
+        btns[-1].click()
+        time.sleep(0.5)
+        print("복사 완성")
+        return ClipboardController.read()
+    
+    def paste_last_response_in_preview(self):
+        preview_area = self.get_preview_area()
+        textarea = preview_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
+        ClipboardController.paste(textarea)   # 클립보드에서만 붙여넣기
+        time.sleep(0.5)
+        
+    def check_paste_in_preview(self) :
+        preview_area = self.get_preview_area()
+        text = preview_area.find_element(By.CSS_SELECTOR, "textarea[name='input']").text.strip()
+        return text
         
 #====================== 에이전트와 대화 ============================================================
         
@@ -436,24 +567,10 @@ class AgentPage(BasePage) :
     def check_paste(self) :
         text = self.get_element_by_css_selector(SELECTORS["TEXTAREA"]).text.strip()
         return text
-    
-    def reset_chat(self):
-        textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
-        ChatInputController.reset_text(textarea)
-        time.sleep(0.5)
+
+#========================= 대화창 파일 관련=================================================================================
         
-    # !!!!!!!!!!!!!!!파일 업로드!!!!!!!!!!!!!!!!-얘로 수정 해야됌
-    # def get_asset_path(self, file_name: str):
-    #     return os.path.join(self.assets_dir, file_name)
-
-    # def get_asset_files(self, extensions=None):
-    #     files = os.listdir(self.assets_dir)
-
-    #     if extensions:
-    #         files = [f for f in files if f.lower().endswith(extensions)]
-
-    #     return [os.path.join(self.assets_dir, f) for f in files]
-    
+    # 브라우저 파일 선택창 열기
     def open_upload_file_dialog(self):
         plus = self.get_element_by_css_selector(SELECTORS["BTN_UPLOAD_PLUS_CSS"])
         if plus and plus.is_enabled():
@@ -464,8 +581,9 @@ class AgentPage(BasePage) :
             btn.click()
             time.sleep(0.5)
 
+    # 단일 파일 업로드
     def upload_file_in_chat(self) :
-        file_path = r"D:\elice_python\.myenv\project\ai-heplychat-automation\src\resources\assets\test_pdf.pdf"
+        file_path = self.fm.get_asset_path("test_pdf.pdf")
         pyautogui.write(file_path)  # 파일 경로 입력
         time.sleep(0.5)
         pyautogui.press('enter')  # 열기 버튼 클릭
@@ -475,9 +593,9 @@ class AgentPage(BasePage) :
         element = self.get_element_by_xpath(XPATH["CHECK_FILE_IN_CHAT"])
         return element
     
-    # 사진 업로드
+    # 단일 사진 업로드
     def upload_img_in_chat(self) :
-        file_path = r"D:\elice_python\.myenv\project\ai-heplychat-automation\src\resources\assets\test_asset.jpg"
+        file_path = self.fm.get_asset_path("test_asset.jpg")
         pyautogui.write(file_path)  # 파일 경로 입력
         time.sleep(0.5)
         pyautogui.press('enter')  # 열기 버튼 클릭
@@ -488,3 +606,35 @@ class AgentPage(BasePage) :
         return element
     
     # 사진 옵션
+    
+    # 용량 큰 단일 파일
+    def upload_big_file_in_chat(self) :
+        file_path = self.fm.get_asset_path("big_file.md")
+        pyautogui.write(file_path)  # 파일 경로 입력
+        time.sleep(0.5)
+        pyautogui.press('enter')  # 열기 버튼 클릭
+        
+    def wait_until_loading_disappear(self) :
+        element = self.get_element_by_xpath(XPATH["LOADING_ICON"])
+        WebDriverWait(self, 30).until(
+        EC.staleness_of(element)
+    )
+        return True
+    
+    # 실행 파일 업로드
+    def upload_exe_file_in_chat(self) :
+        file_path = self.fm.get_asset_path("test_exe.exe")
+        pyautogui.write(file_path)  # 파일 경로 입력
+        time.sleep(0.5)
+        pyautogui.press('enter')  # 열기 버튼 클릭
+        
+    # 여러 파일 업로드
+    def upload_files_in_chat(self) :   
+        file_paths = self.fm.get_asset_files((".pdf",))
+        for file_path in file_paths :
+            self.open_upload_file_dialog()
+            time.sleep(0.5)
+            pyautogui.write(file_path, interval=0.03)
+            time.sleep(0.5)
+            pyautogui.press('enter')
+            self.wait_until_loading_disappear()

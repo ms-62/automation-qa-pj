@@ -11,6 +11,17 @@ def create_driver(browser="chrome"):
             "detach", False
         )  
         
+         # 성진 추가: 다운로드 경로 고정 
+        download_path = os.path.abspath("src/resources/downloads")
+
+        prefs = {
+            "download.default_directory": download_path,
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True,
+        }
+        chrome_options.add_experimental_option("prefs", prefs)
+        
         # 드라이버 옵션 설정
         chrome_options.add_argument("--start-maximized")  
         chrome_options.add_argument("--disable-autofill")

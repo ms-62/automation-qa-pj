@@ -7,7 +7,36 @@ from controllers.chat_input_controller import ChatInputController
 
 
 class SecurityPage(BasePage):
-    #로그인
+    #로그인 페이지에서 보안 테스트 진행
+    def go_to_login_page(self):
+        self.go_to_page(TARGET_URL["LOGIN_URL"])
+    
+    # 입력값 제어 메서드
+    def input_id(self, username):
+        element = self.get_element_by_name(NAME["INPUT_ID"])
+        element.click()
+        element.clear()
+        element.send_keys(username)
+        time.sleep(0.3)
+
+    def input_pw(self, password):
+        element = self.get_element_by_name(NAME["INPUT_PW"])
+        element.click()
+        element.clear()
+        element.send_keys(password)
+        time.sleep(0.3)
+    
+    # 버튼 제어 메서드
+    def click_login_button(self):
+        btn = self.get_element_by_xpath(XPATH["BTN_LOGIN"])
+        btn.click()
+        time.sleep(0.3)    
+        input_email = self.get_element_by_name(NAME["INPUT_ID"], option="visibility", timeout=3)
+        tooltip_msg = self.driver.execute_script("return arguments[0].validationMessage;", input_email)
+        if tooltip_msg:
+            print(tooltip_msg)
+        else :
+            print("sqli 발생")
     
     #회원가입 페이지에서 보안 테스트 진행
     def go_to_signup_page(self):
@@ -96,6 +125,7 @@ class SecurityMainPage(BasePage):
         textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
         ChatInputController.send_text(textarea, text)
         self.click_send()
+        return textarea
     
     def click_send(self):
         self.click_btn_by_xpath(XPATH["BTN_SEND"], option = "presence")

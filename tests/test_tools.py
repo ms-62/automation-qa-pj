@@ -2,6 +2,7 @@ import os
 from utils.headers import *
 from pages.tools_page import (ToolsPage)
 from utils.browser_utils import (BrowserUtils)
+from utils.defines import NAME,XPATH,SELECTORS,TARGET_URL
 from utils.download_utils import wait_for_download
 
 # PHC-TS04-TC001: 세부 특기사항 탭 이동 테스트

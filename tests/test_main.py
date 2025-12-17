@@ -11,39 +11,45 @@ from utils.context import TextContext, ActionResult
 
 # main 홈화면 테스트만 진행합니다. 
 # ======================== E2E - AI 대화 시나리오 ==============================  
-# def test_conversation_scenario(logged_in_main, fm):
-#     page = logged_in_main
+def test_conversation_scenario(logged_in_main, fm):
+    page = logged_in_main
     
-#     test_name = "test_conversation_scenario"
-#     ctx = TextContext(test_name, page="chat")
-#     start = time.perf_counter()
-#     try:
-#         page.click_btn_home_menu(ChatMenu.DEFAULT_CHAT)
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
+    test_name = "test_conversation_scenario"
+    ctx = TextContext(test_name, page="chat")
+    start = time.perf_counter()
+    try:
+        page.click_btn_home_menu(ChatMenu.DEFAULT_CHAT)
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
 
-#         page.action_user_chat(ChatKey.INPUTS, ChatType.TEXT)
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "action_user_chat"))
+        result = TestResult.PASSED if page.compare_chats_after_user_send() else TestResult.FAILED
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "action_user_chat"))
 
-            # AI와 대화 진행시 대화목록에 대화 내용 미리보기가 추가되는지 확인
-            # 사용자의 질문 내용이 저장된 후 클립보드에 복사되는지 검사
-#         page.click_btn_retry()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_retry"))
-
-#         page.copy_last_response()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "copy_last_response"))
-
-#         page.paste_last_response()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "paste_last_response"))
-
-#         page.reset_chat()
-#         elapsed = time.perf_counter() - start
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_conversation_scenario_ended"))
+        # 사용자의 질문 내용이 저장된 후 클립보드에 복사되는지 검사
         
-#     except:
-#         elapsed = time.perf_counter() - start
-#         fm.save_screenshot_png(page.driver, test_name)
-#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
-    
+            
+        page.click_btn_retry()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_retry"))
+
+        page.copy_last_response()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "copy_last_response"))
+
+        page.paste_last_response()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "paste_last_response"))
+
+        page.reset_chat()
+        elapsed = time.perf_counter() - start
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_conversation_scenario_ended"))
+        
+    except:
+        elapsed = time.perf_counter() - start
+        fm.save_screenshot_png(page.driver, test_name)
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+
+
+#     # 사용자가 보낸 메시지 내용 편집
+#     # 사용자가 보낸 메시지 내용 편집 중 취소
+#     # 사용자가 보낸 메시지 복사  
+
     
 # # ====================== 스크롤  ============================== 
 # def test_chat_scroll(logged_in_main, fm):
@@ -75,28 +81,30 @@ from utils.context import TextContext, ActionResult
 #         fm.save_screenshot_png(page.driver, test_name)
 #         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
 
-
-#     # 사용자가 보낸 메시지 내용 편집
-#     # 사용자가 보낸 메시지 내용 편집 중 취소
-#     # 사용자가 보낸 메시지 복사  
-
 # ======================= 검색 ==========================
-def test_search_chat(logged_in_main, fm):
-    page = logged_in_main
+# def test_search_chat(logged_in_main, fm):
+#     page = logged_in_main
     
-    test_name = "test_search_chat"
-    ctx = TextContext(test_name, page="chat")
-    start = time.perf_counter()
-    try:
-        page.click_btn_home_menu(ChatMenu.SEARCH_CHAT)
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_search_menu"))
+#     test_name = "test_search_chat"
+#     ctx = TextContext(test_name, page="chat")
+#     start = time.perf_counter()
+#     try:
+#         result = TestResult.PASSED if page.click_btn_home_menu(ChatMenu.SEARCH_CHAT) else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "click_btn_search_menu"))
+
+#         page.search_past_chats_by_click()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "search_past_chats_by_click"))        
         
-        page.
+#         result = TestResult.PASSED if page.click_btn_home_menu(ChatMenu.SEARCH_CHAT) else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "click_btn_search_menu"))
         
-    except:
-        elapsed = time.perf_counter() - start
-        fm.save_screenshot_png(page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+#         result = TestResult.PASSED if page.search_past_chats_by_input() else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "test_search_chat_ended"))  
+#     except:
+#         elapsed = time.perf_counter() - start
+#         fm.save_screenshot_png(page.driver, test_name)
+#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+
 
     
 # ======================== E2E - 기존 대화 시나리오 ==============================  
@@ -255,7 +263,7 @@ def test_search_chat(logged_in_main, fm):
 #         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
 
 
-# # ====================== 파일 업로드 ============================== 
+# ====================== E2E 파일 업로드 ============================== 
 # def test_file_upload_scenario(logged_in_main, fm):
 #     page = logged_in_main
 
@@ -264,9 +272,13 @@ def test_search_chat(logged_in_main, fm):
 #     start = time.perf_counter()
 #     try:
 #         page.upload_files()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="upload_files"))
+        
+#         page.upload_multi_files()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="upload_multi_files"))
+        
 #         elapsed = time.perf_counter() - start
 #         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_file_upload_scenario ended"))
-           
 #     except:
 #         elapsed = time.perf_counter() - start
 #         fm.save_screenshot_png(page.driver, test_name)

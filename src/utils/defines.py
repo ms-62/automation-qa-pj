@@ -39,7 +39,7 @@ TARGET_URL = {
 
 
 SELECTORS = {
-    "BTNS_HOME_MENU" : 'a[href="/ai-helpy-chat"]',
+    #"BTNS_HOME_MENU" : 'a[href="/ai-helpy-chat"]',
     "MEMBER_MODAL" : "button.MuiAvatar-root.MuiAvatar-circular",
     "CHAT_LIST_ITEMS" : "a[data-item-index]",
     "BTN_SCROLL_TO_BOTTOM" : 'button[aria-label="맨 아래로 스크롤"]',
@@ -68,8 +68,8 @@ SELECTORS = {
     "BTN_EDIT_NOWCHAT" : "button[data-testid='ellipsis-verticalIcon']",
     "BTN_EDIT_PASTCHAT": "div.menu-button button",
     "INPUT_CHAT_NAME" : "input[name='name']",
-    "INPUT_SEARCH_CHAT" : '//input[@placeholder="Search"]',
-    
+
+
 }
 
 # By.ID
@@ -230,7 +230,20 @@ XPATH = {
     "BTN_CANCLE_EDIT" : "//button[text()='취소']",
     "BTN_SAVE_EDIT" : "//button[text()='저장']",
     "BTN_DELETE_CONFIRM" : "//button[normalize-space()='삭제']",
-
+    "INPUT_SEARCH_CHAT" : '//input[@placeholder="Search"]',
     
+    
+    # 메뉴 버튼 다시 정리
+    "BTNS_HOME_MENU" : '//ul[contains(@class,"MuiList-root") and contains(@class,"EliceLayoutList-root")]',
+    "MENU_ITEM_BY_TEXT" : './/li[.//span[normalize-space()="{text}"]]',
+    "BTN_EACH_MENU" : './/*[self::a or @role="button"]',
+    
+    "SEARCH_CHAT_LIST": '//div[contains(@class,"MuiBox-root") and .//ul[contains(@class,"MuiList-root")]]/ul',
+    "SEARCH_CHAT_ITEMS": (
+        '//div[contains(@class,"MuiBox-root") and .//ul[contains(@class,"MuiList-root")]]'
+        '//ul/li/a[starts-with(@href,"/ai-helpy-chat/chats/")]'
+    ),
+    "SEARCH_CHAT_ITEM_TEXT": './/div[contains(@class,"MuiListItemText-root")]/span[contains(@class,"MuiListItemText-primary")]',
+
 }
 

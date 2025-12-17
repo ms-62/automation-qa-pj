@@ -1,7 +1,6 @@
 from enum import Enum, auto
 
 
-# 요즘엔 숫자를 쓰지않고 auto()를 쓴다고 한다.
 class AIresponse(Enum):
     NONE = auto()
     COMPLETED = auto()   # ai가 응답을 완료한 상태

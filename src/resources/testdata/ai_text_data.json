@@ -18,11 +18,11 @@
   "requests" : [
     {
       "type": "image",
-      "content": "짱구 이미지 만들어줘"
+      "content": "사과 그려줘"
     },
     {
       "type": "image",
-      "content": "크리스마스 이미지 만들어줘"
+      "content": "짱구 그려줘"
     },
     {
       "type": "websearch",
@@ -41,7 +41,7 @@
     },
     {
       "type": "chat_ai",
-      "content": "아ㅏㅏㅏㅏㅏㅏㅏㅏ하기ㅅㄹ~~"
+      "content": "짱구"
     }
   ]
 }

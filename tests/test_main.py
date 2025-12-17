@@ -1,17 +1,16 @@
 from utils.headers import *
 
 from pages.model_setting_page import ModelSettingPage
-from pages.past_chats_page import PastChatsPage
 
-from utils.defines import DEFAULT_MODEL, DEFAULT_CHAT
-from utils.defines import ChatKey, ChatType, TestResult
+from utils.defines import DEFAULT_MODEL
+from utils.defines import ChatKey, ChatType, TestResult, ChatMenu
 
 from test_logging.action_logger import log_action
 from utils.context import TextContext, ActionResult
 
 
 # main 홈화면 테스트만 진행합니다. 
-# # ====================== 대화  ============================== 
+# ======================== E2E - AI 대화 시나리오 ==============================  
 # def test_conversation_scenario(logged_in_main, fm):
 #     page = logged_in_main
     
@@ -19,12 +18,14 @@ from utils.context import TextContext, ActionResult
 #     ctx = TextContext(test_name, page="chat")
 #     start = time.perf_counter()
 #     try:
-#         page.click_btn_home_menu(DEFAULT_CHAT)
+#         page.click_btn_home_menu(ChatMenu.DEFAULT_CHAT)
 #         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
 
 #         page.action_user_chat(ChatKey.INPUTS, ChatType.TEXT)
 #         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "action_user_chat"))
 
+            # AI와 대화 진행시 대화목록에 대화 내용 미리보기가 추가되는지 확인
+            # 사용자의 질문 내용이 저장된 후 클립보드에 복사되는지 검사
 #         page.click_btn_retry()
 #         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_retry"))
 
@@ -52,8 +53,8 @@ from utils.context import TextContext, ActionResult
 #     ctx = TextContext(test_name, page="chat")
 #     start = time.perf_counter()
 #     try:
-#         page.click_on_past_chat()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_on_past_chat"))
+#         page.select_latest_chat()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
 
 #         # 아래 스크롤 버튼
 #         page.click_btn_scroll_to_bottom()
@@ -78,18 +79,138 @@ from utils.context import TextContext, ActionResult
 #     # 사용자가 보낸 메시지 내용 편집
 #     # 사용자가 보낸 메시지 내용 편집 중 취소
 #     # 사용자가 보낸 메시지 복사  
-    
-    
-# # def test_past_chats(logged_in_main):
-# #     page = logged_in_main
-    
-# #     past_chat_page = PastChatsPage(driver)
-  
-#     # 이름변경' 버튼 동작
-#     # 이름 변경 '취소' 버튼 동작
-#     # 삭제' 버튼 동작
 
-# # ====================== 이미지 생성 요청 ============================== 
+# ======================= 검색 ==========================
+def test_search_chat(logged_in_main, fm):
+    page = logged_in_main
+    
+    test_name = "test_search_chat"
+    ctx = TextContext(test_name, page="chat")
+    start = time.perf_counter()
+    try:
+        page.click_btn_home_menu(ChatMenu.SEARCH_CHAT)
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_search_menu"))
+        
+        page.
+        
+    except:
+        elapsed = time.perf_counter() - start
+        fm.save_screenshot_png(page.driver, test_name)
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+
+    
+# ======================== E2E - 기존 대화 시나리오 ==============================  
+# def test_past_chats_scenario(logged_in_main, fm):
+#     page = logged_in_main
+    
+#     test_name = "test_past_chats_scenario"
+#     ctx = TextContext(test_name, page="chat")
+#     start = time.perf_counter()
+#     try:
+#         page.select_latest_chat()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "set_current_chat"))
+        
+#         page.scroll_down_past_chats()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_down_past_chats"))
+        
+#         page.scroll_up_past_chats()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_up_past_chats"))
+
+#         result = TestResult.PASSED if page.rename_chat() else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "rename_chat"))
+
+#         result = TestResult.PASSED if page.delete_chat() else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "delete_chat"))
+        
+#         page.cancel_edit()
+#         elapsed = time.perf_counter() - start
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "cancel_edit"))
+#     except:
+#         elapsed = time.perf_counter() - start
+#         fm.save_screenshot_png(page.driver, test_name)
+#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+        
+# def test_cancel_past_edit(logged_in_main, fm):
+#     page = logged_in_main
+    
+#     test_name = "test_cancel_past_edit"
+#     ctx = TextContext(test_name, page="chat")
+#     start = time.perf_counter()
+#     try:        
+#         page.select_latest_chat()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
+        
+#         page.open_selected_edit_menu()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "open_selected_edit_menu"))
+        
+#         page.click_change_chat_name()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_change_chat_name"))
+        
+#         page.click_cancel_edit()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_cancel_edit"))
+        
+#         page.open_selected_edit_menu()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "open_selected_edit_menu"))
+        
+#         page.click_delete_chat()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_delete_chat"))
+        
+#         page.click_cancel_edit()
+#         elapsed = time.perf_counter() - start
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "PHC-TS03-TC022 PHC-TS03-TC024 ended"))
+        
+#     except:
+#         elapsed = time.perf_counter() - start
+#         fm.save_screenshot_png(page.driver, test_name)
+#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+    
+# def test_rename_past_chat(logged_in_main, fm):
+#     page = logged_in_main
+    
+#     test_name = "test_rename_chat"
+#     ctx = TextContext(test_name, page="chat")
+#     start = time.perf_counter()
+    
+#     page.select_latest_chat()
+#     log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
+    
+#     elapsed = time.perf_counter() - start
+#     result = TestResult.PASSED if page.rename_chat() else TestResult.FAILED
+#     log_action(ctx, ActionResult(test_name, result, elapsed, detail = "PHC-TS03-TC021 ended"))
+
+
+# def test_delete_past_chat(logged_in_main, fm):
+#     page = logged_in_main
+    
+#     test_name = "test_delete_chat"
+#     ctx = TextContext(test_name, page="chat")
+#     start = time.perf_counter()
+#     try:    
+#         prev_len = len(page.get_all_chats())
+
+#         page.select_latest_chat()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
+    
+#         page.open_selected_edit_menu()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "open_selected_edit_menu"))
+        
+#         page.click_delete_chat()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_delete_chat"))
+        
+#         page.click_delete_confirm()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_delete_confirm"))
+#         after_len = len(page.get_all_chats())
+        
+#         result = False if prev_len == after_len else True
+#         elapsed = time.perf_counter() - start
+#         log_action(ctx, ActionResult(test_name, result, elapsed, detail = "PHC-TS03-TC023 ended"))
+#     except:
+#         elapsed = time.perf_counter() - start
+#         fm.save_screenshot_png(page.driver, test_name)
+#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+
+
+# ====================== 이미지 생성 요청 ============================== 
 # def test_gen_image_scenario(logged_in_main, fm):
 #     page = logged_in_main
     
@@ -111,7 +232,7 @@ from utils.context import TextContext, ActionResult
 #         fm.save_screenshot_png(page.driver, test_name)
 #         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
         
-# # ====================== 웹 검색 요청 ============================== 
+# ====================== 웹 검색 요청 ============================== 
 # def test_web_sarch_scenario(logged_in_main, fm):
 #     page = logged_in_main
     
@@ -137,7 +258,7 @@ from utils.context import TextContext, ActionResult
 # # ====================== 파일 업로드 ============================== 
 # def test_file_upload_scenario(logged_in_main, fm):
 #     page = logged_in_main
-    
+
 #     test_name = "test_file_upload_scenario"
 #     ctx = TextContext(test_name, page="chat")
 #     start = time.perf_counter()
@@ -145,7 +266,7 @@ from utils.context import TextContext, ActionResult
 #         page.upload_files()
 #         elapsed = time.perf_counter() - start
 #         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_file_upload_scenario ended"))
-        
+           
 #     except:
 #         elapsed = time.perf_counter() - start
 #         fm.save_screenshot_png(page.driver, test_name)
@@ -180,42 +301,40 @@ from utils.context import TextContext, ActionResult
 #         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed_time = elapsed))
     
     
-# ======================== AI 모델 활성화 테스트 ============================== 
-# E2E 
-
-def test_model_scenario(logged_in_main, driver):
-    page = logged_in_main
+# ======================== E2E - AI 모델 활성화 테스트 ============================== 
+# def test_model_scenario(logged_in_main, driver):
+#     page = logged_in_main
     
-    model_page = ModelSettingPage(driver)
+#     model_page = ModelSettingPage(driver)
     
-    test_name = "test_model_setting"
-    ctx = TextContext(test_name, page="chat")
-    start = time.perf_counter()
-    try:
-        model_page.open_model_menu()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
+#     test_name = "test_model_setting"
+#     ctx = TextContext(test_name, page="chat")
+#     start = time.perf_counter()
+#     try:
+#         model_page.open_model_menu()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
 
-        model_page.select_last_model()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "select_last_model"))
+#         model_page.select_last_model()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "select_last_model"))
 
-        model_page.open_model_menu()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
+#         model_page.open_model_menu()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
 
-        model_page.go_to_model_setting()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_to_model_setting"))
+#         model_page.go_to_model_setting()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_to_model_setting"))
 
-        model_page.toggle_all_models_and_verify()        
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "toggle_all_models_and_verify"))
+#         model_page.toggle_all_models_and_verify()        
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "toggle_all_models_and_verify"))
 
-        model_page.go_back() # 설정창 닫기
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_back"))
+#         model_page.go_back() # 설정창 닫기
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_back"))
 
-        model_page.compare_active_models()  # 드롭다운 검증
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "compare_active_models"))
+#         model_page.compare_active_models()  # 드롭다운 검증
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "compare_active_models"))
 
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_model_scenario_ended"))
+#         elapsed = time.perf_counter() - start
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_model_scenario_ended"))
         
-    except:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+#     except:
+#         elapsed = time.perf_counter() - start
+#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))

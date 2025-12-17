@@ -32,5 +32,16 @@
       "type": "websearch",
       "content": "짱구에 대한 정보를 구글에서 찾아줄래?"
     }
+  ],
+
+  "rename" : [
+    {
+      "type": "chat_ai",
+      "content": "마라탕탕탕후루후루"
+    },
+    {
+      "type": "chat_ai",
+      "content": "아ㅏㅏㅏㅏㅏㅏㅏㅏ하기ㅅㄹ~~"
+    }
   ]
 }

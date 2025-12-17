@@ -2,11 +2,13 @@ from utils.headers import *
 
 from utils.defines import TIMEOUT_MAX
 from managers.file_manager import FileManager
+from controllers.mouse_controller import MouseController
 
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
         self.fm = FileManager() 
+        self.mouse = MouseController(self.driver)
         
     def go_to_page(self, url):
         self.driver.get(url)

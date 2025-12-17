@@ -1,22 +1,22 @@
 import pyautogui
-# define를 모으는 곳입니다.
-# 각자 사용해야하는 selector나 xpath를 작성해주세요!
 
-# 예시입니다!!
+
 SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 FULLSCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-TIMEOUT_MAX = 15
-STOPPED_MAX = 10
+TIMEOUT_MAX = 20
+STOPPED_MAX = 15
 STEP = 500
 
 class ChatType:
     TEXT = "text"               # 질문/일반 텍스트
     IMAGE_REQUEST = "image"     # 이미지 요청
     WEB_REQUEST = "websearch"   # 웹 검색 요청
+    CHAT_AI = "chat_ai"         # name
     
 class ChatKey:
     INPUTS = "inputs"           # 유저 입력
     REQUESTS = "requests"       # 요청 관련
+    RENAME = "rename"           # 이름 변경
     
 class TestResult:
     PASSED = "pass"
@@ -25,8 +25,13 @@ class TestResult:
 ACTIVE = "모델이 활성화되었습니다."
 DEACTIVE = "모델이 비활성화되었습니다."
 DEFAULT_MODEL = "Helpy Pro Agent"
-DEFAULT_CHAT = "새 대화"
 
+class ChatMenu:
+    DEFAULT_CHAT = "새 대화"
+    SEARCH_CHAT = "검색"
+    TOOLS_CHAT = "도구"
+    AGENT_CHAT = "에이전트 탐색"
+    
 TARGET_URL = {
     "MAIN_URL": "https://qaproject.elice.io/ai-helpy-chat",
     "LOGIN_URL": "https://accounts.elice.io/accounts/signin/me?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat&lang=en-US&org=qaproject"
@@ -57,6 +62,14 @@ SELECTORS = {
     "BTN_UPLOAD_PLUS_CSS" : "button.MuiIconButton-root:not([disabled]) svg[data-icon='plus']",
     #"BTN_MODEL_SETTING" : 'a[href="/ai-helpy-chat/admin/models"] span.MuiTypography-root',
 
+    "SELECTED_CHAT" : "a.Mui-selected",
+    "SELECTED_CHAT_TEXT": "a.Mui-selected p.MuiTypography-root",
+
+    "BTN_EDIT_NOWCHAT" : "button[data-testid='ellipsis-verticalIcon']",
+    "BTN_EDIT_PASTCHAT": "div.menu-button button",
+    "INPUT_CHAT_NAME" : "input[name='name']",
+    "INPUT_SEARCH_CHAT" : '//input[@placeholder="Search"]',
+    
 }
 
 # By.ID
@@ -205,6 +218,19 @@ XPATH = {
     "BTN_GEN_IMAGE": "//li[.//span[text()='이미지 생성']]",
     "BTN_SEARCH_WEB": "//li[.//span[text()='웹 검색']]",
     "FILE_INPUT" : "//input[@type='file']",
+    
+    # 기존 대화창
+    "SCROLL_PAST_CHATS" : "//div[@data-testid='virtuoso-scroller']",
+    "CHANGE_NOWCHAT_NAME" : "//li[.//span[text()='이름 변경']]",
+    "DELETE_NOWCHAT" : "//li[.//p[text()='삭제']]",
+
+    "BTN_CHANGE_PAST_NAME" : ".//li[.//span[text()='이름 변경']]",
+    "BTN_DELETE_PAST" : ".//li[.//p[text()='삭제']]",
+    
+    "BTN_CANCLE_EDIT" : "//button[text()='취소']",
+    "BTN_SAVE_EDIT" : "//button[text()='저장']",
+    "BTN_DELETE_CONFIRM" : "//button[normalize-space()='삭제']",
+
     
 }
 

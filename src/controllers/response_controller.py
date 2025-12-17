@@ -19,7 +19,7 @@ class ResponseController:
         return False
 
     @staticmethod
-    def wait_for_resp(btn_stop, stop_time = STOPPED_MAX, timeout = TIMEOUT_MAX):
+    def wait_for_response_with_timeout(btn_stop, stop_time = STOPPED_MAX, timeout = TIMEOUT_MAX):
         state = ResponseState(
             resp_btn_stop=btn_stop,
             stop_time=stop_time,

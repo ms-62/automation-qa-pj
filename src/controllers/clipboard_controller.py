@@ -27,7 +27,7 @@ class ClipboardController:
             return ""
     
     @staticmethod
-    def paste_file_path():
+    def paste_file_path(file_path):
         system = platform.system()   
         if system == "Darwin": # 맥용!
             pyautogui.keyDown("command")
@@ -43,7 +43,10 @@ class ClipboardController:
             pyautogui.press("enter") 
             time.sleep(1)
         else: # 윈도우 용!
-            
+            pyautogui.write(file_path, interval=0.03)
+            time.sleep(0.5)
+            pyautogui.press("enter")
+            time.sleep(1)
             pass
         
     

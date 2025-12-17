@@ -38,7 +38,7 @@ def test_go_to_member(security_main_page):
         security_main_page.refresh_member_account_page()
         
 @pytest.mark.parametrize("case_key", ["sql_injection_a","sql_injection_b","sql_injection_c","sql_injection_d","sql_injection_e"])
-def test_member_security_xss(security_main_page, security_cases, case_key):
+def test_member_security_sql(security_main_page, security_cases, case_key):
         data = security_cases[case_key]
         security_main_page.open_name_edit_form()
         security_main_page.member_name(data["sql_injection"])
@@ -48,7 +48,7 @@ def test_member_security_xss(security_main_page, security_cases, case_key):
 #xss
 #로그인페이지 xss PHC-TS07-TC005
 @pytest.mark.parametrize("case_key", ["xss_scipt_a","xss_scipt_b","xss_scipt_c"])
-def test_login(security_signup_page,security_cases,case_key):
+def test_login_xss(security_signup_page,security_cases,case_key):
     data = security_cases[case_key]
     security_signup_page.go_to_login_page()
     security_signup_page.input_id(data["xss_script"]) 

@@ -21,15 +21,15 @@
       "should_save": true
     },
     "xss_scipt_a" : {
-      "xss_script_value_a": "<img src=x onerror='alert('xss')'>",
+      "xss_script": "<img src=x onerror='alert('xss')'>",
       "should_save": true
     },
     "xss_scipt_b" : {
-      "xss_script_value_b": "<script>alert(1)</script>",
+      "xss_script": "<script>alert(1)</script>",
       "should_save": true
     },
     "xss_scipt_c" : {
-      "xss_script_value_c": "</script><script>alert(1)</script>",
+      "xss_script": "</script><script>alert(1)</script>",
       "should_save": true
     }
   

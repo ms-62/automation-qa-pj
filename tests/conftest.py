@@ -7,14 +7,13 @@ from utils.defines import TARGET_URL
 
 from managers.file_manager import FileManager
 from pages.signup_page import SignupPage
-from pages.security_page import SecurityPage
  
 from pages.main_page import MainPage
 from pages.login_page import LoginPage
 from pages.member_page import MemberPage
 from pages.agent_page import AgentPage
 from pages.tools_page import ToolsPage
-from pages.security_page import SecurityMainPage
+from pages.security_page import SecurityPage, SecurityMainPage
 
 # 모든 fixture를 관리하는 곳
 # session = 하나의 드라이버 공유

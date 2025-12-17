@@ -581,10 +581,7 @@ class AgentPage(BasePage) :
     # 단일 파일 업로드
     def upload_file_in_chat(self) :
         file_path = self.fm.get_asset_path("test_pdf.pdf")
-        pyautogui.write(file_path)  # 파일 경로 입력
-        time.sleep(0.5)
-        pyautogui.press('enter')  # 열기 버튼 클릭
-        time.sleep(3)
+        ClipboardController.paste_file_path(file_path)
         
     def check_file_upload_in_chat(self) :
         element = self.get_element_by_xpath(XPATH["CHECK_FILE_IN_CHAT"])
@@ -593,10 +590,7 @@ class AgentPage(BasePage) :
     # 단일 사진 업로드
     def upload_img_in_chat(self) :
         file_path = self.fm.get_asset_path("test_asset.jpg")
-        pyautogui.write(file_path)  # 파일 경로 입력
-        time.sleep(0.5)
-        pyautogui.press('enter')  # 열기 버튼 클릭
-        time.sleep(3)
+        ClipboardController.paste_file_path(file_path)
         
     def check_img_upload_in_chat(self) :
         element = self.get_element_by_xpath(XPATH["CHECK_IMG_IN_CHAT"])
@@ -646,9 +640,7 @@ class AgentPage(BasePage) :
     # 용량 큰 단일 파일
     def upload_big_file_in_chat(self) :
         file_path = self.fm.get_asset_path("big_file.md")
-        pyautogui.write(file_path)  # 파일 경로 입력
-        time.sleep(0.5)
-        pyautogui.press('enter')  # 열기 버튼 클릭
+        ClipboardController.paste_file_path(file_path)
         
     def wait_until_loading_disappear(self) :
         element = self.get_element_by_xpath(XPATH["LOADING_ICON"])
@@ -660,9 +652,7 @@ class AgentPage(BasePage) :
     # 실행 파일 업로드
     def upload_exe_file_in_chat(self) :
         file_path = self.fm.get_asset_path("test_exe.exe")
-        pyautogui.write(file_path)  # 파일 경로 입력
-        time.sleep(0.5)
-        pyautogui.press('enter')  # 열기 버튼 클릭
+        ClipboardController.paste_file_path(file_path)
         
     # 여러 파일 업로드
     def upload_files_in_chat(self) :   
@@ -670,10 +660,7 @@ class AgentPage(BasePage) :
         for file_path in file_paths :
             self.open_upload_file_dialog()
             time.sleep(0.5)
-            pyautogui.write(file_path, interval=0.03)
-            time.sleep(0.5)
-            pyautogui.press('enter')
-            self.wait_until_loading_disappear()
+            ClipboardController.paste_file_path(file_path)
             
 # ====================== 에이전트 수정 & 삭제 ===================================
 

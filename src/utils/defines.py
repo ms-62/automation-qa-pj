@@ -195,6 +195,7 @@ XPATH = {
     "CHECK_IMG_IN_CHAT" : "//img[contains(@class, 'MuiBox')]",
     "CHECK_CREATE_AGAIN_RESPONSE" : "//p[contains(@class, 'css-3uvjx')]",
     "GO_TO_MAKE_CHAT" : "//button[@value = 'chat']",
+    "LOADING_ICON" : "//div[contains(@class, 'css-1jkab21')]",
     
     
     

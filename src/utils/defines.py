@@ -50,6 +50,7 @@ SELECTORS = {
     "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']",
     "FILE_INPUT" : "input[type='file'][accept*='.pdf']",
     "FILE_INPUT_IN_CHAT" : "input[type='file']",
+    "UPDATE_CHECK" : "div.go946087465",
     
 
     "BTNS_DISABLED" : "button.MuiIconButton-root:not([disabled])",
@@ -196,8 +197,16 @@ XPATH = {
     "CHECK_CREATE_AGAIN_RESPONSE" : "//p[contains(@class, 'css-3uvjx')]",
     "GO_TO_MAKE_CHAT" : "//button[@value = 'chat']",
     "LOADING_ICON" : "//div[contains(@class, 'css-1jkab21')]",
-    
-    
+    "DELETE_FILE" : "//button[contains(@class, 'css-1a4ukef')]",
+    "IMG_AREA" : "//img[contains(@src, 'blob')]",
+    "IMG_BTNS" : "//button[contains(@class, 'css-1p4tfme')]",
+    "DOWNSIZE_BTN" : "//div[contains(@class, 'container')]//button[contains(@class, 'css-fyycg6')]",
+    "DOT_IN_AGENTS" : "//div[contains(@class, 'css-1vk042g')]//button[contains(@class, 'css-9jgcee')]",
+    "BTNS_IN_MY_AGENT" : "//div[contains(@class, 'css-lyiuww')]//button",
+    "MODIFY_AND_DELETE_IN_DOT" : "//li[contains(@class, 'css-1i1rqyx')]",
+    "DELETE_OPTIONS_IN_AGENTS" : "//div[contains(@class, 'css-1l2ou4k')]//button",
+    "CHECK_DELETE" : "//p[contains(@class, 'css-to37at')]",
+    "DELETE_OPTIONS_IN_MY_AGENT" : "//div[contains(@class, 'css-xawzel')]//button",
     
     
     # 업로드 버튼

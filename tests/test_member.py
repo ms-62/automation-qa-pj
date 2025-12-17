@@ -1,24 +1,30 @@
 from utils.headers import *
-
 from pages.member_page import MemberPage
 
+import logging
 from utils.defines import TestResult
 from test_logging.action_logger import log_action
 from utils.context import TextContext, ActionResult
+
+logger = logging.getLogger()
+
 #메인페이지 접속
+
 def test_go_to_main(logged_in_main):
     page = logged_in_main
 #계정관리 접속(새창)
 def test_go_to_member(member_page): 
     member_page.go_to_member_page()
-    
+
+test_name = "test_member.py"
+ctx = TextContext(test_name, page="member")
+start = time.perf_counter()    
 #PHC-TS05-TC001
+
+
 @pytest.mark.parametrize("case_key", ["normal"])
 def test_update_name_normal(member_page,test_cases,case_key):
-    
-    test_name = "test_update_name"
-    ctx = TextContext(test_name, page="member")
-    start = time.perf_counter()
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_update_name_normal"))
     try:
         data = test_cases[case_key]
         assert member_page.refresh_member_account_page() , "계정관리 페이지 새로고침 실패"
@@ -34,15 +40,24 @@ def test_update_name_normal(member_page,test_cases,case_key):
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
         
-# @pytest.mark.parametrize("case_key", ["tab_blank","spacebar_blank","newline","code_html","character_blank"])
-# def test_update_name_not_save(member_page,test_cases,case_key):
-#     data = test_cases[case_key]
-#     assert member_page.refresh_member_account_page() , "계정관리 페이지 새로고침 실패"
-#     assert member_page.open_name_edit_form() , "이름 수정 폼 열기 실패"
-#     assert member_page.member_name(data["value"]), "이름 입력 실패"
-    
-#     assert not member_page.submit_name(), "해당 내용 저장 성공"
-    
+@pytest.mark.parametrize("case_key", ["tab_blank","spacebar_blank","newline","code_html","character_blank"])
+def test_update_name_not_save(member_page,test_cases,case_key):
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_update_name_normal"))
+    try:
+        data = test_cases[case_key]
+        assert member_page.refresh_member_account_page() , "계정관리 페이지 새로고침 실패"
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "refresh_member_account_page"))
+        assert member_page.open_name_edit_form() , "이름 수정 폼 열기 실패"
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_name_edit_form"))
+        assert member_page.member_name(data["value"]), "이름 입력 실패"
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "member_name"))
+        
+        assert not member_page.submit_name(), "해당 내용 저장 성공"
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "submit_name"))
+    except:
+        elapsed = time.perf_counter() - start
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+        
 # #PHC-TS05-TC002
 # def test_update_name_maximum(member_page,test_cases):
 #     data = test_cases["maximum_name"]

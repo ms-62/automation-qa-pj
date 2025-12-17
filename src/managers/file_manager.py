@@ -68,10 +68,14 @@ class FileManager:
             return
 
         fieldnames = list(file_data[0].keys())
+        
+        file_exists = os.path.exists(file_path)
+        is_empty = not file_exists or os.path.getsize(file_path) == 0
 
         with open(file_path, option, encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
+            if is_empty:
+                writer.writeheader()
             writer.writerows(file_data)
 
         print(f"CSV 저장 완료: {file_path}")

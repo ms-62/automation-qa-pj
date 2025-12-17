@@ -38,7 +38,7 @@ def test_go_to_member(security_main_page):
         security_main_page.refresh_member_account_page()
         
 @pytest.mark.parametrize("case_key", ["sql_injection_a","sql_injection_b","sql_injection_c","sql_injection_d","sql_injection_e"])
-def test_member_security_sql(security_main_page, security_cases, case_key):
+def test_member_security_xss(security_main_page, security_cases, case_key):
         data = security_cases[case_key]
         security_main_page.open_name_edit_form()
         security_main_page.member_name(data["sql_injection"])
@@ -57,7 +57,7 @@ def test_login(security_signup_page,security_cases,case_key):
 
 #원가입에서 sqli PHC-TS07-TC006
 @pytest.mark.parametrize("case_key", ["xss_scipt_a","xss_scipt_b","xss_scipt_c"])
-def test_signup_security_sql(security_signup_page,security_cases,case_key) :  
+def test_signup_security_xss(security_signup_page,security_cases,case_key) :  
     data = security_cases[case_key]
     security_signup_page.go_to_signup_page()
     security_signup_page.signup_email(data["xss_script"])
@@ -72,7 +72,7 @@ def test_go_to(logged_in_main):
     page = logged_in_main
 
 @pytest.mark.parametrize("case_key", ["xss_scipt_a","xss_scipt_b","xss_scipt_c"])    
-def test__main_security_sql(security_main_page,security_cases,case_key):    
+def test__main_security_xss(security_main_page,security_cases,case_key):    
     data = security_cases[case_key]
     assert security_main_page.input_chat(data["xss_script"]), "검색 안됨 혹은 에러 발생"
     
@@ -82,7 +82,7 @@ def test_go_to_member(security_main_page):
         security_main_page.refresh_member_account_page()
         
 @pytest.mark.parametrize("case_key", ["xss_scipt_a","xss_scipt_b","xss_scipt_c"])
-def test_member_security_sql(security_main_page, security_cases, case_key):
+def test_member_security_xss(security_main_page, security_cases, case_key):
         data = security_cases[case_key]
         security_main_page.open_name_edit_form()
         security_main_page.member_name(data["xss_script"])

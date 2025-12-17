@@ -386,10 +386,9 @@ class AgentPage(BasePage) :
             send_btn.click()
         else:
             raise Exception("미리보기 전송 버튼이 활성화되지 않았습니다!")
-    
-        result = ResponseController.wait_for_resp(
-            btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]'),
-            stop_time=3
+
+        result = ResponseController.wait_for_response_with_timeout(
+            btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]')
         )
         time.sleep(1)
         return result
@@ -529,7 +528,7 @@ class AgentPage(BasePage) :
         ChatInputController.send_text(textarea, text)
         self.click_send()
     
-        result = ResponseController.wait_for_resp(
+        result = ResponseController.wait_for_response_with_timeout(
             btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"])
         )
         time.sleep(1)

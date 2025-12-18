@@ -64,7 +64,7 @@ class SignupPage(BasePage):
     def check_signup_success(self) :
         success = self.get_element_by_xpath(XPATH["CHECK_SIGNUP"])
         logger.info("회원가입 완료")
-        return success.text.strip()
+        return success
     
     def check_signup_fail(self) :
         fail = self.get_element_by_xpath(XPATH["SIGNUP_FAIL"])

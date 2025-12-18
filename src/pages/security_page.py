@@ -4,6 +4,9 @@ from pages.base_page import BasePage
 from utils.defines import TARGET_URL, NAME, XPATH, SELECTORS
 
 from controllers.chat_input_controller import ChatInputController
+import logging
+
+logger = logging.getLogger()
 
 
 class SecurityPage(BasePage):
@@ -34,9 +37,9 @@ class SecurityPage(BasePage):
         input_email = self.get_element_by_name(NAME["INPUT_ID"], option="visibility", timeout=3)
         tooltip_msg = self.driver.execute_script("return arguments[0].validationMessage;", input_email)
         if tooltip_msg:
-            print(tooltip_msg)
+            logger.info(tooltip_msg)
         else :
-            print("sqli 발생")
+            logger.error("sqli 발생")
     
     #회원가입 페이지에서 보안 테스트 진행
     def go_to_signup_page(self):
@@ -48,7 +51,7 @@ class SecurityPage(BasePage):
         create_withemail = self.get_element_by_xpath(XPATH["BTN_CREATE_EMAIL"])
         create_withemail.click()
         time.sleep(1)
-        print("회원 가입 페이지로 이동")
+        logger.info("회원 가입 페이지로 이동")
     
     def signup_email(self,data) :
         element = self.get_element_by_name(NAME["INPUT_ID"])
@@ -56,7 +59,7 @@ class SecurityPage(BasePage):
         element.clear()
         element.send_keys(data)
         time.sleep(0.5)
-        print("이메일 sql 입력 완료")
+        logger.info("이메일 sql 입력 완료")
         return element
     
     def signup_pw(self, data) :
@@ -65,7 +68,7 @@ class SecurityPage(BasePage):
         element.clear()
         element.send_keys(data)
         time.sleep(0.5)
-        print("비밀번호 sql 입력 완료")
+        logger.info("비밀번호 sql 입력 완료")
         return element
     
     def signup_name(self, data) :
@@ -74,7 +77,7 @@ class SecurityPage(BasePage):
         element.clear()
         element.send_keys(data)
         time.sleep(0.5)
-        print("이름 sql 입력 완료")
+        logger.info("이름 sql 입력 완료")
         return element
 
     def checkbox_spread(self) :
@@ -93,16 +96,16 @@ class SecurityPage(BasePage):
         input_email = self.get_element_by_name(NAME["INPUT_ID"], option="visibility", timeout=3)
         tooltip_msg = self.driver.execute_script("return arguments[0].validationMessage;", input_email)
         if tooltip_msg:
-            print(tooltip_msg)
+            logger.info(tooltip_msg)
         else :
-            print("sqli 발생")
+            logger.error("sqli 발생")
             
         try:
             if "Forgot" in success:
-                print("sqli 발생")
+                logger.error("sqli 발생")
                 return False
             else:
-                print("sqli 대비 굿")
+                logger.info("sqli 대비 굿")
                 return True
         except:    
             return True
@@ -153,7 +156,7 @@ class SecurityMainPage(BasePage):
 
     #이름 관련 테스트 케이스를 위한 메서드
     def open_name_edit_form(self, timeout=5) -> bool:
-        print("open_name_edit_form 시작")
+        logger.info("open_name_edit_form 시작")
 
         # 0) '이름' 행 스크롤 위치 맞추기
         name_row = self.get_element(
@@ -163,7 +166,7 @@ class SecurityMainPage(BasePage):
             timeout=timeout,
         )
         if not name_row:
-            print(" '이름' 행을 찾지 못함 (NAME_ROW)")
+            logger.error(" '이름' 행을 찾지 못함 (NAME_ROW)")
             return False
 
         self.driver.execute_script("""
@@ -181,10 +184,10 @@ class SecurityMainPage(BasePage):
             timeout=timeout,
         )
         if not edit_btn:
-            print("'이름' 수정 버튼 못 찾음 (BTN_NAME_EDIT)")
+            logger.error("'이름' 수정 버튼 못 찾음 (BTN_NAME_EDIT)")
             return False
 
-        print("'이름' 수정 버튼 찾음, 클릭 시도")
+        logger.info("'이름' 수정 버튼 찾음, 클릭 시도")
 
         # 스크롤 + JS 클릭 
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
@@ -195,17 +198,17 @@ class SecurityMainPage(BasePage):
         # 2) 이름 입력 필드 대기
         input_name = self.get_element_by_name(NAME["INPUT_NAME"], option="visibility", timeout=timeout)
         if not input_name:
-            print("이름 입력란 안 나타남 (폼 안 열림)")
+            logger.error("이름 입력란 안 나타남 (폼 안 열림)")
             return False
 
-        print("이름 수정 폼 열림")
+        logger.info("이름 수정 폼 열림")
         return True
 
 
     def member_name(self, name) -> bool:
         input_name = self.get_element_by_name(NAME["INPUT_NAME"], option="visibility", timeout=3)
         if not input_name:
-            print("이름 입력란 못 찾음")
+            logger.error("이름 입력란 못 찾음")
             return False
 
         self.driver.execute_script("""
@@ -218,14 +221,14 @@ class SecurityMainPage(BasePage):
         try:
             input_name.click()
         except Exception as e:
-            print(f"input 클릭 실패: {e}")
+            logger.error(f"input 클릭 실패: {e}")
             self.driver.execute_script("arguments[0].focus();", input_name)
 
         self.driver.execute_script("arguments[0].value = '';", input_name)
         input_name.send_keys(name)
 
         time.sleep(0.5)
-        print(f"테스트 내용 입력 완료: {repr(name)}")
+        logger.info(f"테스트 내용 입력 완료: {repr(name)}")
         return True
 
 
@@ -235,12 +238,12 @@ class SecurityMainPage(BasePage):
 
         submit_btn = self.get_element(By.XPATH, xpath, option="visibility", timeout=3)
         if not submit_btn:
-            print(" 저장 버튼 없음 (DOM에 없음)")
+            logger.error(" 저장 버튼 없음 (DOM에 없음)")
             return False
 
         #저장 버튼 활성화 여부 먼저 확인
         if not submit_btn.is_enabled():
-            print("저장 버튼 비활성화 상태 (저장 불가)")
+            logger.error("저장 버튼 비활성화 상태 (저장 불가)")
             return False
 
         try:
@@ -268,9 +271,9 @@ class SecurityMainPage(BasePage):
                 self.driver.execute_script("window.scrollTo({top: 0, behavior: 'instant'});")
 
             time.sleep(0.5)
-            print("저장 버튼 JS 클릭 + 이름 행으로 복귀")
+            logger.info("저장 버튼 JS 클릭 + 이름 행으로 복귀")
             return True
 
         except Exception as e:
-            print(f" 저장 버튼 JS 클릭 실패: {e}")
+            logger.error(f" 저장 버튼 JS 클릭 실패: {e}")
             return False

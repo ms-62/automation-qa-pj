@@ -212,7 +212,8 @@ class AgentPage(BasePage) :
         return element
     
     def delete_card(self) :
-        element = self.get_element_by_xpath(XPATH["DELETE_CARD"])
+        elements = self.get_elements_by_xpath(XPATH["DELETE_CARD"])
+        element = elements[1]
         element.click()
         
     def check_card_number(self) :
@@ -527,7 +528,8 @@ class AgentPage(BasePage) :
         self.click_send()
     
         result = ResponseController.wait_for_response_with_timeout(
-            btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"])
+            btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]),
+            stop_time=3
         )
         time.sleep(1)
         return result
@@ -712,8 +714,8 @@ class AgentPage(BasePage) :
 # =========================== 에이전트 삭제 ===================================================================
 
     def check_delete_in_agents(self) :
-        text = self.get_element_by_xpath(XPATH["CHECK_DELETE"]).text.strip()
-        return text
+        element = self.get_element_by_xpath(XPATH["DELETE_CHECK"])
+        return element
         
     def go_to_delete_in_agents(self) :
         element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"])
@@ -742,6 +744,10 @@ class AgentPage(BasePage) :
         if options :
             options[0].click()
             time.sleep(0.5)
+            
+    def check_delete_in_my_agent(self) :
+        element = self.get_element_by_xpath(XPATH["DELETE_CHECK"])
+        return element
         
     def go_to_delete_in_my_agent(self) :
         btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"])

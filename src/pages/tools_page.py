@@ -81,7 +81,7 @@ class ToolsPage(BasePage):
     
     def is_create_abort_page(self):
         try:
-            self.get_element_by_xpath(XPATH["CREATE_ABORT_MESSAGE"]) ##
+            self.get_element_by_xpath(XPATH["CREATE_ABORT_MESSAGE"])
             return True
         except:
             return False

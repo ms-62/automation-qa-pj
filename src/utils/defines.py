@@ -55,7 +55,7 @@ SELECTORS = {
     "IMAGE_FILE_INPUT": "input[type='file'][accept^='image']",
     "FILE_INPUT" : "input[type='file'][accept*='.pdf']",
     "FILE_INPUT_IN_CHAT" : "input[type='file']",
-    "UPDATE_CHECK" : "div.go946087465",
+    "UPDATE_CHECK" : "div.go946087465", 
     
 
     "BTNS_DISABLED" : "button.MuiIconButton-root:not([disabled])",
@@ -98,7 +98,7 @@ XPATH = {
     "BTN_CREATE_ACCOUNT" : "//a[contains(@href, 'signup')]",
     "BTN_CREATE_EMAIL" : "//button",
     "SIGNUP_AGREE" : "//input[contains(@class, 'PrivateSwitchBase')]",
-    "CHECK_SIGNUP" : "//a[contains(@href, 'recover')]",
+    "CHECK_SIGNUP" : "//button[contains(@class, 'css-jgzpb4')]",
     "BTN_SIGNUP" : "//button[@type = 'submit']",
     "BTN_MEMBER" : "//a[contains(@href,'account')]",
     "SIGNUP_FAIL" : "//p",
@@ -219,6 +219,7 @@ XPATH = {
     "DELETE_OPTIONS_IN_AGENTS" : "//div[contains(@class, 'css-1l2ou4k')]//button",
     "CHECK_DELETE" : "//p[contains(@class, 'css-to37at')]",
     "DELETE_OPTIONS_IN_MY_AGENT" : "//div[contains(@class, 'css-xawzel')]//button",
+    "DELETE_CHECK" : "//div[contains(@class, 'notistack')]",
     
     
     # 업로드 버튼

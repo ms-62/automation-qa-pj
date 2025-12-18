@@ -3,7 +3,6 @@ from utils.headers import *
 from pages.base_page import BasePage
 from utils.defines import TARGET_URL, SELECTORS, NAME, XPATH
 
-from test_logging.action_logger import log_action
 import logging
 
 logger = logging.getLogger()
@@ -60,10 +59,10 @@ class MemberPage(BasePage):
             timeout=timeout,
         )
         if not edit_btn:
-            logger.info("'이름' 수정 버튼 못 찾음 (BTN_NAME_EDIT)")
+            logger.error("'이름' 수정 버튼 못 찾음 (BTN_NAME_EDIT)")
             return False
 
-        logger.info("'이름' 수정 버튼 찾음, 클릭 시도")
+        logger.error("'이름' 수정 버튼 찾음, 클릭 시도")
 
         # 스크롤 + JS 클릭 
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
@@ -74,7 +73,7 @@ class MemberPage(BasePage):
         # 2) 이름 입력 필드 대기
         input_name = self.get_element_by_name(NAME["INPUT_NAME"], option="visibility", timeout=timeout)
         if not input_name:
-            logger.info("이름 입력란 안 나타남 (폼 안 열림)")
+            logger.error("이름 입력란 안 나타남 (폼 안 열림)")
             return False
 
         logger.info("이름 수정 폼 열림")
@@ -84,7 +83,7 @@ class MemberPage(BasePage):
     def member_name(self, name) -> bool:
         input_name = self.get_element_by_name(NAME["INPUT_NAME"], option="visibility", timeout=3)
         if not input_name:
-            logger.info("이름 입력란 못 찾음")
+            logger.error("이름 입력란 못 찾음")
             return False
 
         self.driver.execute_script("""
@@ -114,12 +113,12 @@ class MemberPage(BasePage):
 
         submit_btn = self.get_element(By.XPATH, xpath, option="visibility", timeout=3)
         if not submit_btn:
-            logger.info(" 저장 버튼 없음 (DOM에 없음)")
+            logger.error(" 저장 버튼 없음 (DOM에 없음)")
             return False
 
         #저장 버튼 활성화 여부 먼저 확인
         if not submit_btn.is_enabled():
-            logger.info("저장 버튼 비활성화 상태 (저장 불가)")
+            logger.error("저장 버튼 비활성화 상태 (저장 불가)")
             return False
 
         try:
@@ -151,7 +150,7 @@ class MemberPage(BasePage):
             return True
 
         except Exception as e:
-            logger.info(f" 저장 버튼 JS 클릭 실패: {e}")
+            logger.error(f" 저장 버튼 JS 클릭 실패: {e}")
             return False
     
     #메일 관련 테스트를 위한 메서드
@@ -166,7 +165,7 @@ class MemberPage(BasePage):
             timeout=timeout,
         )
         if not email_row:
-            logger.info(" 이메일 행을 찾지 못함 (EMAIL_ROW)")
+            logger.error(" 이메일 행을 찾지 못함 (EMAIL_ROW)")
             return False
 
         self.driver.execute_script("""
@@ -198,7 +197,7 @@ class MemberPage(BasePage):
         # 2) 이메일 입력 필드 대기
         input_email = self.get_element_by_name(NAME["INPUT_EMAIL"], option="visibility", timeout=timeout)
         if not input_email:
-            logger.info("이메일 입력란 안 나타남 (폼 안 열림)")
+            logger.error("이메일 입력란 안 나타남 (폼 안 열림)")
             return False
 
         logger.info("이메일 수정 폼 열림")
@@ -236,7 +235,7 @@ class MemberPage(BasePage):
 
         certi_btn = self.get_element(By.XPATH, xpath, option="visibility", timeout=3)
         if not certi_btn:
-            logger.info(" 인증메일 발송 버튼 없음 (DOM에 없음)")
+            logger.error(" 인증메일 발송 버튼 없음 (DOM에 없음)")
             return False
         try:
             # JS 클릭 - 중복 이메일만 클릭 가능
@@ -269,7 +268,7 @@ class MemberPage(BasePage):
                 return True
                 
         except Exception as e:
-            logger.info(f" 인증메일 발송 버튼 JS 클릭 실패: {e}")
+            logger.error(f" 인증메일 발송 버튼 JS 클릭 실패: {e}")
             return False
     
     #휴대폰 번호 관련 테스트 메서드
@@ -302,7 +301,7 @@ class MemberPage(BasePage):
             timeout=timeout,
         )
         if not edit_btn:
-            logger.info("휴대폰번호 수정 버튼 못 찾음 (BTN_MOBILE_EDIT)")
+            logger.error("휴대폰번호 수정 버튼 못 찾음 (BTN_MOBILE_EDIT)")
             return False
 
         logger.info("휴대폰 번호 수정 버튼 찾음, 클릭 시도")
@@ -316,7 +315,7 @@ class MemberPage(BasePage):
         # 2) 휴대폰번호 입력 필드 대기
         input_mobile = self.get_element_by_css_selector(SELECTORS["INPUT_MOBILE"], option="visibility", timeout=timeout)
         if not input_mobile:
-            logger.info("휴대폰 번호 입력란 안 나타남 (폼 안 열림)")
+            logger.error("휴대폰 번호 입력란 안 나타남 (폼 안 열림)")
             return False
 
         logger.info("휴대폰 번호 수정 폼 열림")
@@ -325,7 +324,7 @@ class MemberPage(BasePage):
     def member_mobile(self, mobile) -> bool:
         input_mobile = self.get_element_by_css_selector(SELECTORS["INPUT_MOBILE"], option="visibility", timeout=3)
         if not input_mobile:
-            logger.info("휴대폰 번호 입력란 못 찾음")
+            logger.error("휴대폰 번호 입력란 못 찾음")
             return False
 
         self.driver.execute_script("""
@@ -352,7 +351,7 @@ class MemberPage(BasePage):
         """4시간 내 최대 5회 발송 시도 후 확인"""
         certi_btn = self.get_element(By.XPATH, XPATH["BTN_CERTI_MOBIL"] , option="visibility", timeout=3)
         if not certi_btn:
-            logger.info("인증 문자 버튼 없음 (DOM에 없음)")
+            logger.error("인증 문자 버튼 없음 (DOM에 없음)")
             return False
         try:
             for i in range(6):
@@ -379,7 +378,7 @@ class MemberPage(BasePage):
             return True
                 
         except Exception as e:
-            logger.info(f"인증발송 최대횟수 시도 후 토스트 확인 실패: {e}")
+            logger.error(f"인증발송 최대횟수 시도 후 토스트 확인 실패: {e}")
             return False
         
     #비밀번호 관련 테스트 메서드
@@ -394,7 +393,7 @@ class MemberPage(BasePage):
             timeout=timeout,
         )
         if not pwd_row:
-            logger.info(" 비밀번호 행을 찾지 못함 (PWD_ROW)")
+            logger.error(" 비밀번호 행을 찾지 못함 (PWD_ROW)")
             return False
 
         self.driver.execute_script("""
@@ -412,7 +411,7 @@ class MemberPage(BasePage):
             timeout=timeout,
         )
         if not edit_btn:
-            logger.info("비밀번호 수정 버튼 못 찾음 (BTN_PWD_EDIT)")
+            logger.error("비밀번호 수정 버튼 못 찾음 (BTN_PWD_EDIT)")
             return False
 
         logger.info("비밀번호 수정 버튼 찾음, 클릭 시도")
@@ -426,7 +425,7 @@ class MemberPage(BasePage):
         # 2) 비밀번호 입력 필드 대기
         input_pwd = self.get_element_by_name(NAME["INPUT_PWD"], option="visibility", timeout=timeout)
         if not input_pwd:
-            logger.info("비밀번호 입력란 안 나타남 (폼 안 열림)")
+            logger.error("비밀번호 입력란 안 나타남 (폼 안 열림)")
             return False
 
         logger.info("비밀번호 수정 폼 열림")
@@ -437,7 +436,7 @@ class MemberPage(BasePage):
         input_new_pwd = self.get_element_by_name(NAME["INPUT_NEW_PWD"], option="visibility", timeout=3)
         
         if not input_pwd:
-            logger.info("비밀번호 입력란 못 찾음")
+            logger.error("비밀번호 입력란 못 찾음")
             return False
 
         self.driver.execute_script("""
@@ -474,7 +473,7 @@ class MemberPage(BasePage):
         """동일한 비밀번호 기입한 상태로 변경 시도 : 테스트 내용 실패가 성공"""
         submit_pwd = self.get_element(By.XPATH, XPATH["SUBMIT_PWD"] , option="visibility", timeout=3)
         if not submit_pwd:
-            logger.info("완료 버튼 없음 (DOM에 없음)")
+            logger.error("완료 버튼 없음 (DOM에 없음)")
             return False
         try:
             self.driver.execute_script("arguments[0].click();", submit_pwd)
@@ -483,14 +482,14 @@ class MemberPage(BasePage):
             invalid_msg = self.get_element_by_xpath(XPATH["INVALID_MSG"]).text
             
             if invalid_msg:
-                logger.info(f"비밀번호 변경 실패 : {invalid_msg}")
+                logger.error(f"비밀번호 변경 실패 : {invalid_msg}")
                 return False
             else:
                 logger.info("비번 변경됨")
                 return True
             
         except Exception as e:
-            logger.info(f"예외 발생: {e}")
+            logger.error(f"예외 발생: {e}")
             return False
     
     def member_success_pwd(self, pwd , pwd_new) -> bool:
@@ -498,7 +497,7 @@ class MemberPage(BasePage):
         input_new_pwd = self.get_element_by_name(NAME["INPUT_NEW_PWD"], option="visibility", timeout=3)
         
         if not input_pwd:
-            logger.info("비밀번호 입력란 못 찾음")
+            logger.error("비밀번호 입력란 못 찾음")
             return False
 
         self.driver.execute_script("""
@@ -536,7 +535,7 @@ class MemberPage(BasePage):
         """비밀번호 변경 성공"""
         submit_pwd = self.get_element(By.XPATH, XPATH["SUBMIT_PWD"] , option="visibility", timeout=3)
         if not submit_pwd:
-            logger.info("완료 버튼 없음 (DOM에 없음)")
+            logger.error("완료 버튼 없음 (DOM에 없음)")
             return False
         try:
             self.driver.execute_script("arguments[0].click();", submit_pwd)
@@ -546,14 +545,14 @@ class MemberPage(BasePage):
             toast_container = self.get_element(By.XPATH,XPATH["TOAST_CONTAINER"],option="visibility", timeout=5 )
             toast_msg = toast_container.text
             if toast_msg:
-                logger.info(f"비밀번호 변경성공 : {toast_msg}")
+                logger.info(f"비밀번호 변경 성공 : {toast_msg}")
                 return True
             else:
-                logger.info("비밀빈호 변경 실패")
+                logger.error("비밀빈호 변경 실패")
                 return False
             
         except Exception as e:
-            logger.info(f"예외 발생: {e}")
+            logger.warning(f"예외 발생: {e}")
             return False
     
     #선호 언어 변경 메서드
@@ -568,7 +567,7 @@ class MemberPage(BasePage):
             timeout=timeout,
         )
         if not lang_row:
-            logger.info(" 선호 언어 행을 찾지 못함 (LANG_ROW)")
+            logger.error(" 선호 언어 행을 찾지 못함 (LANG_ROW)")
             return False
 
         self.driver.execute_script("""
@@ -602,7 +601,7 @@ class MemberPage(BasePage):
                 logger.info("선호 언어 변경 성공")
                 return True
             else:
-                logger.info(f"선호 언어 변경 실패:{current_url}")
+                logger.error(f"선호 언어 변경 실패:{current_url}")
                 return False
         except Exception as e:
             logger.info(f"예외 발생: {e}")

@@ -1,9 +1,11 @@
 import logging, os
 
 def setup_logging():
-    current_dir = os.path.dirname(__file__)
+    current_dir = os.path.dirname(__file__)           # .../ai-heplychat-automation/src
     project_root = os.path.abspath(os.path.join(current_dir, ".."))
-    log_dir = os.path.join(project_root, "reports", "logs")
+    # .../ai-heplychat-automation
+
+    log_dir = os.path.join("reports", "logs") #src 외부임
     os.makedirs(log_dir, exist_ok=True)
 
     log_path = os.path.join(log_dir, "run.log")

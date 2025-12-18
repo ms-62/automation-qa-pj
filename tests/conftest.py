@@ -46,8 +46,13 @@ def main_page(driver):
     return page
 
 @pytest.fixture
-def login_page(login_driver):
+def login_page_test(login_driver):
     page = LoginPage(login_driver)
+    return page
+
+@pytest.fixture
+def login_page(driver):
+    page = LoginPage(driver)
     return page
 
 @pytest.fixture

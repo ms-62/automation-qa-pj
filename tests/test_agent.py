@@ -398,7 +398,7 @@ def test_make_agent_chat_create_again(logged_in_agent, fm) :
         fm.save_screenshot_png(agent_page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "create_again_ai_response"))
     
-# PHC-TS06-TC026 - 고쳐야됌
+# PHC-TS06-TC026
 def test_make_agent_chat_copy_and_paste(logged_in_agent, fm) :
     test_name = "chat_copy_option_test_in_make_agent"
     ctx = TextContext(test_name, page="make_agent_with_chat")
@@ -424,86 +424,86 @@ def test_make_agent_chat_copy_and_paste(logged_in_agent, fm) :
         fm.save_screenshot_png(agent_page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "copy_ai_response"))
     
-# # PHC-TS06-TC028
-# def test_make_agent_setting_for_me(logged_in_agent, fm) :
-#     test_name = "make_agent"
-#     ctx = TextContext(test_name, page="make_agent_with_setting")
-#     start = time.perf_counter()
-#     try :
-#         agent_page = logged_in_agent
-#         agent_page.go_to_agent_page()
-#         agent_page.make_agent_screen()
-#         data = fm.read_json_file("agent_text_data.json")
-#         name = data["setting_inputs"][0]["content"]
-#         intro = data["setting_inputs"][1]["content"]
-#         rule = data["setting_inputs"][2]["content"]
-#         card = data["setting_inputs"][3]["content"]
-#         agent_page.setting_name_input(name)
-#         agent_page.setting_intro_input(intro)
-#         agent_page.setting_rule_input(rule)
-#         agent_page.setting_card_input(card)
-#         check = agent_page.make_agent_for_me().text.strip()
-#         assert "나만보기" or "Private" in check, "PHC-TS06-TC028 : Test Fail"
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_for_me"))
-#     except :
-#         elapsed = time.perf_counter() - start
-#         fm.save_screenshot_png(agent_page.driver, test_name)
-#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "make_agent_for_me"))
+# PHC-TS06-TC028
+def test_make_agent_setting_for_me(logged_in_agent, fm) :
+    test_name = "make_agent"
+    ctx = TextContext(test_name, page="make_agent_with_setting")
+    start = time.perf_counter()
+    try :
+        agent_page = logged_in_agent
+        agent_page.go_to_agent_page()
+        agent_page.make_agent_screen()
+        data = fm.read_json_file("agent_text_data.json")
+        name = data["setting_inputs"][0]["content"]
+        intro = data["setting_inputs"][1]["content"]
+        rule = data["setting_inputs"][2]["content"]
+        card = data["setting_inputs"][3]["content"]
+        agent_page.setting_name_input(name)
+        agent_page.setting_intro_input(intro)
+        agent_page.setting_rule_input(rule)
+        agent_page.setting_card_input(card)
+        check = agent_page.make_agent_for_me().text.strip()
+        assert "나만보기" or "Private" in check, "PHC-TS06-TC028 : Test Fail"
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_for_me"))
+    except :
+        elapsed = time.perf_counter() - start
+        fm.save_screenshot_png(agent_page.driver, test_name)
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "make_agent_for_me"))
     
-# # PHC-TS06-TC029
-# def test_make_agent_setting_for_agency(logged_in_agent, fm) :
-#     test_name = "make_agent"
-#     ctx = TextContext(test_name, page="make_agent_with_setting")
-#     start = time.perf_counter()
-#     try :
-#         agent_page = logged_in_agent
-#         agent_page.go_to_agent_page()
-#         agent_page.make_agent_screen()
-#         data = fm.read_json_file("agent_text_data.json")
-#         name = data["setting_inputs"][0]["content"]
-#         intro = data["setting_inputs"][1]["content"]
-#         rule = data["setting_inputs"][2]["content"]
-#         card = data["setting_inputs"][3]["content"]
-#         agent_page.setting_name_input(name)
-#         agent_page.setting_intro_input(intro)
-#         agent_page.setting_rule_input(rule)
-#         agent_page.setting_card_input(card)
-#         check = agent_page.make_agent_for_agency().text.strip()
-#         assert "기관 공개" or "Organization" in check, "PHC-TS06-TC029 : Test Fail"
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_for_organization"))
-#     except :
-#         elapsed = time.perf_counter() - start
-#         fm.save_screenshot_png(agent_page.driver, test_name)
-#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "make_agent_for_organization"))
+# PHC-TS06-TC029
+def test_make_agent_setting_for_agency(logged_in_agent, fm) :
+    test_name = "make_agent"
+    ctx = TextContext(test_name, page="make_agent_with_setting")
+    start = time.perf_counter()
+    try :
+        agent_page = logged_in_agent
+        agent_page.go_to_agent_page()
+        agent_page.make_agent_screen()
+        data = fm.read_json_file("agent_text_data.json")
+        name = data["setting_inputs"][0]["content"]
+        intro = data["setting_inputs"][1]["content"]
+        rule = data["setting_inputs"][2]["content"]
+        card = data["setting_inputs"][3]["content"]
+        agent_page.setting_name_input(name)
+        agent_page.setting_intro_input(intro)
+        agent_page.setting_rule_input(rule)
+        agent_page.setting_card_input(card)
+        check = agent_page.make_agent_for_agency().text.strip()
+        assert "기관 공개" or "Organization" in check, "PHC-TS06-TC029 : Test Fail"
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_for_organization"))
+    except :
+        elapsed = time.perf_counter() - start
+        fm.save_screenshot_png(agent_page.driver, test_name)
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "make_agent_for_organization"))
 
-# # PHC-TS06-TC030  
-# def test_make_agent_setting_no_name(logged_in_agent, fm) :
-#     test_name = "make_agent_exception_test"
-#     ctx = TextContext(test_name, page="make_agent_with_setting")
-#     start = time.perf_counter()
-#     try:
-#         agent_page = logged_in_agent
-#         agent_page.go_to_agent_page()
-#         agent_page.make_agent_screen()
-#         data = fm.read_json_file("agent_text_data.json")
-#         intro = data["setting_inputs"][1]["content"]
-#         rule = data["setting_inputs"][2]["content"]
-#         card = data["setting_inputs"][3]["content"]
-#         agent_page.setting_name_input("")
-#         agent_page.setting_intro_input(intro)
-#         agent_page.setting_rule_input(rule)
-#         agent_page.setting_card_input(card)
-#         btn = agent_page.check_btn_disabled()
-#         error = agent_page.error_message().text.strip()
-#         assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC030 : Test Fail"
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_name"))
+# PHC-TS06-TC030  
+def test_make_agent_setting_no_name(logged_in_agent, fm) :
+    test_name = "make_agent_exception_test"
+    ctx = TextContext(test_name, page="make_agent_with_setting")
+    start = time.perf_counter()
+    try:
+        agent_page = logged_in_agent
+        agent_page.go_to_agent_page()
+        agent_page.make_agent_screen()
+        data = fm.read_json_file("agent_text_data.json")
+        intro = data["setting_inputs"][1]["content"]
+        rule = data["setting_inputs"][2]["content"]
+        card = data["setting_inputs"][3]["content"]
+        agent_page.setting_name_input("")
+        agent_page.setting_intro_input(intro)
+        agent_page.setting_rule_input(rule)
+        agent_page.setting_card_input(card)
+        btn = agent_page.check_btn_disabled()
+        error = agent_page.error_message().text.strip()
+        assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC030 : Test Fail"
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_name"))
         
-#         assert "이름" or "Name" in error, "PHC-TS06-TC030 : Test Fail"
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_no_name"))
-#     except :
-#         elapsed = time.perf_counter() - start
-#         fm.save_screenshot_png(agent_page.driver, test_name)
-#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "make_agent_with_no_name"))
+        assert "이름" or "Name" in error, "PHC-TS06-TC030 : Test Fail"
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_no_name"))
+    except :
+        elapsed = time.perf_counter() - start
+        fm.save_screenshot_png(agent_page.driver, test_name)
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "make_agent_with_no_name"))
 
 # PHC-TS06-TC031 
 def test_make_agent_setting_long_name(logged_in_agent, fm) :

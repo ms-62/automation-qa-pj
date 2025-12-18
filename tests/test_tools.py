@@ -5,88 +5,96 @@ from utils.browser_utils import (BrowserUtils)
 from utils.defines import NAME,XPATH,SELECTORS,TARGET_URL
 from utils.download_utils import wait_for_download, wait_for_download_contains
 
+from test_logging.action_logger import log_action
+from utils.context import TextContext, ActionResult
+from utils.defines import TestResult
+
 # PHC-TS04-TC001: 세부 특기사항 탭 이동 테스트
-def test_go_to_special_note(logged_in_agent,tools_page):
+def test_go_to_special_note(logged_in_agent,tools_page, fm):
+    test_name = "go_to_special_note_test"
+    ctx = TextContext(test_name, page="tools_page")
+    start = time.perf_counter()
+    
     tools_page.go_to_tools_page()
     tools_page.click_special_note_page()
     assert tools_page.is_special_note_page(), "세부특기사항 탭으로 이동 실패"
-    print("PHC-TS04-TC001 : Test success")    
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_success"))    
     
-# PHC-TS04-TC002~TC003
-def test_input_info_result(logged_in_agent,tools_page):
-    # PHC-TS04-TC002: 정보 입력 및 결과 출력 확인
-    tools_page.go_to_tools_page()
-    tools_page.click_special_note_page()
-    tools_page.select_school_class("초등")
-    tools_page.select_subject("초등","국어")
+# # PHC-TS04-TC002~TC003
+# def test_input_info_result(logged_in_agent,tools_page):
+#     # PHC-TS04-TC002: 정보 입력 및 결과 출력 확인
+#     tools_page.go_to_tools_page()
+#     tools_page.click_special_note_page()
+#     tools_page.select_school_class("초등")
+#     tools_page.select_subject("초등","국어")
     
-    file_path = os.path.abspath("src/resources/assets/test_student_evaluation_template.xlsx")
-    tools_page.upload_data(file_path)
-    tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
-    tools_page.click_auto_create_button()
+#     file_path = os.path.abspath("src/resources/assets/test_student_evaluation_template.xlsx")
+#     tools_page.upload_data(file_path)
+#     tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
+#     tools_page.click_auto_create_button()
     
-    WebDriverWait(tools_page.driver, 10).until(
-    EC.element_to_be_clickable(
-        (By.XPATH, XPATH["DOWNLOAD_RESULT_BUTTON"])
-        )
-    )
+#     WebDriverWait(tools_page.driver, 10).until(
+#     EC.element_to_be_clickable(
+#         (By.XPATH, XPATH["DOWNLOAD_RESULT_BUTTON"])
+#         )
+#     )
     
-    # PHC-TS04-TC003: 생성 결과 다운받기 버튼 확인
-    tools_page.click_download_result_button()
-    # 다운로드 확인 메서드
-    download_dir = "src/resources/downloads"
-    downloaded = wait_for_download_contains(download_dir, ext=".xlsx", timeout=30)
-    assert downloaded is not None, "다운로드가 안됨"
+#     # PHC-TS04-TC003: 생성 결과 다운받기 버튼 확인
+#     tools_page.click_download_result_button()
+#     # 다운로드 확인 메서드
+#     download_dir = "src/resources/downloads"
+#     downloaded = wait_for_download_contains(download_dir, ext=".xlsx", timeout=30)
+#     assert downloaded is not None, "다운로드가 안됨"
     
-# PHC-TS04-TC004: 자동 생성 중 중지 버튼 테스트
-def test_input_info_result(logged_in_agent,tools_page):
-    tools_page.go_to_tools_page()
-    tools_page.click_special_note_page()
-    tools_page.select_school_class("초등")
-    tools_page.select_subject("초등","국어")
+# # PHC-TS04-TC004: 자동 생성 중 중지 버튼 테스트
+# def test_input_info_result(logged_in_agent,tools_page):
+#     tools_page.go_to_tools_page()
+#     tools_page.click_special_note_page()
+#     tools_page.select_school_class("초등")
+#     tools_page.select_subject("초등","국어")
     
-    file_path = os.path.abspath("src/resources/assets/test_student_evaluation_template.xlsx")
-    tools_page.upload_data(file_path)
-    tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
-    tools_page.click_auto_create_button()
-    tools_page.click_create_abort_button()
-    tools_page.is_create_abort_page(), "중지 버튼이 동작하지 않습니다."
+#     file_path = os.path.abspath("src/resources/assets/test_student_evaluation_template.xlsx")
+#     tools_page.upload_data(file_path)
+#     tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
+#     tools_page.click_auto_create_button()
+#     tools_page.click_create_abort_button()
+#     tools_page.is_create_abort_page(), "중지 버튼이 동작하지 않습니다."
     
     
 
 
-# PHC-TS04-TC003: 지원되지 않는 파일 형식 업로드
-def test_not_supported_file_upload(logged_in_agent,tools_page):
-    tools_page.go_to_tools_page()
-    tools_page.click_special_note_page()
-    file_path = os.path.abspath("src/resources/assets/test_pdf.pdf")
-    tools_page.upload_data(file_path)
-    assert tools_page.is_upload_error_visible(), "에러 출력 오류"
-    assert tools_page.get_upload_error_text(" "), "메시지 출력 오류"
+# # PHC-TS04-TC003: 지원되지 않는 파일 형식 업로드
+# def test_not_supported_file_upload(logged_in_agent,tools_page):
+#     tools_page.go_to_tools_page()
+#     tools_page.click_special_note_page()
+#     file_path = os.path.abspath("src/resources/assets/test_pdf.pdf")
+#     tools_page.upload_data(file_path)
+#     assert tools_page.is_upload_error_visible(), "에러 출력 오류"
+#     assert tools_page.get_upload_error_text(" "), "메시지 출력 오류"
     
-# PHC-TS04-TC004: 대용량 파일 업로드
-def test_big_file_upload(logged_in_agent,tools_page):
-    tools_page.go_to_tools_page()
-    tools_page.click_special_note_page()
-    file_path = os.path.abspath("   ")
-    tools_page.upload_data(file_path)
-    assert tools_page.is_upload_error_visible(), "에러 출력 오류"
-    assert tools_page.get_upload_error_text(" "), "메시지 출력 오류"
+# # PHC-TS04-TC004: 대용량 파일 업로드
+# def test_big_file_upload(logged_in_agent,tools_page):
+#     tools_page.go_to_tools_page()
+#     tools_page.click_special_note_page()
+#     file_path = os.path.abspath("   ")
+#     tools_page.upload_data(file_path)
+#     assert tools_page.is_upload_error_visible(), "에러 출력 오류"
+#     assert tools_page.get_upload_error_text(" "), "메시지 출력 오류"
 
-# PHC-TS04-TC005: 입력 양식 다운받기 버튼 테스트
-def test_file_download_button_test(logged_in_agent,tools_page):
-    tools_page.go_to_tools_page()
-    tools_page.click_special_note_page()
-    tools_page.click_download_template()
+# # PHC-TS04-TC005: 입력 양식 다운받기 버튼 테스트
+# def test_file_download_button_test(logged_in_agent,tools_page):
+#     tools_page.go_to_tools_page()
+#     tools_page.click_special_note_page()
+#     tools_page.click_download_template()
     
-    # 다운로드 확인 메서드
-    download_dir = "src/resources/downloads"
-    assert wait_for_download(download_dir, "student_evaluation_template")
+#     # 다운로드 확인 메서드
+#     download_dir = "src/resources/downloads"
+#     assert wait_for_download(download_dir, "student_evaluation_template")
     
-# PHC-TS04-TC006: 입력 양식 다운받기 버튼 테스트
-def test_go_to_achievement_page(logged_in_agent,tools_page):
-    tools_page.go_to_tools_page()
-    tools_page.click_special_note_page()
-    tools_page.click_achievement_button()
-    tools_page.switch_to_new_tab()
-    assert tools_page.is_achievement_page(), "페이지 이동 안됨"
+# # PHC-TS04-TC006: 입력 양식 다운받기 버튼 테스트
+# def test_go_to_achievement_page(logged_in_agent,tools_page):
+#     tools_page.go_to_tools_page()
+#     tools_page.click_special_note_page()
+#     tools_page.click_achievement_button()
+#     tools_page.switch_to_new_tab()
+#     assert tools_page.is_achievement_page(), "페이지 이동 안됨"

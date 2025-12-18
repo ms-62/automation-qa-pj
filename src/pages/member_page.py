@@ -4,7 +4,7 @@ from pages.base_page import BasePage
 from utils.defines import TARGET_URL, SELECTORS, NAME, XPATH
 
 import logging
-
+    
 logger = logging.getLogger()
 
 class MemberPage(BasePage):
@@ -62,7 +62,7 @@ class MemberPage(BasePage):
             logger.error("'이름' 수정 버튼 못 찾음 (BTN_NAME_EDIT)")
             return False
 
-        logger.error("'이름' 수정 버튼 찾음, 클릭 시도")
+        logger.info("'이름' 수정 버튼 찾음, 클릭 시도")
 
         # 스크롤 + JS 클릭 
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)

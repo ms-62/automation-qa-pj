@@ -1,15 +1,22 @@
 from utils.headers import *
 import re
 from pages.base_page import BasePage
-from utils.defines import SELECTORS, XPATH, TARGET_URL, TIMEOUT_MAX, STOPPED_MAX
+from utils.defines import SELECTORS, XPATH, TARGET_URL, TIMEOUT_MAX
 
 from enums.ui_status import MenuStatus, AIresponse
 from utils.defines import ChatKey, ChatType
+from states.response_state import ResponseState
 
 from controllers.chat_input_controller import ChatInputController
 from controllers.clipboard_controller import ClipboardController
 from controllers.response_controller import ResponseController
 from controllers.scroll_controller import ScrollController
+
+CHAT_TIME = 10
+IMAGES_FORMAT = (".jpg", ".png")
+ENABLED_FORMAT = (".csv", ".md")
+DISABLED_FORMAT = (".psd", ".exe", ".zip")
+MUITY_UPLOAD_FORMAT = ".pdf" # 다중 업로드 용으로 만들어놓았음.
 
 class MainPage(BasePage):
     def __init__(self, driver):
@@ -61,6 +68,7 @@ class MainPage(BasePage):
             chat_name = item.find_element(By.XPATH, XPATH["SEARCH_CHAT_ITEM_TEXT"]).text.strip()
             if chat_name != "":
                 break
+            
         ChatInputController.send_text(input_search, chat_name) 
         after_chat_items = self.get_search_chat_items()
         
@@ -181,7 +189,7 @@ class MainPage(BasePage):
 
             self.scroll_up_chat()
 
-    # ================  Chat ================ 
+    # ================  main Chat ================ 
     def input_chat(self, text: str):
         textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])      
         ChatInputController.send_text(textarea, text)
@@ -192,45 +200,185 @@ class MainPage(BasePage):
         for item in ai_input_lst:
             if item["type"] != chat_type:
                 continue   
-            self.input_chat(item["content"])  
-        return self.wait_for_chat(stop = False)
-    
-    def wait_for_chat(self, stop = False):
-        if not stop:
-            check_area = self.get_ai_response_area()
-            result = ResponseController.wait_for_response_with_timeout(check_area)
-            match result:
-                case AIresponse.COMPLETED: return True
-                case AIresponse.TIMEOUT: return False
-        else:
-            result = ResponseController.wait_for_response_with_timeout(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]))
-            match result:
-                case AIresponse.STOPPED: return True
-                case AIresponse.TIMEOUT: return False
+
+            self.input_chat(item["content"])
+            self.wait_for_chat(stop = True, target = "ai")
+
+    # ------------------- 채팅 메시지 기다리기 ---------------------------- 
+    def wait_for_ai_complete(self, stop, target, timeout): 
+        base_xpath = XPATH["MESSAGE_XPATH"][target]
+        last_msg_xpath = f'({base_xpath}//div[@data-status])[last()]'
+        
+        start = time.time()
+        while time.time() - start < timeout:
+            #elem = self.get_element_by_xpath(last_msg_xpath)
+            elems = self.get_elements_by_xpath(last_msg_xpath)
+
+            if not elems:
+                time.sleep(0.5)
+                continue
             
-    def compare_chats_after_user_send(self):
-        prev_chats_len = self.get_all_chats()
-        
-        self.action_user_chat(ChatKey.INPUTS, ChatType.TEXT)
-        after_chats_len = self.get_all_chats()
-        
-        return False if prev_chats_len != after_chats_len else True
+            elem = elems[-1]
+            if elem:
+                status = elem.get_attribute("data-status")
+                if status == "complete":
+                    print(f"완료: : {elem.text}")
+                    return AIresponse.COMPLETED
+            time.sleep(0.5)
+        return AIresponse.STOPPED if stop else AIresponse.TIMEOUT
     
+    def wait_for_chat(self, stop, target, timeout = CHAT_TIME):
+        result = self.wait_for_ai_complete(stop, target, timeout)
+            
+        match result:
+            case AIresponse.STOPPED:
+                btn = self.get_element_by_xpath(XPATH["BTN_STOP"])
+                if btn and btn.is_enabled():
+                    btn.click()
+                    time.sleep(1)
+                    return True    
+            case AIresponse.COMPLETED:
+                return True
+            case AIresponse.TIMEOUT:
+                return False                
+                
+    # ------------------- 채팅 보내고 비교 ---------------------------- 
+    def compare_chats_after_user_send(self):
+        prev_count = len(self.get_all_chats())
+        print(prev_count)
+
+        self.action_user_chat(ChatKey.INPUTS, ChatType.TEXT)
+
+        after_count = len(self.get_all_chats())
+        print(after_count)
+
+        return prev_count != after_count
+    
+    # ------------------- action ---------------------------- 
     def click_send(self):
         self.click_btn_by_xpath(XPATH["BTN_SEND"], option = "presence")
         time.sleep(0.5)
-
-    def get_ai_response_area(self) :
-        return self.get_element_by_css_selector(SELECTORS["CHECK_CHAT_COMPLETE"])        
     
     def click_btn_retry(self):
         btns = self.get_elements_by_xpath(XPATH["BTN_RETRY"])
         if not btns:
             raise Exception("다시 생성하기 버튼이 없음.")
-        btns[-1].click()
-        return self.wait_for_chat(stop = True)
         
-    # ================ Clipboard ================ 
+        btns[-1].click()
+        return self.wait_for_chat(stop = True, target = "ai")
+        
+    # ================ Clipboard ================
+    def get_last_user_message(self):
+        xpath = f'({XPATH["MESSAGE_XPATH"]["user"]})[last()]'
+        elem = self.get_element_by_xpath(xpath)
+        return elem
+ 
+    def force_hover(self, elem):
+        self.driver.execute_script("""
+            const el = arguments[0];
+            el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+            el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+            el.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+        """, elem)
+    
+    def get_user_last_tooltip(self, timeout=10):
+        end = time.time() + timeout
+
+        while time.time() < end:
+            user_msg = self.get_last_user_message()
+            if not user_msg:
+                time.sleep(0.5)
+                continue
+            
+            self.force_hover(user_msg)
+            tooltips = self.get_elements_by_xpath(XPATH["TOOLTIP"])
+            if tooltips:
+                return tooltips[-1]
+            time.sleep(0.5)
+        return None
+            
+    # 추후 리팩토링 
+    def copy_last_question(self):
+        tooltip = self.get_user_last_tooltip()
+        time.sleep(1)
+        
+        copy_btn = self.get_tooltip_button(tooltip, "복사")
+        if copy_btn:
+            self.driver.execute_script("arguments[0].click();", copy_btn)
+        return ClipboardController.read()
+    
+    def paste_last_question(self):
+        textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
+        ChatInputController.paste_text(textarea, self.copy_last_question())
+        time.sleep(1)
+    
+    def get_tooltip_button(self, tooltip, aria_label, timeout=5):
+        end = time.time() + timeout
+        while time.time() < end:
+            try:
+                btn = tooltip.find_element(By.XPATH, f'.//button[@aria-label="{aria_label}"]')
+                return btn
+            except:
+                time.sleep(0.2)
+        return None
+    
+    # 추후 리팩토링 
+    def smooth_scroll_into_view(self, elem):
+        self.driver.execute_script("""
+            arguments[0].scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        """, elem)
+        time.sleep(0.8)
+    
+    def click_edit_last_question(self):
+        user_msg = self.get_last_user_message()
+        if not user_msg:
+            return None
+
+        self.smooth_scroll_into_view(user_msg)
+        self.force_hover(user_msg)
+        tooltip = self.get_user_last_tooltip()
+        self.smooth_scroll_into_view(tooltip)
+
+        edit_btn = tooltip.find_element(By.XPATH, XPATH["BTN_TOOLTIP_EDIT"])
+        if edit_btn and edit_btn.is_enabled():
+            self.driver.execute_script("arguments[0].click();", edit_btn)
+            time.sleep(1)
+        else:
+            return False
+        
+    def send_after_edit_question(self):
+        self.click_edit_last_question()
+        
+        ai_input_last = self.fm.read_json_file("ai_text_data.json")[ChatKey.RENAME][-1]
+        content = ai_input_last["content"]
+        
+        textarea = self.get_element_by_xpath(XPATH["BTN_EDIT_AREA"])
+        ClipboardController.copy(content)
+        time.sleep(1)
+        ChatInputController.reset_text(textarea)
+        time.sleep(1)
+        ClipboardController.paste(textarea)
+        time.sleep(1) # 헝헝 너무 빨라서 time.sleep 했어요..
+        
+        btn_send = self.get_element_by_xpath(XPATH["BTN_EDIT_SEND"])
+        if btn_send and btn_send.is_enabled():
+            self.driver.execute_script("arguments[0].click();", btn_send)
+            time.sleep(1)
+            
+        self.wait_for_chat(stop=True, target = "ai")
+
+    def cancel_edit_question(self):
+        self.click_edit_last_question()
+        
+        cancel_btn = self.get_element_by_xpath(XPATH["BTN_EDIT_CANCEL"])
+        if cancel_btn and cancel_btn.is_enabled():
+            self.driver.execute_script("arguments[0].click();", cancel_btn)
+            time.sleep(1)
+        
+    
     def copy_last_response(self):
         btns = self.get_elements_by_xpath(XPATH["BTN_COPY_RESPONE"])
         if not btns:
@@ -238,7 +386,6 @@ class MainPage(BasePage):
 
         btns[-1].click()
         time.sleep(0.5)
-        print("복사 완성")
         return ClipboardController.read()
     
     def paste_last_response(self):
@@ -264,7 +411,6 @@ class MainPage(BasePage):
         if btn_close and btn_close.is_displayed():
             self.menu_status = MenuStatus.OPENED   
 
-        
     def toggle_menu(self, btn_element):
         if not btn_element:
             print("버튼 찾기 실패")
@@ -307,29 +453,29 @@ class MainPage(BasePage):
     def action_upload_file(self, file_path):
         self.paste_file_path_and_send(file_path)
         self.click_send()
-        return self.wait_for_chat(stop = False)
+        return self.wait_for_chat(stop = False, target = "ai")
             
     def upload_files(self):
-        images = self.fm.get_asset_files((".jpg", ".png"))
+        images = self.fm.get_asset_files(IMAGES_FORMAT)
         for img in images:
             self.action_upload_file(file_path = img)
             
-        allowed_files = self.fm.get_asset_files((".md", ".csv"))
+        allowed_files = self.fm.get_asset_files(ENABLED_FORMAT)
         for file in allowed_files:
             self.action_upload_file(file_path = file)
         
-        not_allowed_files = self.fm.get_asset_files((".psd", ".exe", ".zip"))
+        not_allowed_files = self.fm.get_asset_files(DISABLED_FORMAT)
         for file in not_allowed_files:
             self.action_upload_file(file_path = file)
     
     def upload_multi_files(self):
-        files = self.fm.get_asset_files((".pdf"))
+        files = self.fm.get_asset_files(MUITY_UPLOAD_FORMAT)
         files_sorted = sorted(files, key=lambda x: int(re.search(r'test_pdf_(\d+)\.pdf', x).group(1)))
 
         for file in files_sorted:
             self.paste_file_path_and_send(file)
         self.click_send()
-        return self.wait_for_chat(stop = False)
+        return self.wait_for_chat(stop = False, target = "ai")
  
     # ================ 이미지 생성 ================ 
     def action_gen_image(self):

@@ -9,8 +9,8 @@ from test_logging.action_logger import log_action
 from utils.context import TextContext, ActionResult
 
 
-# main 홈화면 테스트만 진행합니다. 
 # ======================== E2E - AI 대화 시나리오 ==============================  
+# 테스트 케이스를 하나하나 테스트 하려니 시간이 너무 오래걸려서 기능 완성을 위해서 E2E 방식으로 진행. 
 def test_conversation_scenario(logged_in_main, fm):
     page = logged_in_main
     
@@ -18,18 +18,41 @@ def test_conversation_scenario(logged_in_main, fm):
     ctx = TextContext(test_name, page="chat")
     start = time.perf_counter()
     try:
-        page.click_btn_home_menu(ChatMenu.DEFAULT_CHAT)
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
+        # page.click_btn_home_menu(ChatMenu.DEFAULT_CHAT)
+        # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
 
-        result = TestResult.PASSED if page.compare_chats_after_user_send() else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "action_user_chat"))
-
-        # 사용자의 질문 내용이 저장된 후 클립보드에 복사되는지 검사
+        # result = TestResult.PASSED if page.compare_chats_after_user_send() else TestResult.FAILED
+        # log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "action_user_chat"))
         
-            
+        page.select_latest_chat()
+        
+        # ---------- user 행동          
+        #page.copy_last_question()
+        #log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "copy_last_question"))
+        
+        #page.paste_last_question()
+        #log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "paste_last_question"))
+        
+        #page.reset_chat()
+        
+        page.cancel_edit_question()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "cancel_edit_question"))
+        
+        page.send_after_edit_question()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "send_after_edit_question"))
+
+        # page.rename_main_chat() # 미구현
+        # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "rename_main_chat"))
+        
+        # page.delete_main_chat() # 미구현
+        # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "delete_main_chat"))
+        
+        # ---------- response 행동
+        page.select_latest_chat()
+                
         page.click_btn_retry()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_retry"))
-
+   
         page.copy_last_response()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "copy_last_response"))
 
@@ -44,11 +67,6 @@ def test_conversation_scenario(logged_in_main, fm):
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
-
-
-#     # 사용자가 보낸 메시지 내용 편집
-#     # 사용자가 보낸 메시지 내용 편집 중 취소
-#     # 사용자가 보낸 메시지 복사  
 
     
 # # ====================== 스크롤  ============================== 

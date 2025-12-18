@@ -31,7 +31,15 @@ class ChatMenu:
     SEARCH_CHAT = "검색"
     TOOLS_CHAT = "도구"
     AGENT_CHAT = "에이전트 탐색"
-    
+
+class FilesType:
+    IMAGES_FORMAT = (".jpg", ".png")
+    ENABLED_FORMAT = (".csv",)        
+    DISABLED_FORMAT = (".psd", ".exe", ".zip")
+    BIGSIZED_FORMAT = (".md",)
+    MULTI_FORMAT = (".pdf",)
+
+
 TARGET_URL = {
     "MAIN_URL": "https://qaproject.elice.io/ai-helpy-chat",
     "LOGIN_URL": "https://accounts.elice.io/accounts/signin/me?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat&lang=en-US&org=qaproject"
@@ -149,9 +157,13 @@ XPATH = {
     "LANG_ROW" :  "//div[contains(@class,'MuiStack-root')][.//h2[normalize-space(.)='선호 언어']]",
     "SOCIAL_ROW" :  "//h2[contains(@class,'MuiTypography-body1')][normalize-space(.)='소셜 연결 계정']",
     "LANG_ROW_ENG" :  "//div[contains(@class,'MuiStack-root')][.//h2[normalize-space(.)='language']]",
-    
-    "BTN_COPY_QUESTION" : "//div[@data-floating='true'])[last()]",  # 이거 해야함 
+    "TOOLTIP": '//div[@role="tooltip" or @data-floating="true"]',
+    "BTN_TOOLTIP_COPY" : './/button[@aria-label="복사"]',
+    "BTN_TOOLTIP_EDIT" : './/button[@aria-label="수정"]',
     "BTN_STOP" : '//button[@aria-label="취소"]',
+    "BTN_EDIT_AREA" : '//textarea[@name="input"]', # 보낸 채팅 edit 창
+    "BTN_EDIT_SEND" : '//button[@type="button" and normalize-space()="보내기"]', # edit 채팅 보내기
+    "BTN_EDIT_CANCEL" : '//button[normalize-space()="취소"]',
     
     # 메인 화면 '메뉴' 확인용
     "BTN_MENU_OPEN": "//button[normalize-space(.)='메뉴 열기']",
@@ -238,8 +250,7 @@ XPATH = {
     "BTN_SEARCH_WEB": "//li[.//span[text()='웹 검색']]",
     "FILE_INPUT" : "//input[@type='file']",
     
-    ## 도구 탭 관련
-    # 공용으로 쓸만한 것
+    # 도구 탭 관련
     "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
     "SCHOOL_CLASS_DROPDOWN" : "//label[contains(normalize-space(), '학교급')]/following::div[@role='combobox'][1]",
     "ELEMENTARY_SCHOOL_CLASS" : "//li[normalize-space()='초등']",
@@ -259,6 +270,7 @@ XPATH = {
     "BTN_RECREATE" : "//button[contains(@class, 'css-1az3dby') and normalize-space()='다시 생성']",         # 다른 도구에서도 같은지 확인 필요
     "BTN_SURE_RECREATE" : "//div[@role='dialog']//button[normalize-space()='다시 생성']",                   # 다른 도구에서도 같은지 확인 필요
     "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
+
     "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
     "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",
     "BTN_DOWNLOAD_RESULT" : "//a[contains(@href,'elicebackendstorage.blob.core.') and contains(@rel,'noopener noreferrer')]",
@@ -278,11 +290,14 @@ XPATH = {
     "CLASS_TIME" : "//label[contains(normalize-space(), '수업 시간 (분)')]/following::div[@role='combobox'][1]",
     "TEACHING_RESULT_VALID" : "//p[contains(.,'수업 지도안을 생성했습니다.')]",
     
-    
+
+    "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                      # 다른 도구에서도 같은지 확인 필요
+
+
     # 기존 대화창
     "SCROLL_PAST_CHATS" : "//div[@data-testid='virtuoso-scroller']",
-    "CHANGE_NOWCHAT_NAME" : "//li[.//span[text()='이름 변경']]",
-    "DELETE_NOWCHAT" : "//li[.//p[text()='삭제']]",
+    "CHANGE_NOWCHAT_NAME" : "//li[.//span[text()='이름 변경']]", # main과 기존대화랑 동일사용
+    "DELETE_NOWCHAT" : "//li[.//p[text()='삭제']]", # main과 기존대화랑 동일사용
 
     "BTN_CHANGE_PAST_NAME" : ".//li[.//span[text()='이름 변경']]",
     "BTN_DELETE_PAST" : ".//li[.//p[text()='삭제']]",
@@ -292,7 +307,8 @@ XPATH = {
     "BTN_DELETE_CONFIRM" : "//button[normalize-space()='삭제']",
     "INPUT_SEARCH_CHAT" : '//input[@placeholder="Search"]',
     
-    
+    # E2E - 
+    # unit test - 
     # 메뉴 버튼 다시 정리
     "BTNS_HOME_MENU" : '//ul[contains(@class,"MuiList-root") and contains(@class,"EliceLayoutList-root")]',
     "MENU_ITEM_BY_TEXT" : './/li[.//span[normalize-space()="{text}"]]',
@@ -304,6 +320,17 @@ XPATH = {
         '//ul/li/a[starts-with(@href,"/ai-helpy-chat/chats/")]'
     ),
     "SEARCH_CHAT_ITEM_TEXT": './/div[contains(@class,"MuiListItemText-root")]/span[contains(@class,"MuiListItemText-primary")]',
+
+
+    "MESSAGE_XPATH" : {
+        "user": '//div[contains(@class,"css-12or7o0") and contains(@class,"eyhsuw33")]',
+        "ai": '//div[contains(@class,"css-h9lp2s") and contains(@class,"e1qzu3c82")]'
+    },
+    "LATEST_MESSAGE_XPATH" : '({base_xpath}//div[@data-status="complete"])[last()]',
+
+
+    "MAIN_CHAT_HAMBURGER" : "//div[@class='css-16qm689 eq52xil2']//button[.//svg[@data-testid='ellipsis-verticalIcon']]",
+
 
 }
 

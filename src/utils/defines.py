@@ -271,6 +271,7 @@ XPATH = {
     "BTN_SURE_RECREATE" : "//div[@role='dialog']//button[normalize-space()='다시 생성']",                   # 다른 도구에서도 같은지 확인 필요
     "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
 
+
     "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
     "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",
     "BTN_DOWNLOAD_RESULT" : "//a[contains(@href,'elicebackendstorage.blob.core.') and contains(@rel,'noopener noreferrer')]",
@@ -327,7 +328,6 @@ XPATH = {
         "ai": '//div[contains(@class,"css-h9lp2s") and contains(@class,"e1qzu3c82")]'
     },
     "LATEST_MESSAGE_XPATH" : '({base_xpath}//div[@data-status="complete"])[last()]',
-
 
     "MAIN_CHAT_HAMBURGER" : "//div[@class='css-16qm689 eq52xil2']//button[.//svg[@data-testid='ellipsis-verticalIcon']]",
 

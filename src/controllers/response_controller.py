@@ -18,6 +18,7 @@ class ResponseController:
             time.sleep(0.3)
         return False
     
+    
     # stop_time에 취소
     @staticmethod
     def wait_for_response_with_timeout(btn_stop, stop_time = STOPPED_MAX, timeout = TIMEOUT_MAX):

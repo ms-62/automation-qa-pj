@@ -2,15 +2,15 @@ from utils.headers import *
 
 from pages.model_setting_page import ModelSettingPage
 
-from utils.defines import DEFAULT_MODEL
-from utils.defines import ChatKey, ChatType, TestResult, ChatMenu
+from utils.defines import DEFAULT_MODEL, XPATH
+from utils.defines import ChatKey, ChatType, TestResult, ChatMenu, FilesType
 
 from test_logging.action_logger import log_action
 from utils.context import TextContext, ActionResult
 
 
 # ======================== E2E - AI 대화 시나리오 ==============================  
-# 테스트 케이스를 하나하나 테스트 하려니 시간이 너무 오래걸려서 기능 완성을 위해서 E2E 방식으로 진행. 
+# 테스트 케이스를 하나하나 테스트 하려니 시간이 너무 오래걸려서 E2E 방식으로 진행. 
 def test_conversation_scenario(logged_in_main, fm):
     page = logged_in_main
     
@@ -18,22 +18,23 @@ def test_conversation_scenario(logged_in_main, fm):
     ctx = TextContext(test_name, page="chat")
     start = time.perf_counter()
     try:
-        # page.click_btn_home_menu(ChatMenu.DEFAULT_CHAT)
-        # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
+        page.click_btn_home_menu(ChatMenu.DEFAULT_CHAT)
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
 
-        # result = TestResult.PASSED if page.compare_chats_after_user_send() else TestResult.FAILED
-        # log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "action_user_chat"))
+        result = TestResult.PASSED if page.compare_chats_after_user_send() else TestResult.FAILED
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "action_user_chat"))
         
-        page.select_latest_chat()
+        # page.select_latest_chat() 테스트 용도  
         
-        # ---------- user 행동          
-        #page.copy_last_question()
-        #log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "copy_last_question"))
+        # # ---------- user 행동          
+        page.copy_last_question()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "copy_last_question"))
         
-        #page.paste_last_question()
-        #log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "paste_last_question"))
+        page.paste_last_question()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "paste_last_question"))
         
-        #page.reset_chat()
+        page.reset_chat() 
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "reset_chat"))
         
         page.cancel_edit_question()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "cancel_edit_question"))
@@ -41,14 +42,11 @@ def test_conversation_scenario(logged_in_main, fm):
         page.send_after_edit_question()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "send_after_edit_question"))
 
-        # page.rename_main_chat() # 미구현
-        # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "rename_main_chat"))
-        
-        # page.delete_main_chat() # 미구현
-        # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "delete_main_chat"))
+        page.rename_main_chat()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "rename_main_chat"))
         
         # ---------- response 행동
-        page.select_latest_chat()
+        # page.select_latest_chat() 테스트용
                 
         page.click_btn_retry()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_retry"))
@@ -58,7 +56,11 @@ def test_conversation_scenario(logged_in_main, fm):
 
         page.paste_last_response()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "paste_last_response"))
-
+        
+        # 삭제는 마지막에 
+        result = TestResult.PASSED if page.delete_main_chat() else TestResult.FAILED
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "delete_main_chat"))
+        
         page.reset_chat()
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_conversation_scenario_ended"))
@@ -67,6 +69,7 @@ def test_conversation_scenario(logged_in_main, fm):
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+
 
     
 # # ====================== 스크롤  ============================== 
@@ -142,8 +145,8 @@ def test_conversation_scenario(logged_in_main, fm):
 #         page.scroll_up_past_chats()
 #         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_up_past_chats"))
 
-#         result = TestResult.PASSED if page.rename_chat() else TestResult.FAILED
-#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "rename_chat"))
+#         result = TestResult.PASSED if page.rename_past_chats() else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "rename_past_chats"))
 
 #         result = TestResult.PASSED if page.delete_chat() else TestResult.FAILED
 #         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "delete_chat"))
@@ -201,7 +204,7 @@ def test_conversation_scenario(logged_in_main, fm):
 #     log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
     
 #     elapsed = time.perf_counter() - start
-#     result = TestResult.PASSED if page.rename_chat() else TestResult.FAILED
+#     result = TestResult.PASSED if page.rename_past_chats() else TestResult.FAILED
 #     log_action(ctx, ActionResult(test_name, result, elapsed, detail = "PHC-TS03-TC021 ended"))
 
 
@@ -289,18 +292,25 @@ def test_conversation_scenario(logged_in_main, fm):
 #     ctx = TextContext(test_name, page="chat")
 #     start = time.perf_counter()
 #     try:
-#         page.upload_files()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="upload_files"))
+#         page.upload_files(FilesType.IMAGES_FORMAT)
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="upload_images"))
+
+#         page.upload_files(FilesType.ENABLED_FORMAT)
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="upload_enabled_files"))
         
-#         page.upload_multi_files()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="upload_multi_files"))
+#         result = TestResult.PASSED if page.upload_files(FilesType.DISABLED_FORMAT) else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="upload_DISABLED_FORMAT"))
         
+#         result = TestResult.PASSED if page.upload_multi_files() else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="upload_multi_files"))
+
 #         elapsed = time.perf_counter() - start
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_file_upload_scenario ended"))
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_file_upload_scenario ended")) # 20개 이상올렸으므로 test시나리오 성공으로 지정
 #     except:
 #         elapsed = time.perf_counter() - start
 #         fm.save_screenshot_png(page.driver, test_name)
 #         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+        
         
 # # ====================== 메뉴 테스트 ============================== 
 # def test_menu_scenario(logged_in_main):

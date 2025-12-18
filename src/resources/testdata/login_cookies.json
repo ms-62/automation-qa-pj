@@ -1,0 +1,45 @@
+{
+    "timestamp": 1766030085.5885017,
+    "cookies": [
+        {
+            "domain": ".elice.io",
+            "expiry": 1766031884,
+            "httpOnly": false,
+            "name": "ch-session-21195",
+            "path": "/",
+            "sameSite": "Lax",
+            "secure": false,
+            "value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZXMiLCJrZXkiOiIyMTE5NS02OTQzN2FlMTc1YjA4MTkyY2UxNCIsImlhdCI6MTc2NjAzMDA0OSwiZXhwIjoxNzY4NjIyMDQ5fQ.gkk-FmMtnb0WseFGI_vd546vfKwFUaEB9s9RbgBaB-4"
+        },
+        {
+            "domain": ".elice.io",
+            "expiry": 1800590084,
+            "httpOnly": false,
+            "name": "_ga_GQPNRX1WCB",
+            "path": "/",
+            "sameSite": "Lax",
+            "secure": false,
+            "value": "GS2.1.s1766030083$o1$g0$t1766030084$j59$l0$h0"
+        },
+        {
+            "domain": ".elice.io",
+            "expiry": 1797566084,
+            "httpOnly": false,
+            "name": "ch-veil-id",
+            "path": "/",
+            "sameSite": "Lax",
+            "secure": false,
+            "value": "8dd1b36e-f0de-4e44-ab8f-37ec59161980"
+        },
+        {
+            "domain": ".elice.io",
+            "expiry": 1800590083,
+            "httpOnly": false,
+            "name": "_ga",
+            "path": "/",
+            "sameSite": "Lax",
+            "secure": false,
+            "value": "GA1.1.23424586.1766030083"
+        }
+    ]
+}

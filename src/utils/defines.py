@@ -94,6 +94,15 @@ NAME = {
 # By.XPATH
 XPATH = {
     "BTN_LOGIN": "//button[normalize-space()='Login']",
+    "TXT_LOGIN_ERROR" : "//p[normalize-space()='Email or password does not match']",
+    "TXT_LOGIN_INVALID" :"//p[normalize-space()='Invalid email format.']",
+    "TXT_PW_INVALID" : "//p[normalize-space()='Please enter a password of at least 8 digits.']",    
+    "BTN_ACCOUNT" : "//button[contains(@class, 'css-jgzpb4')]",
+    "BTN_LOGOUT" : "//p[normalize-space()='로그아웃']/parent::div",
+    "BTN_VIEW_PASSWORD" : "//button[contains(@aria-label, 'View password')]",
+    "BTN_FORGOT_PASSWORD" : "//a[normalize-space()='Forgot your password?']",
+    "BTN_DIFF_ACCOUNT" : "//a[normalize-space()='Sign in with a different account']",
+    "BTN_REMOVE_HISTORY" : "//a[normalize-space()='Remove history']",
     "BTN_CREATE_ACCOUNT" : "//a[contains(@href, 'signup')]",
     "BTN_CREATE_EMAIL" : "//button",
     "SIGNUP_AGREE" : "//input[contains(@class, 'PrivateSwitchBase')]",
@@ -218,16 +227,15 @@ XPATH = {
     "BTN_SEARCH_WEB": "//li[.//span[text()='웹 검색']]",
     "FILE_INPUT" : "//input[@type='file']",
     
-<<<<<<< HEAD
     # 도구 탭 관련
     "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
     "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
     "SPECIAL_NOTE_PAGE_TITLE" : "//span[contains(text(),'세부 특기사항')]",
-    "SCHOOL_CLASS_DROPDOWN" : "//div[normalize-space()='학교급을 선택해주세요.']",
+    "SCHOOL_CLASS_DROPDOWN" : "//label[contains(normalize-space(), '학교급)]/following::div[contains(@class, 'css-1lcjmop')]",
     "ELEMENTARY_SCHOOL_CLASS" : "//li[normalize-space()='초등']",
     "MIDDLE_SCHOOL_CLASS" : "//li[normalize-space()='중등']",
     "HIGH_SCHOOL_CLASS" : "//li[normalize-space()='고등']",
-    "SUBJECT_DROPDOWN" : "//div[normalize-space()='과목을 선택해주세요.']",
+    "SUBJECT_DROPDOWN" : "//div[contains(@class,'Mui-focused') and contains(@class, 'css-1lcjmop')]",
     "FILE_UPLOAD_INPUT" : "//input[@type='file']",
     "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",   
     "BTN_ACHIEVEMENT" : "//a[contains(@href, '/stas.moe.go.kr/')]",
@@ -237,8 +245,9 @@ XPATH = {
     "BTN_SURE_RECREATE" : "//button[contains(@class, 'css-1thd9aa') and normalize-space()='다시 생성']",    # 다른 도구에서도 같은지 확인 필요
     "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
     "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
+    "CREATE_ABORT_MESSAGE" : "//div[contains(text(),'답변 생성을 중지했습니다.')]",
+    "BTN_DOWNLOAD_RESULT" : "//a[contains(@href,'elicebackendstorage.blob.core.') and contains(@rel,'noopener noreferrer')]",
     
-=======
     # 기존 대화창
     "SCROLL_PAST_CHATS" : "//div[@data-testid='virtuoso-scroller']",
     "CHANGE_NOWCHAT_NAME" : "//li[.//span[text()='이름 변경']]",
@@ -265,6 +274,5 @@ XPATH = {
     ),
     "SEARCH_CHAT_ITEM_TEXT": './/div[contains(@class,"MuiListItemText-root")]/span[contains(@class,"MuiListItemText-primary")]',
 
->>>>>>> master
 }
 

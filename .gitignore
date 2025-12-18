@@ -21,7 +21,8 @@ cookies.json
 htmlcov/
 
 # 스크린샷
-screenshots/
+reports/screenshots/
 
 # 로그
-logs/
+reports/logs/
+run.log

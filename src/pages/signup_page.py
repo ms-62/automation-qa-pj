@@ -2,7 +2,9 @@ from utils.headers import *
 
 from pages.base_page import BasePage
 from utils.defines import TARGET_URL, XPATH, ID, NAME
+import logging
 
+logger = logging.getLogger()
 class SignupPage(BasePage):
     def go_to_signup_page(self):
         self.go_to_page(TARGET_URL["MAIN_URL"])
@@ -13,7 +15,7 @@ class SignupPage(BasePage):
         create_withemail = self.get_element_by_xpath(XPATH["BTN_CREATE_EMAIL"])
         create_withemail.click()
         time.sleep(1)
-        print("회원 가입 페이지로 이동")
+        logger.info("회원 가입 페이지로 이동")
         
     def signup_email(self, email) :
         element = self.get_element_by_name(NAME["INPUT_ID"])
@@ -21,7 +23,7 @@ class SignupPage(BasePage):
         element.clear()
         element.send_keys(email)
         time.sleep(0.5)
-        print("이메일 입력 완료")
+        logger.info("이메일 입력 완료")
         return element
         
     def signup_pw(self, password) :
@@ -30,7 +32,7 @@ class SignupPage(BasePage):
         element.clear()
         element.send_keys(password)
         time.sleep(0.5)
-        print("비밀번호 입력 완료")
+        logger.info("비밀번호 입력 완료")
         return element
         
     def signup_name(self, name) :
@@ -39,7 +41,7 @@ class SignupPage(BasePage):
         element.clear()
         element.send_keys(name)
         time.sleep(0.5)
-        print("이름 입력 완료")
+        logger.info("이름 입력 완료")
         return element
         
     def checkbox_spread(self) :
@@ -61,8 +63,8 @@ class SignupPage(BasePage):
         
     def check_signup_success(self) :
         success = self.get_element_by_xpath(XPATH["CHECK_SIGNUP"])
-        print("회원가입 완료")
-        return success.text.strip()
+        logger.info("회원가입 완료")
+        return success
     
     def check_signup_fail(self) :
         fail = self.get_element_by_xpath(XPATH["SIGNUP_FAIL"])
@@ -70,7 +72,7 @@ class SignupPage(BasePage):
     
     def iframe_element(self) :
         iframe = self.get_element_by_xpath(XPATH["PASS_IFRAME"])
-        print("본인인증 화면 로드 완료")
+        logger.info("본인인증 화면 로드 완료")
         return iframe
     
     def iframe_pass_element(self) :

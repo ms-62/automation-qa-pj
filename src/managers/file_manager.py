@@ -17,6 +17,10 @@ class FileManager:
         
         self.report_log_dir = os.path.join(project_root, "reports", "logs")
         self.report_screenshot_dir = os.path.join(project_root, "reports", "screenshots")
+        
+        #log dir 없는 경우 자동 생성
+        os.makedirs(self.report_log_dir, exist_ok=True)
+        os.makedirs(self.report_screenshot_dir, exist_ok=True)
 
     # =================== 파일 가져오기 =========================
     def get_asset_path(self, file_name: str):
@@ -64,10 +68,14 @@ class FileManager:
             return
 
         fieldnames = list(file_data[0].keys())
+        
+        file_exists = os.path.exists(file_path)
+        is_empty = not file_exists or os.path.getsize(file_path) == 0
 
         with open(file_path, option, encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
+            if is_empty:
+                writer.writeheader()
             writer.writerows(file_data)
 
         print(f"CSV 저장 완료: {file_path}")

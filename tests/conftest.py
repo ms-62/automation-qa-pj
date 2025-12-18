@@ -14,6 +14,7 @@ from pages.member_page import MemberPage
 from pages.agent_page import AgentPage
 from pages.tools_page import ToolsPage
 from pages.security_page import SecurityPage, SecurityMainPage
+from test_logging.logging_config import setup_logging
 
 # session = 하나의 드라이버 공유
 @pytest.fixture(scope="session")
@@ -140,3 +141,8 @@ def logged_in_agent(driver, fm, login_page, main_page, member_page, agent_page, 
         browser_utils.auto_login(ctx)
 
     return agent_page
+
+#logging 에러용으로 사용하려고
+@pytest.fixture(scope="session", autouse=True)
+def _setup_logging_once():
+    setup_logging()

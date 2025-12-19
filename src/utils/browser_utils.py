@@ -42,11 +42,11 @@ class BrowserUtils:
         if self.is_logged_in(ctx.driver):
             return ctx.main_page
         
-        loaded = self.load_cookies(ctx.driver, ctx.fm, ctx.url, ctx.file_name)
-        if loaded:
-            ctx.main_page.go_to_main_page()
-            if self.is_logged_in(ctx.driver):
-                return ctx.main_page
+        # loaded = self.load_cookies(ctx.driver, ctx.fm, ctx.url, ctx.file_name)
+        # if loaded:
+        #     ctx.main_page.go_to_main_page()
+        #     if self.is_logged_in(ctx.driver):
+        #         return ctx.main_page
 
         el_id = ctx.login_page.get_element_by_name(NAME["INPUT_ID"], option="visibility")
         el_pw = ctx.login_page.get_element_by_name(NAME["INPUT_PW"], option="visibility")

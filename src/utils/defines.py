@@ -90,6 +90,7 @@ NAME = {
     "INPUT_PWD" :"password",
     "INPUT_NEW_PWD" : "newPassword",
     "TEACHER_COMMENT_AREA" : "teacher_comment",
+    "ACHIEVEMENT_STANDARD_AREA" : "achievement_criteria",
 }
 
 # By.XPATH
@@ -237,26 +238,46 @@ XPATH = {
     "BTN_SEARCH_WEB": "//li[.//span[text()='웹 검색']]",
     "FILE_INPUT" : "//input[@type='file']",
     
-    # 도구 탭 관련
+    ## 도구 탭 관련
+    # 공용으로 쓸만한 것
     "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
-    "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
-    "SPECIAL_NOTE_PAGE_TITLE" : "//span[contains(text(),'세부 특기사항')]",
-    "SCHOOL_CLASS_DROPDOWN" : "//label[contains(normalize-space(), '학교급)]/following::div[contains(@class, 'css-1lcjmop')]",
+    "SCHOOL_CLASS_DROPDOWN" : "//label[contains(normalize-space(), '학교급')]/following::div[@role='combobox'][1]",
     "ELEMENTARY_SCHOOL_CLASS" : "//li[normalize-space()='초등']",
     "MIDDLE_SCHOOL_CLASS" : "//li[normalize-space()='중등']",
     "HIGH_SCHOOL_CLASS" : "//li[normalize-space()='고등']",
-    "SUBJECT_DROPDOWN" : "//div[contains(@class,'Mui-focused') and contains(@class, 'css-1lcjmop')]",
-    "FILE_UPLOAD_INPUT" : "//input[@type='file']",
-    "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",   
+    "SUBJECT_DROPDOWN" : "//label[contains(normalize-space(), '과목')]/following::div[@role='combobox'][1]",
+    
+    "FILE_UPLOAD_INPUT" : "//input[@type='file' and contains(@accept,'.xls')]",
+    "VAILD_UPLOAD_FILE" : "//div[@data-scope='file-upload' and @data-part='item-preview']",
+    "UPLOAD_ERROR_TEXT" : "//*[contains(text(), '오류') or contains(text(), '에러')]",
     "BTN_ACHIEVEMENT" : "//a[contains(@href, '/stas.moe.go.kr/')]",
-    "DOWNLOAD_TEMPLATE" : "//a[contains(@href, 'student_evaluation_template.xlsx')]",
+    "DOWNLOAD_TEMPLATE" : "//a[contains(@href, '/elice-ai-helpy-chat/tools/templates/')]",
+    
     "BTN_AUTO_CREATE" : "//button[normalize-space()='자동 생성']",
+    "CREATE_ABORT_MESSAGE" : "//div[contains(text(),'답변 생성을 중지했습니다.')]",
+    "RECREATE_CONFIRM_MODAL" : "//div[@role='dialog']",
     "BTN_RECREATE" : "//button[contains(@class, 'css-1az3dby') and normalize-space()='다시 생성']",         # 다른 도구에서도 같은지 확인 필요
-    "BTN_SURE_RECREATE" : "//button[contains(@class, 'css-1thd9aa') and normalize-space()='다시 생성']",    # 다른 도구에서도 같은지 확인 필요
+    "BTN_SURE_RECREATE" : "//div[@role='dialog']//button[normalize-space()='다시 생성']",                   # 다른 도구에서도 같은지 확인 필요
     "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
     "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
-    "CREATE_ABORT_MESSAGE" : "//div[contains(text(),'답변 생성을 중지했습니다.')]",
+    "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",
     "BTN_DOWNLOAD_RESULT" : "//a[contains(@href,'elicebackendstorage.blob.core.') and contains(@rel,'noopener noreferrer')]",
+    
+    # 세부 특기사항
+    "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
+    "SPECIAL_NOTE_PAGE_TITLE" : "//span[contains(text(),'세부 특기사항')]",
+    
+    # 행동특성 및 종합의견
+    "BTN_OPINION_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/1beee8e2-9e5c-478f-bfc2-d98ce34a8240')]",
+    "OPINION_NOTE_PAGE_TITLE" : "//span[contains(text(),'행동특성 및 종합의견')]",
+    
+    # 수업지도안
+    "BTN_TEACHING_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/b641b251-ecad-4cf7-8375-4b87efa281e9')]",
+    "TEACHING_NOTE_PAGE_TITLE" : "//span[contains(text(),'수업지도안')]",
+    "GRADE_DROPDOWN" : "//label[contains(normalize-space(), '학년')]/following::div[@role='combobox'][1]",
+    "CLASS_TIME" : "//label[contains(normalize-space(), '수업 시간 (분)')]/following::div[@role='combobox'][1]",
+    "TEACHING_RESULT_VALID" : "//p[contains(.,'수업 지도안을 생성했습니다.')]",
+    
     
     # 기존 대화창
     "SCROLL_PAST_CHATS" : "//div[@data-testid='virtuoso-scroller']",

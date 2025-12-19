@@ -594,27 +594,44 @@ class MainPage(BasePage):
         ClipboardController.copy(file_path)
         ClipboardController.paste_file_path(file_path)
 
-    def action_upload_file(self, file_path):
-        self.paste_file_path_finder(file_path)
-        self.click_send()
-        ResponseController.wait_for_response_with_timeout(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]), stop_time=CHAT_TIME)
 
     def upload_files(self, format):
         files = self.fm.get_asset_files(format)
+        if not files:
+            return False 
+        
         for file in files:
-            self.action_upload_file(file_path = file)
-            time.sleep(1) 
-    
+            self.paste_file_path_finder(file)
+            self.click_send()
+            ResponseController.wait_for_response_with_timeout(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]), stop_time=CHAT_TIME)
+            
+            WebDriverWait(self.driver, WAIT_TIME).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, SELECTORS["BTN_UPLOAD_PLUS_CSS"]))
+            )
+        return True     
+            
     def upload_multi_files(self):
         files = self.fm.get_asset_files(".pdf")
-        files_sorted = sorted(files, key=lambda x: int(re.search(r'test_pdf_(\d+)\.pdf', x).group(1)))
+        if not files:
+            return False 
+        
+        matched_files = []
+        for f in files:
+            filename = os.path.basename(f)
+            match = re.search(r'test_pdf_(\d+)\.pdf', filename)
+            if match:
+                matched_files.append((f, int(match.group(1))))
+        
+        files_sorted = [f for f, _ in sorted(matched_files, key=lambda x: x[1])]
+        results = []
 
         for file in files_sorted:
-            result = self.paste_file_path_finder(file_path=file)
-            time.sleep(1) 
+            res = self.paste_file_path_finder(file_path=file)
+            results.append(res)
+
         self.click_send()
-        return result
-    
+        ResponseController.wait_for_response_with_timeout(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]), stop_time=CHAT_TIME)
+        return True 
 
 
 

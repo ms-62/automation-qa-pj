@@ -313,96 +313,96 @@ from utils.context import TextContext, ActionResult
 
 
 # # ====================== E2E 파일 업로드 ============================== 
-def test_file_upload_scenario(logged_in_main, fm):
-    page = logged_in_main
-
-    test_name = "test_file_upload_scenario"
-    ctx = TextContext(test_name, page="chat")
-    start = time.perf_counter()
-    try:
-        page.upload_files(FilesType.IMAGES_FORMAT)
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="upload_images"))
-
-        page.upload_files(FilesType.ENABLED_FORMAT)
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="upload_enabled_files"))
-        
-        result = TestResult.PASSED if page.upload_files(FilesType.DISABLED_FORMAT) else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="upload_DISABLED_FORMAT"))
-        
-        result = TestResult.PASSED if page.upload_multi_files() else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="upload_multi_files"))
-
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_file_upload_scenario ended")) # 20개 이상올렸으므로 test시나리오 성공으로 지정
-    except:
-        elapsed = time.perf_counter() - start
-        fm.save_screenshot_png(page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
-        raise
-        
-# # # ====================== 메뉴 테스트 ============================== 
-# def test_menu_scenario(logged_in_main):
+# def test_file_upload_scenario(logged_in_main, fm):
 #     page = logged_in_main
-    
-#     test_name = "test_menu_scenario"
+
+#     test_name = "test_file_upload_scenario"
 #     ctx = TextContext(test_name, page="chat")
 #     start = time.perf_counter()
 #     try:
-#         # 메뉴 접기, 열기 버튼이 사라졌어요!!
-#         #page.action_menu_arrow()
-#         #log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "action_menu_arrow"))
+#         page.upload_files(FilesType.IMAGES_FORMAT)
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="upload_images"))
 
-#         result = page.action_menu_bar()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = f"action_menu_bar => {result}"))
+#         page.upload_files(FilesType.ENABLED_FORMAT)
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="upload_enabled_files"))
+        
+#         result = TestResult.PASSED if page.upload_files(FilesType.DISABLED_FORMAT) else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="upload_DISABLED_FORMAT"))
+        
+#         result = TestResult.PASSED if page.upload_multi_files() else TestResult.FAILED
+#         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="upload_multi_files"))
 
-#         result = page.action_menu_bar()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = f"action_menu_bar => {result}"))
-        
-#         # 메뉴 접기, 열기 버튼이 사라졌어요!!
-#         # page.action_menu_arrow()
-#         # elapsed = time.perf_counter() - start
-#         # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= elapsed, detail="test_menu_scenario ended"))
-        
+#         elapsed = time.perf_counter() - start
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_file_upload_scenario ended")) # 20개 이상올렸으므로 test시나리오 성공으로 지정
 #     except:
 #         elapsed = time.perf_counter() - start
-#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed_time = elapsed))
+#         fm.save_screenshot_png(page.driver, test_name)
+#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+#         raise
+        
+# # # ====================== 메뉴 테스트 ============================== 
+def test_menu_scenario(logged_in_main):
+    page = logged_in_main
+    
+    test_name = "test_menu_scenario"
+    ctx = TextContext(test_name, page="chat")
+    start = time.perf_counter()
+    try:
+        # 메뉴 접기, 열기 버튼이 사라졌어요!!
+        #page.action_menu_arrow()
+        #log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "action_menu_arrow"))
+
+        result = page.action_menu_bar()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = f"action_menu_bar => {result}"))
+
+        result = page.action_menu_bar()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = f"action_menu_bar => {result}"))
+        
+        # 메뉴 접기, 열기 버튼이 사라졌어요!!
+        # page.action_menu_arrow()
+        # elapsed = time.perf_counter() - start
+        # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= elapsed, detail="test_menu_scenario ended"))
+        
+    except:
+        elapsed = time.perf_counter() - start
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed_time = elapsed))
     
     
     
 # # ======================== E2E - AI 모델 활성화 테스트 ============================== 
-# def test_model_scenario(logged_in_main, driver):
-#     logged_in_main
+def test_model_scenario(logged_in_main, driver):
+    logged_in_main
     
-#     model_page = ModelSettingPage(driver)
+    model_page = ModelSettingPage(driver)
     
-#     test_name = "test_model_setting"
-#     ctx = TextContext(test_name, page="chat")
-#     start = time.perf_counter()
-#     try:
-#         model_page.open_model_menu()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
+    test_name = "test_model_setting"
+    ctx = TextContext(test_name, page="chat")
+    start = time.perf_counter()
+    try:
+        model_page.open_model_menu()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
 
-#         model_page.select_last_model()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "select_last_model"))
+        model_page.select_last_model()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "select_last_model"))
 
-#         model_page.open_model_menu()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
+        model_page.open_model_menu()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
 
-#         model_page.go_to_model_setting()
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_to_model_setting"))
+        model_page.go_to_model_setting()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_to_model_setting"))
 
-#         model_page.toggle_all_models_and_verify()        
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "toggle_all_models_and_verify"))
+        model_page.toggle_all_models_and_verify()        
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "toggle_all_models_and_verify"))
 
-#         model_page.go_back() # 설정창 닫기
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_back"))
+        model_page.go_back() # 설정창 닫기
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_back"))
 
-#         model_page.compare_active_models()  # 드롭다운 검증
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "compare_active_models"))
+        model_page.compare_active_models()  # 드롭다운 검증
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "compare_active_models"))
 
-#         elapsed = time.perf_counter() - start
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_model_scenario_ended"))
+        elapsed = time.perf_counter() - start
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_model_scenario_ended"))
         
-#     except:
-#         elapsed = time.perf_counter() - start
-#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+    except:
+        elapsed = time.perf_counter() - start
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))

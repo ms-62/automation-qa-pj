@@ -37,7 +37,7 @@ def tools_page(driver):
 
 # 같은 driver로 로그인 보장
 @pytest.fixture
-def logged_in_agent(driver, fm, user_data):
+def logged_in_agent(driver, fm, user_data): 
     login_page = LoginPage(driver)
     main_page = MainPage(driver)
     member_page = MemberPage(driver)
@@ -70,16 +70,15 @@ def logged_in_agent(driver, fm, user_data):
     if not browser_utils.is_logged_in(driver):
         browser_utils.auto_login(ctx)
 
-    return agent_page
+    return tools_page
 
 
 # PHC-TS04-TC001: 세부 특기사항 탭 이동 테스트
-def test_go_to_special_note(logged_in_agent,fm):
+def test_go_to_special_note(logged_in_agent,tools_page,fm):
     test_name = "test_go_to_special_note"
     ctx = TextContext(test_name, page="tools_page")
     start = time.perf_counter()
-    
-    tools_page = logged_in_agent
+
     tools_page.go_to_tools_page()
     tools_page.click_special_note_page()
     assert tools_page.is_special_note_page(), "세부특기사항 탭으로 이동 실패"
@@ -541,7 +540,7 @@ def test_ppt_deepdive_input_info_result(logged_in_agent,tools_page):
     downloaded = wait_for_download_contains(download_dir, ext=".pptx", timeout=30)
     assert downloaded is not None, "다운로드가 안됨"
 
-################################################################################################
+###############################################################################################
 # 퀴즈 탭
 # PHC-TS04-TC044 : 퀴즈 탭 이동
 def test_go_to_quiz(logged_in_agent,tools_page, fm):
@@ -625,8 +624,8 @@ def test_quiz_create_abort(logged_in_agent,tools_page):
     assert tools_page.is_create_abort_page(), "생성 중지에 실패했습니다."
 
 
-################################################################################################
-# 심층조사 탭
+###############################################################################################
+## 심층조사 탭
 # PHC-TS04-TC053 : 심층조사 탭 이동
 def test_go_to_deepdive(logged_in_agent,tools_page, fm):
     test_name = "test_go_to_deepdive"
@@ -643,7 +642,7 @@ def test_deepdive_input_info_result(logged_in_agent,tools_page):
     # PHC-TS04-TC054: 정보 입력 및 결과 출력 확인
     tools_page.go_to_tools_page()
     tools_page.click_create_deepdive()
-    tools_page.deep_dive_input_information("보안테스팅","차트를 포함해서 작성해")
+    tools_page.deepdive_input_information("보안테스팅","차트를 포함해서 작성해")
     
     try:
         tools_page.click_auto_create_button()
@@ -662,7 +661,7 @@ def test_deepdive_input_info_result(logged_in_agent,tools_page):
         )
     
     # PHC-TS04-TC057: 마크다운 생성결과 다운받기 버튼 확인  
-    WebDriverWait(tools_page.driver, 300).until(
+    WebDriverWait(tools_page.driver, 600).until(
     EC.element_to_be_clickable(
         (By.XPATH, XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"])
         )
@@ -673,14 +672,10 @@ def test_deepdive_input_info_result(logged_in_agent,tools_page):
     download_dir = "src/resources/downloads"
     downloaded = wait_for_download_contains(download_dir, ext=".md", timeout=30)
     assert downloaded is not None, "다운로드가 안됨"
+    time.sleep(2)
     
     
-    # PHC-TS04-TC058: HWP 생성결과 다운받기 버튼 확인  
-    WebDriverWait(tools_page.driver, 300).until(
-    EC.element_to_be_clickable(
-        (By.XPATH, XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"])
-        )
-    )
+    # PHC-TS04-TC058: HWP 생성결과 다운받기 버튼 확인
     tools_page.click_deepdive_HWP_download_button()
     # 다운로드 확인 메서드
     download_dir = "src/resources/downloads"
@@ -691,7 +686,7 @@ def test_deepdive_input_info_result(logged_in_agent,tools_page):
 def test_deepdive_create_abort(logged_in_agent,tools_page):
     tools_page.go_to_tools_page()
     tools_page.click_create_deepdive()
-    tools_page.deep_dive_input_information("보안테스팅","차트를 포함해서 작성해")
+    tools_page.deepdive_input_information("보안테스팅","차트를 포함해서 작성해")
 
     try:
         tools_page.click_auto_create_button()
@@ -715,7 +710,7 @@ def test_deepdive_create_abort(logged_in_agent,tools_page):
 def test_ppt_create_reject(logged_in_agent,tools_page):
     tools_page.go_to_tools_page()
     tools_page.click_create_deepdive()
-    tools_page.deep_dive_input_information("보안테스팅","차트를 포함해서 작성해")
+    tools_page.deepdive_input_information("보안테스팅","차트를 포함해서 작성해")
 
     try:
         tools_page.click_auto_create_button()

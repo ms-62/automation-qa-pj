@@ -132,14 +132,6 @@ def logged_in_agent(driver, fm, login_page, main_page, member_page, agent_page, 
     )
     
     browser_utils = BrowserUtils()
-    # loaded = browser_utils.load_cookies(
-    #     driver=driver,
-    #     fm=fm,
-    #     url=TARGET_URL["MAIN_URL"],
-    #     file_name="cookies.json"
-    # )
-    
-    # if not browser_utils.is_logged_in(driver):
     browser_utils.auto_login(ctx)
 
     return agent_page

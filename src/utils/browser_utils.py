@@ -39,31 +39,41 @@ class BrowserUtils:
     
     def auto_login(self, ctx: LoginContext):
         ctx.main_page.go_to_main_page()
-        #loaded_cookies = self.load_cookies(ctx.driver, ctx.fm, ctx.url, ctx.file_name)
+        if self.is_logged_in(ctx.driver):
+            return ctx.main_page
+        
+        loaded = self.load_cookies(ctx.driver, ctx.fm, ctx.url, ctx.file_name)
+        if loaded:
+            ctx.main_page.go_to_main_page()
+            if self.is_logged_in(ctx.driver):
+                return ctx.main_page
 
-        #if not loaded_cookies:
         el_id = ctx.login_page.get_element_by_name(NAME["INPUT_ID"], option="visibility")
         el_pw = ctx.login_page.get_element_by_name(NAME["INPUT_PW"], option="visibility")
         user = ctx.user_data[-1]
         if el_id and el_pw:
             ctx.login_page.input_user_data(user)
-            ctx.login_page.click_login_button()
-            self.save_cookies(ctx.driver, ctx.fm, ctx.file_name)
         elif el_pw and not el_id:
             ctx.login_page.input_pw(user["password"])
-            ctx.login_page.click_login_button()
-            self.save_cookies(ctx.driver, ctx.fm, ctx.file_name)
         else:
             print("로그인 폼이 없으니까 로그인 스킵")
+        ctx.login_page.click_login_button()
 
+        if not self.is_logged_in(ctx.driver):
+            raise Exception("auto_login 실패: 로그인 성공 확인 불가")
+        self.save_cookies(ctx.driver, ctx.fm, ctx.file_name)
         return ctx.main_page
     
     # 수진 - 추가
     def is_logged_in(self, driver):
         try:
-            driver.find_element(By.XPATH, XPATH["AGENT_MENU_BTN"])
+            WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, XPATH["AGENT_MENU_BTN"])
+                )
+            )
             return True
-        except:
+        except TimeoutException:
             return False
 
         

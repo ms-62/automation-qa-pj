@@ -14,6 +14,13 @@ class BasePage:
         self.driver.get(url)
         time.sleep(1)
         
+    def find_element_presence_by_xpath(self, xpath, timeout=TIMEOUT_MAX):
+        try:
+            return WebDriverWait(self.driver, timeout).until(
+                EC.presence_of_element_located((By.XPATH, xpath))
+            )
+        except TimeoutException:
+            return None
     
     def get_element(self, by, value, option="presence", timeout=TIMEOUT_MAX):
         try:

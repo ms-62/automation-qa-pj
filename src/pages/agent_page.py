@@ -42,13 +42,13 @@ class AgentPage(BasePage) :
         result = self.get_element_by_xpath(XPATH["AGENT_SEARCH_NO_RESULT"])
         return result
     
+#============================= 에이전트 대화로 만들기 ==========================================================================
+        
     # 에이전트 만들기 창 들어가기
     def make_agent_screen(self) :
         element = self.get_element_by_xpath(XPATH["GO_MAKE_AGENT"])
         element.click()
     
-#============================= 에이전트 대화로 만들기 ==========================================================================
-        
     # 대화로 만들기 메뉴 버튼 클릭
     def go_to_make_chat(self) :
         self.get_element_by_xpath(XPATH["GO_TO_MAKE_CHAT"]).click()
@@ -242,7 +242,7 @@ class AgentPage(BasePage) :
         
     # 이미지 업로드 체크
     def check_upload_image(self) :
-        uploaded = self.get_element_by_xpath(XPATH["UPLOADED_IMAGE_PREVIEW"])
+        uploaded = self.get_element_by_xpath(XPATH["UPLOADED_IMAGE_PREVIEW"], timeout=10)
         return uploaded
     
     def check_upload_big_img(self) :
@@ -282,7 +282,7 @@ class AgentPage(BasePage) :
         
     # 파일 업로드 체크
     def check_upload_file(self) :
-        uploaded = self.get_element_by_xpath(XPATH["CHECK_UPLOADED_FILE"])
+        uploaded = self.get_element_by_xpath(XPATH["CHECK_UPLOADED_FILE"], timeout=3)
         return uploaded
     
     def check_fail_file_upload(self) :
@@ -586,7 +586,7 @@ class AgentPage(BasePage) :
         ClipboardController.paste_file_path(file_path)
         
     def check_file_upload_in_chat(self) :
-        element = self.get_element_by_xpath(XPATH["CHECK_FILE_IN_CHAT"])
+        element = self.get_element_by_xpath(XPATH["CHECK_FILE_IN_CHAT"], timeout=3)
         return element
     
     # 단일 사진 업로드
@@ -631,7 +631,7 @@ class AgentPage(BasePage) :
         btn = self.get_element_by_xpath(XPATH["DOWNSIZE_BTN"])
         btn.click()
         time.sleep(1)
-        element = self.get_element_by_xpath(XPATH["DOWNSIZE_BTN"])
+        element = self.get_element_by_xpath(XPATH["DOWNSIZE_BTN"], timeout=3)
         return element
         
     
@@ -714,7 +714,7 @@ class AgentPage(BasePage) :
 # =========================== 에이전트 삭제 ===================================================================
 
     def check_delete_in_agents(self) :
-        element = self.get_element_by_xpath(XPATH["DELETE_CHECK"])
+        element = self.get_element_by_xpath(XPATH["DELETE_CHECK"], timeout=5)
         return element
         
     def go_to_delete_in_agents(self) :
@@ -746,7 +746,7 @@ class AgentPage(BasePage) :
             time.sleep(0.5)
             
     def check_delete_in_my_agent(self) :
-        element = self.get_element_by_xpath(XPATH["DELETE_CHECK"])
+        element = self.get_element_by_xpath(XPATH["DELETE_CHECK"], timeout=5)
         return element
         
     def go_to_delete_in_my_agent(self) :

@@ -30,6 +30,11 @@ def signup_driver() :
     yield driver
     driver.quit()
 
+@pytest.fixture(scope="function")
+def login_driver() :
+    driver = create_driver()
+    yield driver
+    driver.quit()
     
 @pytest.fixture
 def fm():
@@ -38,6 +43,11 @@ def fm():
 @pytest.fixture
 def main_page(driver):
     page = MainPage(driver)
+    return page
+
+@pytest.fixture
+def login_page_test(login_driver):
+    page = LoginPage(login_driver)
     return page
 
 @pytest.fixture
@@ -122,15 +132,7 @@ def logged_in_agent(driver, fm, login_page, main_page, member_page, agent_page, 
     )
     
     browser_utils = BrowserUtils()
-    loaded = browser_utils.load_cookies(
-        driver=driver,
-        fm=fm,
-        url=TARGET_URL["MAIN_URL"],
-        file_name="cookies.json"
-    )
-    
-    if not browser_utils.is_logged_in(driver):
-        browser_utils.auto_login(ctx)
+    browser_utils.auto_login(ctx)
 
     return agent_page
 

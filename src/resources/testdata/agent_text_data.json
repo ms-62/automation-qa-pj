@@ -72,5 +72,20 @@
         "type" : "text",
         "content" : "자바스크립트가 무엇인가요?"
     }
+  ],
+
+  "preview_inputs" : [
+    {
+      "type" : "text",
+      "content" : "유머"
+    },
+    {
+      "type" : "text",
+      "content" : "유머에이전트"
+    },
+    {
+      "type" : "text",
+      "content" : "아무 유머나"
+    }
   ]
 }

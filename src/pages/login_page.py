@@ -62,18 +62,33 @@ class LoginPage(BasePage):
             return ""
         return element.text
     
-    def is_id_invalid(self) -> bool:
-        id_input = self.get_element_by_name(NAME["INPUT_ID"])
-        if id_input is None:
-            return False
-        return id_input.get_attribute("aria-invalid") == "true"
+    def is_id_invalid_msg_displayed(self):
+        element = self.get_element_by_xpath(XPATH["TXT_LOGIN_INVALID"])
+        return element is not None and element.is_displayed()
     
-    def is_pw_invalid(self) -> bool:
-        pw_input = self.get_element_by_name(NAME["INPUT_PW"])
-        if pw_input is None:
-            return False
-        return pw_input.get_attribute("aria-invalid") == "true"
+    def get_id_invalid_msg(self):
+        element = self.get_element_by_xpath(XPATH["TXT_LOGIN_INVALID"])
+        if element is None:
+            return ""
+        return element.text
     
+    def is_pw_invalid_msg_displayed(self):
+        element = self.get_element_by_xpath(XPATH["TXT_PW_INVALID"])
+        return element is not None and element.is_displayed()
+    
+    def get_pw_invalid_msg(self):
+        element = self.get_element_by_xpath(XPATH["TXT_PW_INVALID"])
+        if element is None:
+            return ""
+        return element.text
+    
+    def is_login_page(self):
+        try:
+            self.get_element_by_xpath(XPATH["BTN_LOGIN"])
+            return True
+        except:
+            return False
+
     def is_main_page(self):
         try:
             self.get_element_by_xpath(XPATH["AGENT_MENU_BTN"])
@@ -87,18 +102,18 @@ class LoginPage(BasePage):
         
     # 로그아웃 기능 메서드
     def click_account_button(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_ACCOUNT"]) # 아직 안됨
+        btn = self.get_element_by_xpath(XPATH["BTN_ACCOUNT"])
         btn.click()
         time.sleep(0.3)
         
     def click_logout_button(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_LOGOUT"]) # 아직 안됨
+        btn = self.get_element_by_xpath(XPATH["BTN_LOGOUT"])
         btn.click()
         time.sleep(0.3)
         
     def logout(self):
-        self.click_account_button
-        self.click_logout_button
+        self.click_account_button()
+        self.click_logout_button()
         time.sleep(0.3)
         
     def is_logged_out_page(self):
@@ -107,7 +122,7 @@ class LoginPage(BasePage):
     
     # View Password 기능 메서드
     def click_view_password_button(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_VIEW_PASSWORD"]) # 아직 안됨
+        btn = self.get_element_by_xpath(XPATH["BTN_VIEW_PASSWORD"])
         btn.click()
         time.sleep(0.3)
     
@@ -125,7 +140,7 @@ class LoginPage(BasePage):
     
     # Forgot password 기능 메서드
     def click_forgot_password_button(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_FORGOT_PASSWORD"]) # 아직 안됨
+        btn = self.get_element_by_xpath(XPATH["BTN_FORGOT_PASSWORD"])
         btn.click()
         time.sleep(0.3)
         
@@ -138,13 +153,13 @@ class LoginPage(BasePage):
         
     # Sign in with a different account 기능 메서드
     def click_diff_account_button(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_DIFF_ACCOUNT"]) # 아직 안됨
+        btn = self.get_element_by_xpath(XPATH["BTN_DIFF_ACCOUNT"])
         btn.click()
         time.sleep(0.3)   
     
     # Remove history 기능 메서드
     def click_remove_history_button(self):
-        btn = self.get_element_by_xpath(XPATH["BTN_REMOVE_HISTORY"]) # 아직 안됨
+        btn = self.get_element_by_xpath(XPATH["BTN_REMOVE_HISTORY"])
         btn.click()
         time.sleep(0.3)
         

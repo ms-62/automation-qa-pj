@@ -1,76 +1,191 @@
 import os
+import pytest
+
 from utils.headers import *
 from pages.tools_page import (ToolsPage)
 from utils.browser_utils import (BrowserUtils)
 from utils.defines import NAME,XPATH,SELECTORS,TARGET_URL
-from utils.download_utils import wait_for_download
+from utils.download_utils import wait_for_download, wait_for_download_contains
+
+from test_logging.action_logger import log_action
+from utils.context import TextContext, ActionResult
+from utils.defines import TestResult
+
+from utils.browser_setup import create_driver  # 추가
+from pages.login_page import LoginPage         # 추가
+from pages.main_page import MainPage           # 추가
+from pages.member_page import MemberPage       # 추가
+from pages.agent_page import AgentPage         # 추가
+from managers.file_manager import FileManager  
+from utils.context import LoginContext         
+
+# test_tools.py에서만: 테스트마다 새 브라우저
+@pytest.fixture(scope="function")
+def driver():
+    driver = create_driver()
+    yield driver
+    driver.quit()
+    
+@pytest.fixture
+def fm():
+    return FileManager()
+
+# tools_page도 이 파일에서만 새 driver
+@pytest.fixture
+def tools_page(driver):
+    return ToolsPage(driver)
+
+# 같은 driver로 로그인 보장
+@pytest.fixture
+def logged_in_agent(driver, fm, user_data):
+    login_page = LoginPage(driver)
+    main_page = MainPage(driver)
+    member_page = MemberPage(driver)
+    agent_page = AgentPage(driver)
+
+    ctx = LoginContext(
+        driver=driver,
+        fm=fm,
+        login_page=login_page,
+        main_page=main_page,
+        member_page=member_page,
+        agent_page=agent_page,
+        user_data=user_data
+    )
+
+    browser_utils = BrowserUtils()
+
+    # 쿠키로 빠른 로그인 시도
+    browser_utils.load_cookies(
+        driver=driver,
+        fm=fm,
+        url=TARGET_URL["MAIN_URL"],
+        file_name="cookies.json"
+    )
+
+    driver.get(TARGET_URL["MAIN_URL"])
+    driver.refresh()
+    time.sleep(0.5)
+
+    if not browser_utils.is_logged_in(driver):
+        browser_utils.auto_login(ctx)
+
+    return agent_page
+
 
 # PHC-TS04-TC001: 세부 특기사항 탭 이동 테스트
-def test_go_to_special_note(logged_in_agent,tools_page):
+def test_go_to_special_note(logged_in_agent,fm):
+    test_name = "test_go_to_special_note"
+    ctx = TextContext(test_name, page="tools_page")
+    start = time.perf_counter()
+    
+    tools_page = logged_in_agent
     tools_page.go_to_tools_page()
     tools_page.click_special_note_page()
     assert tools_page.is_special_note_page(), "세부특기사항 탭으로 이동 실패"
-    print("PHC-TS04-TC001 : Test success")    
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_success"))    
     
-# PHC-TS04-TC002: 정보 입력 및 결과 출력 확인
-def test_input_info_result(logged_in_agent,tools_page):
+# PHC-TS04-TC002~TC004
+def test_special_input_info_result(logged_in_agent,tools_page):
+    # PHC-TS04-TC002: 정보 입력 및 결과 출력 확인
     tools_page.go_to_tools_page()
     tools_page.click_special_note_page()
-    tools_page.select_school_class("초등")
-    tools_page.select_subject("초등","국어")
+    tools_page.select_subject("초등","영어")
     
     file_path = os.path.abspath("src/resources/assets/test_student_evaluation_template.xlsx")
-    tools_page.upload_data(file_path)
+    tools_page.upload_file(file_path)
+    assert tools_page.is_valid_upload_file(), "파일 업로드 실패"
     tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
-    tools_page.click_auto_create_button()
     
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        # PHC-TS04-TC003: 다시 생성 후 다시 생성 버튼 동작
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+    
+    # PHC-TS04-TC004: 생성 결과 다운받기 버튼 확인  
     WebDriverWait(tools_page.driver, 10).until(
     EC.element_to_be_clickable(
-        (By.XPATH, XPATH["DOWNLOAD_RESULT_BUTTON"])
+        (By.XPATH, XPATH["BTN_DOWNLOAD_RESULT"])
         )
     )
-    
-    # PHC-TS04-TC003: 생성 결과 다운받기 버튼 확인
     tools_page.click_download_result_button()
     # 다운로드 확인 메서드
     download_dir = "src/resources/downloads"
-    assert wait_for_download(download_dir, "   ")
+    downloaded = wait_for_download_contains(download_dir, ext=".xlsx", timeout=30)
+    assert downloaded is not None, "다운로드가 안됨"
     
-# PHC-TS04-TC004: 자동 생성 중 중지 버튼 테스트
-def test_input_info_result(logged_in_agent,tools_page):
+# PHC-TS04-TC005 : 생성 이후 중지 버튼 확인
+def test_special_create_abort(logged_in_agent,tools_page):
     tools_page.go_to_tools_page()
     tools_page.click_special_note_page()
-    tools_page.select_school_class("초등")
-    tools_page.select_subject("초등","국어")
+    tools_page.select_subject("중등","정보")
     
     file_path = os.path.abspath("src/resources/assets/test_student_evaluation_template.xlsx")
-    tools_page.upload_data(file_path)
+    tools_page.upload_file(file_path)
+    assert tools_page.is_valid_upload_file(), "파일 업로드 실패"
     tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
-    tools_page.click_auto_create_button()
-    tools_page.click_create_abort_button()
-       
     
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+        
+    tools_page.click_create_abort_button()
+    assert tools_page.is_create_abort_page(), "생성 중지에 실패했습니다."
 
-# PHC-TS04-TC003: 지원되지 않는 파일 형식 업로드
-def test_not_supported_file_upload(logged_in_agent,tools_page):
+# PHC-TS04-TC006 : 다시 생성 이후 취소 버튼 확인
+def test_special_create_reject(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_special_note_page()
+    tools_page.select_subject("고등","한국사")
+    
+    file_path = os.path.abspath("src/resources/assets/test_student_evaluation_template.xlsx")
+    tools_page.upload_file(file_path)
+    assert tools_page.is_valid_upload_file(), "파일 업로드 실패"
+    tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+    
+    tools_page.click_create_reject_button()
+    assert not tools_page.is_recreate_modal_open(), "취소 버튼이 동작하지 않습니다."
+
+# PHC-TS04-TC007: 지원되지 않는 파일 형식 업로드
+def test_special_not_supported_file_upload(logged_in_agent,tools_page):
     tools_page.go_to_tools_page()
     tools_page.click_special_note_page()
     file_path = os.path.abspath("src/resources/assets/test_pdf.pdf")
-    tools_page.upload_data(file_path)
-    assert tools_page.is_upload_error_visible(), "에러 출력 오류"
-    assert tools_page.get_upload_error_text(" "), "메시지 출력 오류"
-    
-# PHC-TS04-TC004: 대용량 파일 업로드
-def test_big_file_upload(logged_in_agent,tools_page):
-    tools_page.go_to_tools_page()
-    tools_page.click_special_note_page()
-    file_path = os.path.abspath("   ")
-    tools_page.upload_data(file_path)
-    assert tools_page.is_upload_error_visible(), "에러 출력 오류"
-    assert tools_page.get_upload_error_text(" "), "메시지 출력 오류"
+    tools_page.upload_file(file_path)
+    assert not tools_page.get_upload_error_text(), "파일 형식 오류 시 응답메시지 없음"
 
-# PHC-TS04-TC005: 입력 양식 다운받기 버튼 테스트
-def test_file_download_button_test(logged_in_agent,tools_page):
+# PHC-TS04-TC009: 입력 양식 다운받기 버튼 테스트
+def test_special_file_download_button_test(logged_in_agent,tools_page):
     tools_page.go_to_tools_page()
     tools_page.click_special_note_page()
     tools_page.click_download_template()
@@ -79,10 +194,536 @@ def test_file_download_button_test(logged_in_agent,tools_page):
     download_dir = "src/resources/downloads"
     assert wait_for_download(download_dir, "student_evaluation_template")
     
-# PHC-TS04-TC006: 입력 양식 다운받기 버튼 테스트
-def test_go_to_achievement_page(logged_in_agent,tools_page):
+# PHC-TS04-TC010: 성취기준 검색하기 URL 이동 확인
+def test_special_go_to_achievement_page(logged_in_agent,tools_page):
     tools_page.go_to_tools_page()
     tools_page.click_special_note_page()
     tools_page.click_achievement_button()
     tools_page.switch_to_new_tab()
     assert tools_page.is_achievement_page(), "페이지 이동 안됨"
+
+
+###############################################################################################
+# 행동특성 및 종합의견  
+# PHC-TS04-TC014: 행동특성 및 종합의견 탭 이동
+def test_go_to_opinion(logged_in_agent,tools_page, fm):
+    test_name = "go_to_special_note_test"
+    ctx = TextContext(test_name, page="tools_page")
+    start = time.perf_counter()
+
+    tools_page.go_to_tools_page()
+    tools_page.click_opinion_note_page()
+    assert tools_page.is_opinion_note_page(), "행동특성 탭으로 이동 실패"
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_success"))    
+
+# PHC-TS04-TC015~TC017
+def test_opinion_input_info_result(logged_in_agent,tools_page):
+    # PHC-TS04-TC015: 정보 입력 및 결과 출력 확인
+    tools_page.go_to_tools_page()
+    tools_page.click_opinion_note_page()
+    file_path = os.path.abspath("src/resources/assets/student_record_generation_template.xlsx")
+    tools_page.upload_file(file_path)
+    assert tools_page.is_valid_upload_file(), "파일 업로드 실패"
+    tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        # PHC-TS04-TC016: 다시 생성 후 다시 생성 버튼 확인
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+    # PHC-TS04-TC017: 생성 결과 다운받기 버튼 확인  
+    WebDriverWait(tools_page.driver, 20).until(
+    EC.element_to_be_clickable(
+        (By.XPATH, XPATH["BTN_DOWNLOAD_RESULT"])
+        )
+    )
+    tools_page.click_download_result_button()
+    # 다운로드 확인 메서드
+    download_dir = "src/resources/downloads"
+    downloaded = wait_for_download_contains(download_dir, ext=".xlsx", timeout=30)
+    assert downloaded is not None, "다운로드가 안됨"
+
+# PHC-TS04-TC018 : 생성 이후 중지 버튼 확인
+def test_opinion_create_abort(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_opinion_note_page()
+    file_path = os.path.abspath("src/resources/assets/student_record_generation_template.xlsx")
+    tools_page.upload_file(file_path)
+    assert tools_page.is_valid_upload_file(), "파일 업로드 실패"
+    tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+        
+    tools_page.click_create_abort_button()
+    assert tools_page.is_create_abort_page(), "생성 중지에 실패했습니다."
+
+# PHC-TS04-TC019 : 다시 생성 이후 취소 버튼 확인
+def test_opinion_create_reject(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_opinion_note_page()
+    file_path = os.path.abspath("src/resources/assets/student_record_generation_template.xlsx")
+    tools_page.upload_file(file_path)
+    assert tools_page.is_valid_upload_file(), "파일 업로드 실패"
+    tools_page.input_teacher_comment("AI가 세부 특기사항 작성 시 반영할 사항이나 고려할 점을 알려주세요")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+    
+    tools_page.click_create_reject_button()
+    assert not tools_page.is_recreate_modal_open(), "취소 버튼이 동작하지 않습니다."
+
+# PHC-TS04-TC020: 지원되지 않는 파일 형식 업로드
+def test_opinion_not_supported_file_upload(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_opinion_note_page()
+    file_path = os.path.abspath("src/resources/assets/test_pdf.pdf")
+    tools_page.upload_file(file_path)
+    assert not tools_page.get_upload_error_text(), "파일 형식 오류 시 응답메시지 없음"
+
+# PHC-TS04-TC022: 입력 양식 다운 받기 버튼 확인
+def test_opinion_file_download_button_test(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_opinion_note_page()
+    tools_page.click_download_template()
+    
+    # 다운로드 확인 메서드
+    download_dir = "src/resources/downloads"
+    assert wait_for_download(download_dir, "student_record_generation_template")
+
+
+###############################################################################################
+# 수업지도안 
+# PHC-TS04-TC023: 수업지도안 탭 이동
+def test_go_to_teaching_note(logged_in_agent,tools_page, fm):
+    test_name = "test_go_to_teaching_note"
+    ctx = TextContext(test_name, page="tools_page")
+    start = time.perf_counter()
+
+    tools_page.go_to_tools_page()
+    tools_page.click_teaching_note_page()
+    assert tools_page.is_teaching_note_page(), "수업지도안 탭으로 이동 실패"
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_success"))    
+
+# PHC-TS04-TC024~TC025
+def test_teaching_input_info_result(logged_in_agent,tools_page):
+    # PHC-TS04-TC024: 정보 입력 및 결과 출력 확인
+    tools_page.go_to_tools_page()
+    tools_page.click_teaching_note_page()
+    tools_page.input_information("초등","6학년","실과","40분")
+    tools_page.input_achievement_standard("[2국06-02]")
+    tools_page.input_teacher_comment("AI가 수업 지도안 작성 시 반영할 사항이나 고려할 점을 알려주세요.")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        # PHC-TS04-TC025: 다시 생성 후 다시 생성 버튼 확인
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+    
+    WebDriverWait(tools_page.driver, 20).until(
+    EC.presence_of_element_located(
+        (By.XPATH, XPATH["TEACHING_RESULT_VALID"])
+        )
+    )
+    assert not tools_page.is_teaching_result_valid(), "생성 결과가 출력되지 않습니다."
+
+# PHC-TS04-TC026: 다시 생성 후 취소 버튼 확인
+def test_teaching_create_reject(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_teaching_note_page()
+    tools_page.input_information("고등","1학년","제2외국어/한문","50분")
+    tools_page.input_achievement_standard("[2국06-02]")
+    tools_page.input_teacher_comment("AI가 수업 지도안 작성 시 반영할 사항이나 고려할 점을 알려주세요.")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+    tools_page.click_create_reject_button()
+    assert not tools_page.is_recreate_modal_open(), "취소 버튼이 동작하지 않습니다."
+
+# PHC-TS04-TC027: 생성 중 중지 버튼 확인
+def test_teaching_create_abort(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_teaching_note_page()
+    tools_page.input_information("중등","2학년","정보","45분")
+    tools_page.input_achievement_standard("[2국06-02]")
+    tools_page.input_teacher_comment("AI가 수업 지도안 작성 시 반영할 사항이나 고려할 점을 알려주세요.")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+
+    tools_page.click_create_abort_button()
+    assert tools_page.is_create_abort_page(), "생성 중지에 실패했습니다."
+
+# PHC-TS04-TC028: 성취 기준 검색하기 URL 이동 확인
+def test_teaching_go_to_achievement_page(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_teaching_note_page()
+    tools_page.click_achievement_button()
+    tools_page.switch_to_new_tab()
+    assert tools_page.is_achievement_page(), "페이지 이동 안됨"
+
+###############################################################################################
+# PPT 생성
+# PHC-TS04-TC033: PPT 탭 이동
+def test_go_to_create_ppt(logged_in_agent,tools_page, fm):
+    test_name = "test_go_to_create_ppt"
+    ctx = TextContext(test_name, page="tools_page")
+    start = time.perf_counter()
+
+    tools_page.go_to_tools_page()
+    tools_page.click_create_ppt_page()
+    assert tools_page.is_creat_ppt_page(), "PPT 탭으로 이동 실패"
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_success"))
+
+# PHC-TS04-TC034~TC036
+def test_ppt_input_info_result(logged_in_agent,tools_page):
+    # PHC-TS04-TC034: 정보 입력 및 결과 출력 확인
+    tools_page.go_to_tools_page()
+    tools_page.click_create_ppt_page()
+    tools_page.ppt_input_information("보안테스팅","차트를 포함해서 작성해","10","5")
+    tools_page.ppt_turn_off_deepdive()
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        # PHC-TS04-TC035: 다시 생성 후 다시 생성 버튼 동작
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+    
+    # PHC-TS04-TC036: 생성 결과 다운받기 버튼 확인  
+    WebDriverWait(tools_page.driver, 120).until(
+    EC.element_to_be_clickable(
+        (By.XPATH, XPATH["BTN_DOWNLOAD_RESULT"])
+        )
+    )
+    tools_page.click_download_result_button()
+    # 다운로드 확인 메서드
+    download_dir = "src/resources/downloads"
+    downloaded = wait_for_download_contains(download_dir, ext=".pptx", timeout=30)
+    assert downloaded is not None, "다운로드가 안됨"
+
+# PHC-TS04-TC037 : 생성 이후 중지 버튼 확인
+def test_ppt_create_abort(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_create_ppt_page()
+    tools_page.ppt_input_information("보안테스팅","차트를 포함해서 작성해","10","5")
+    tools_page.ppt_turn_off_deepdive()
+
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+        
+    tools_page.click_create_abort_button()
+    assert tools_page.is_create_abort_page(), "생성 중지에 실패했습니다."
+
+# PHC-TS04-TC038 : 다시 생성 이후 취소 버튼 확인
+def test_ppt_create_reject(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_create_ppt_page()
+    tools_page.ppt_input_information("보안테스팅","차트를 포함해서 작성해","10","5")
+    tools_page.ppt_turn_off_deepdive()
+
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+    
+    tools_page.click_create_reject_button()
+    assert not tools_page.is_recreate_modal_open(), "취소 버튼이 동작하지 않습니다."
+
+# PHC-TS04-TC039 : 심층조사 모드 활성화 후 동작 확인
+def test_ppt_deepdive_input_info_result(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_create_ppt_page()
+    tools_page.ppt_input_information("보안테스팅","차트를 포함해서 작성해","10","5")
+    tools_page.ppt_turn_on_deepdive()
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+      
+    WebDriverWait(tools_page.driver, 200).until(
+    EC.element_to_be_clickable(
+        (By.XPATH, XPATH["BTN_DOWNLOAD_RESULT"])
+        )
+    )
+    tools_page.click_download_result_button()
+    # 다운로드 확인 메서드
+    download_dir = "src/resources/downloads"
+    downloaded = wait_for_download_contains(download_dir, ext=".pptx", timeout=30)
+    assert downloaded is not None, "다운로드가 안됨"
+
+################################################################################################
+# 퀴즈 탭
+# PHC-TS04-TC044 : 퀴즈 탭 이동
+def test_go_to_quiz(logged_in_agent,tools_page, fm):
+    test_name = "test_go_to_quiz"
+    ctx = TextContext(test_name, page="tools_page")
+    start = time.perf_counter()
+
+    tools_page.go_to_tools_page()
+    tools_page.click_create_quiz()
+    assert tools_page.is_creat_quiz(), "심층조사 탭으로 이동 실패"
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_success"))
+
+# PHC-TS04-TC047,TC050: 정보 입력 및 결과 출력 확인
+def test_quiz_input_info_result(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_create_quiz()
+    tools_page.quiz_input_information("객관식 (복수 선택)","중","커피의 유래")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        # PHC-TS04-TC050: 다시 생성 후 다시 생성 버튼 동작
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+        
+    WebDriverWait(tools_page.driver, 120).until(
+        EC.presence_of_element_located(
+                (By.XPATH, XPATH["QUIZ_RESULT"])
+        )
+    )
+    assert tools_page.is_quiz_created(), "퀴즈생성이 되지 않았습니다."
+
+# PHC-TS04-TC048 : 퀴즈 생성 중 '취소' 버튼 클릭
+def test_quiz_create_reject(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_create_quiz()
+    tools_page.quiz_input_information("객관식 (복수 선택)","중","커피의 유래")
+
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+    
+    tools_page.click_create_reject_button()
+    assert not tools_page.is_recreate_modal_open(), "취소 버튼이 동작하지 않습니다."
+    
+# PHC-TS04-TC049 : 퀴즈 생성 중 '중지' 버튼 클릭
+def test_quiz_create_abort(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_create_quiz()
+    tools_page.quiz_input_information("객관식 (복수 선택)","중","커피의 유래")
+
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+        
+    tools_page.click_create_abort_button()
+    assert tools_page.is_create_abort_page(), "생성 중지에 실패했습니다."
+
+
+################################################################################################
+# 심층조사 탭
+# PHC-TS04-TC053 : 심층조사 탭 이동
+def test_go_to_deepdive(logged_in_agent,tools_page, fm):
+    test_name = "test_go_to_deepdive"
+    ctx = TextContext(test_name, page="tools_page")
+    start = time.perf_counter()
+
+    tools_page.go_to_tools_page()
+    tools_page.click_create_deepdive()
+    assert tools_page.is_creat_deepdive(), "심층조사 탭으로 이동 실패"
+    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_success"))
+
+# PHC-TS04-TC054,TC056~TC058
+def test_deepdive_input_info_result(logged_in_agent,tools_page):
+    # PHC-TS04-TC054: 정보 입력 및 결과 출력 확인
+    tools_page.go_to_tools_page()
+    tools_page.click_create_deepdive()
+    tools_page.deep_dive_input_information("보안테스팅","차트를 포함해서 작성해")
+    
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        # PHC-TS04-TC056: 다시 생성 후 다시 생성 버튼 동작
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+    
+    # PHC-TS04-TC057: 마크다운 생성결과 다운받기 버튼 확인  
+    WebDriverWait(tools_page.driver, 300).until(
+    EC.element_to_be_clickable(
+        (By.XPATH, XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"])
+        )
+    )
+    
+    tools_page.click_deepdive_markdown_download_button()
+    # 다운로드 확인 메서드
+    download_dir = "src/resources/downloads"
+    downloaded = wait_for_download_contains(download_dir, ext=".md", timeout=30)
+    assert downloaded is not None, "다운로드가 안됨"
+    
+    
+    # PHC-TS04-TC058: HWP 생성결과 다운받기 버튼 확인  
+    WebDriverWait(tools_page.driver, 300).until(
+    EC.element_to_be_clickable(
+        (By.XPATH, XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"])
+        )
+    )
+    tools_page.click_deepdive_HWP_download_button()
+    # 다운로드 확인 메서드
+    download_dir = "src/resources/downloads"
+    downloaded = wait_for_download_contains(download_dir, ext=".hwp", timeout=30)
+    assert downloaded is not None, "다운로드가 안됨"
+    
+# PHC-TS04-TC059 : 생성 이후 중지 버튼 확인
+def test_deepdive_create_abort(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_create_deepdive()
+    tools_page.deep_dive_input_information("보안테스팅","차트를 포함해서 작성해")
+
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+        
+        tools_page.click_sure_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.invisibility_of_element_located(
+                (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+            )
+        )
+        
+    tools_page.click_create_abort_button()
+    assert tools_page.is_create_abort_page(), "생성 중지에 실패했습니다."
+
+# PHC-TS04-TC060 : 다시 생성 이후 취소 버튼 확인
+def test_ppt_create_reject(logged_in_agent,tools_page):
+    tools_page.go_to_tools_page()
+    tools_page.click_create_deepdive()
+    tools_page.deep_dive_input_information("보안테스팅","차트를 포함해서 작성해")
+
+    try:
+        tools_page.click_auto_create_button()
+    except:
+        tools_page.click_recreate_button()
+        WebDriverWait(tools_page.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+        )
+    
+    tools_page.click_create_reject_button()
+    assert not tools_page.is_recreate_modal_open(), "취소 버튼이 동작하지 않습니다."

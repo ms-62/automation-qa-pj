@@ -5,7 +5,7 @@ SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 FULLSCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 TIMEOUT_MAX = 20
 STOPPED_MAX = 15
-STEP = 500
+STEP = 200
 
 class ChatType:
     TEXT = "text"               # 질문/일반 텍스트
@@ -31,7 +31,15 @@ class ChatMenu:
     SEARCH_CHAT = "검색"
     TOOLS_CHAT = "도구"
     AGENT_CHAT = "에이전트 탐색"
-    
+
+class FilesType:
+    IMAGES_FORMAT = (".jpg", ".png")
+    ENABLED_FORMAT = (".csv",)        
+    DISABLED_FORMAT = (".psd", ".exe", ".zip")
+    BIGSIZED_FORMAT = (".md",)
+    MULTI_FORMAT = (".pdf",)
+
+
 TARGET_URL = {
     "MAIN_URL": "https://qaproject.elice.io/ai-helpy-chat",
     "LOGIN_URL": "https://accounts.elice.io/accounts/signin/me?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat&lang=en-US&org=qaproject"
@@ -69,7 +77,7 @@ SELECTORS = {
     "BTN_EDIT_NOWCHAT" : "button[data-testid='ellipsis-verticalIcon']",
     "BTN_EDIT_PASTCHAT": "div.menu-button button",
     "INPUT_CHAT_NAME" : "input[name='name']",
-
+    #"SCROLL_MAIN_CHAT" : "div.css-134v8t0.es3brm60",
 
 }
 
@@ -90,11 +98,27 @@ NAME = {
     "INPUT_PWD" :"password",
     "INPUT_NEW_PWD" : "newPassword",
     "TEACHER_COMMENT_AREA" : "teacher_comment",
+    "ACHIEVEMENT_STANDARD_AREA" : "achievement_criteria",
+    "TOPIC": "topic",
+    "INSTRUCTION" : "instructions",
+    "PPT_NUM_SLIDE" : "slides_count",
+    "PPT_NUM_SECTION" : "section_count",
+    "BTN_DEEP_DIVE" : "simple_mode",
+    "QUIZ_TOPIC" : "content",
 }
 
 # By.XPATH
 XPATH = {
     "BTN_LOGIN": "//button[normalize-space()='Login']",
+    "TXT_LOGIN_ERROR" : "//p[normalize-space()='Email or password does not match']",
+    "TXT_LOGIN_INVALID" :"//p[normalize-space()='Invalid email format.']",
+    "TXT_PW_INVALID" : "//p[normalize-space()='Please enter a password of at least 8 digits.']",    
+    "BTN_ACCOUNT" : "//button[contains(@class, 'css-jgzpb4')]",
+    "BTN_LOGOUT" : "//p[normalize-space()='로그아웃']/parent::div",
+    "BTN_VIEW_PASSWORD" : "//button[contains(@aria-label, 'View password')]",
+    "BTN_FORGOT_PASSWORD" : "//a[normalize-space()='Forgot your password?']",
+    "BTN_DIFF_ACCOUNT" : "//a[normalize-space()='Sign in with a different account']",
+    "BTN_REMOVE_HISTORY" : "//a[normalize-space()='Remove history']",
     "BTN_CREATE_ACCOUNT" : "//a[contains(@href, 'signup')]",
     "BTN_CREATE_EMAIL" : "//button",
     "SIGNUP_AGREE" : "//input[contains(@class, 'PrivateSwitchBase')]",
@@ -139,13 +163,17 @@ XPATH = {
     "LANG_ROW" :  "//div[contains(@class,'MuiStack-root')][.//h2[normalize-space(.)='선호 언어']]",
     "SOCIAL_ROW" :  "//h2[contains(@class,'MuiTypography-body1')][normalize-space(.)='소셜 연결 계정']",
     "LANG_ROW_ENG" :  "//div[contains(@class,'MuiStack-root')][.//h2[normalize-space(.)='language']]",
-    
-    "BTN_COPY_QUESTION" : "//div[@data-floating='true'])[last()]",  # 이거 해야함 
+    "TOOLTIP": '//div[@role="tooltip" or @data-floating="true"]',
+    "BTN_TOOLTIP_COPY" : './/button[@aria-label="복사"]',
+    "BTN_TOOLTIP_EDIT" : './/button[@aria-label="수정"]',
     "BTN_STOP" : '//button[@aria-label="취소"]',
+    "BTN_EDIT_AREA" : '//textarea[@name="input"]', # 보낸 채팅 edit 창
+    "BTN_EDIT_SEND" : '//button[@type="button" and normalize-space()="보내기"]', # edit 채팅 보내기
+    "BTN_EDIT_CANCEL" : '//button[normalize-space()="취소"]',
     
     # 메인 화면 '메뉴' 확인용
-    "BTN_MENU_OPEN": "//button[normalize-space(.)='메뉴 열기']",
-    "BTN_MENU_CLOSE": "//button[normalize-space(.)='메뉴 접기']",
+    "BTN_MENU_HAMBURGER": "//button[contains(@class,'EliceLayoutSidenavHamburger-root')]",
+    #"BTN_MENU_CLOSE": "//button[normalize-space(.)='메뉴 접기']",
         
     # ai 모델
     "BTN_MODEL_DROPDOWN" : '//button[.//p[normalize-space()="{model_name}"]]',
@@ -199,7 +227,7 @@ XPATH = {
     "FAIL_UPLOAD_FILE" : "//*[name()='svg' and @data-testid='circle-exclamationIcon']",
     "FAIL_UPLOAD_FILE_MSG" : "//p[contains(@class, 'css-wrn3u')]",
     "BTN_FOR_UPLOADED_FILE" : "//button[contains(@class, 'css-1rssx7s')]",
-    "BTN_BACK_IN_MAKE_AGENT" : "//button[contains(@class, 'css-1p4tfme')]",
+    "BTN_BACK_IN_MAKE_AGENT" : "//div[contains(@class, 'css-cbovu4')]//button",
     "CHECK_DRAFT" : "//div[contains(@class, 'css-1alszk2')]",
     "PREVIEW_INPUT" :"//textarea[@data-gtm-form-interact-field-id = '5']",
     "BTN_PREVIEW_SEND" : "//button[contains(@class, 'css-rhb320')]",
@@ -230,27 +258,70 @@ XPATH = {
     
     # 도구 탭 관련
     "BTN_TOOLS" : "//a[contains(@href, '/ai-helpy-chat/tools')]",
-    "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
-    "SPECIAL_NOTE_PAGE_TITLE" : "//span[contains(text(),'세부 특기사항')]",
-    "SCHOOL_CLASS_DROPDOWN" : "//div[normalize-space()='학교급을 선택해주세요.']",
+    "SCHOOL_CLASS_DROPDOWN" : "//label[contains(normalize-space(), '학교급')]/following::div[@role='combobox'][1]",
     "ELEMENTARY_SCHOOL_CLASS" : "//li[normalize-space()='초등']",
     "MIDDLE_SCHOOL_CLASS" : "//li[normalize-space()='중등']",
     "HIGH_SCHOOL_CLASS" : "//li[normalize-space()='고등']",
-    "SUBJECT_DROPDOWN" : "//div[normalize-space()='과목을 선택해주세요.']",
-    "FILE_UPLOAD_INPUT" : "//input[@type='file']",
-    "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",   
-    "BTN_ACHIEVEMENT" : "//a[contains(@href, '/stas.moe.go.kr/')]",
-    "DOWNLOAD_TEMPLATE" : "//a[contains(@href, 'student_evaluation_template.xlsx')]",
-    "BTN_AUTO_CREATE" : "//button[normalize-space()='자동 생성']",
-    "BTN_RECREATE" : "//button[contains(@class, 'css-1az3dby') and normalize-space()='다시 생성']",         # 다른 도구에서도 같은지 확인 필요
-    "BTN_SURE_RECREATE" : "//button[contains(@class, 'css-1thd9aa') and normalize-space()='다시 생성']",    # 다른 도구에서도 같은지 확인 필요
-    "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
-    "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
+    "SUBJECT_DROPDOWN" : "//label[contains(normalize-space(), '과목')]/following::div[@role='combobox'][1]",
     
+    "FILE_UPLOAD_INPUT" : "//input[@type='file' and contains(@accept,'.xls')]",
+    "VAILD_UPLOAD_FILE" : "//div[@data-scope='file-upload' and @data-part='item-preview']",
+    "UPLOAD_ERROR_TEXT" : "//*[contains(text(), '오류') or contains(text(), '에러')]",
+    "BTN_ACHIEVEMENT" : "//a[contains(@href, '/stas.moe.go.kr/')]",
+    "DOWNLOAD_TEMPLATE" : "//a[contains(@href, '/elice-ai-helpy-chat/tools/templates/')]",
+    
+    "BTN_AUTO_CREATE" : "//button[normalize-space()='자동 생성']",
+    "CREATE_ABORT_MESSAGE" : "//div[contains(text(),'답변 생성을 중지했습니다.')]",
+    "RECREATE_CONFIRM_MODAL" : "//div[@role='dialog']",
+    "BTN_RECREATE" : "//button[contains(@class, 'css-1az3dby') and normalize-space()='다시 생성']", 
+    "BTN_SURE_RECREATE" : "//div[@role='dialog']//button[normalize-space()='다시 생성']",
+    "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
+
+
+    "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]", 
+    "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",
+    "BTN_DOWNLOAD_RESULT" : "//a[contains(@href,'elicebackendstorage.blob.core.') and contains(@rel,'noopener noreferrer')]",
+    
+    # 세부 특기사항
+    "BTN_SPECIAL_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/dd9d89e7-7bb4-465c-aeed-d96986e21c4d')]",
+    "SPECIAL_NOTE_PAGE_TITLE" : "//span[contains(text(),'세부 특기사항')]",
+    
+    # 행동특성 및 종합의견
+    "BTN_OPINION_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/1beee8e2-9e5c-478f-bfc2-d98ce34a8240')]",
+    "OPINION_NOTE_PAGE_TITLE" : "//span[contains(text(),'행동특성 및 종합의견')]",
+    
+    # 수업지도안
+    "BTN_TEACHING_NOTE_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/b641b251-ecad-4cf7-8375-4b87efa281e9')]",
+    "TEACHING_NOTE_PAGE_TITLE" : "//span[contains(text(),'수업지도안')]",
+    "GRADE_DROPDOWN" : "//label[contains(normalize-space(), '학년')]/following::div[@role='combobox'][1]",
+    "CLASS_TIME" : "//label[contains(normalize-space(), '수업 시간 (분)')]/following::div[@role='combobox'][1]",
+    "TEACHING_RESULT_VALID" : "//p[contains(.,'수업 지도안을 생성했습니다.')]",
+    
+    # PPT 탭
+    "BTN_CREATE_PPT_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/b11ea464-c1bc-45e0-8140-85e38f5ec1e1')]",
+    "CREATE_PPT_PAGE_TITLE" : "//span[contains(text(),'PPT 생성')]",
+    "ON_DEEP_DIVE" : "//input[@value='false']",
+    
+    # 퀴즈생성 탭
+    "BTN_CREATE_QUIZ" : "//a[contains(@href, '/ai-helpy-chat/tools/98b00265-c2fb-43cc-8785-5330e18f8c28')]",
+    "CREATE_QUIZ_TITLE" : "//span[contains(text(),'퀴즈 생성')]",
+    "CATEGORY_DROPDOWN" : "//label[contains(normalize-space(), '유형')]/following::div[@role='combobox'][1]",
+    "DIFFICULTY_DROPDOWN" : "//label[contains(normalize-space(), '난이도')]/following::div[@role='combobox'][1]",
+    "QUIZ_RESULT" : "//p[contains(normalize-space(),'퀴즈를 생성했습니다.')]",
+    
+    # 심층조사 탭
+    "BTN_CREATE_DEEPDIVE" : "//a[contains(@href, '/ai-helpy-chat/tools/50d0e558-488c-4ed6-8d1a-dcb16dd2cb6d')]",
+    "CREATE_DEEPDIVE_TITLE" : "//span[contains(text(),'심층 조사')]",
+    "BTN_DOWNLOAD_DEEPDIVE_RESULT" : "//button[contains(.,'다운받기')]",
+    "BTN_DOWNLOAD_DEEPDIVE_MARKDOWN" : "//span[normalize-space()='마크다운 다운로드']/ancestor::a",
+    "BTN_DOWNLOAD_DEEPDIVE_HWP" : "//span[normalize-space()='HWP파일 다운로드']/ancestor::a",
+    
+
+
     # 기존 대화창
     "SCROLL_PAST_CHATS" : "//div[@data-testid='virtuoso-scroller']",
-    "CHANGE_NOWCHAT_NAME" : "//li[.//span[text()='이름 변경']]",
-    "DELETE_NOWCHAT" : "//li[.//p[text()='삭제']]",
+    "CHANGE_NOWCHAT_NAME" : "//li[.//span[text()='이름 변경']]", # main과 기존대화랑 동일사용
+    "DELETE_NOWCHAT" : "//li[.//p[text()='삭제']]", # main과 기존대화랑 동일사용
 
     "BTN_CHANGE_PAST_NAME" : ".//li[.//span[text()='이름 변경']]",
     "BTN_DELETE_PAST" : ".//li[.//p[text()='삭제']]",
@@ -260,7 +331,8 @@ XPATH = {
     "BTN_DELETE_CONFIRM" : "//button[normalize-space()='삭제']",
     "INPUT_SEARCH_CHAT" : '//input[@placeholder="Search"]',
     
-    
+    # E2E - 
+    # unit test - 
     # 메뉴 버튼 다시 정리
     "BTNS_HOME_MENU" : '//ul[contains(@class,"MuiList-root") and contains(@class,"EliceLayoutList-root")]',
     "MENU_ITEM_BY_TEXT" : './/li[.//span[normalize-space()="{text}"]]',
@@ -273,5 +345,20 @@ XPATH = {
     ),
     "SEARCH_CHAT_ITEM_TEXT": './/div[contains(@class,"MuiListItemText-root")]/span[contains(@class,"MuiListItemText-primary")]',
 
+
+    "MESSAGE_XPATH" : {
+        "user": '//div[contains(@class,"css-12or7o0") and contains(@class,"eyhsuw33")]',
+        "ai": '//div[contains(@class,"css-h9lp2s") and contains(@class,"e1qzu3c82")]'
+    },
+    "LATEST_MESSAGE_XPATH" : '({base_xpath}//div[@data-status="complete"])[last()]',
+
+    "MAIN_CHAT_HAMBURGER" : "//div[@class='css-16qm689 eq52xil2']//button[.//svg[@data-testid='ellipsis-verticalIcon']]",
+    "BTN_PLAN" : '//a[contains(@href, "/ai-helpy-chat/admin/general")]',
+
+    "SCROLL_SEARCH_AREA" : "//div[contains(@class,'MuiBox-root') and contains(@class,'css-1xmno1m')]",
+    # 이미지
+    "BTN_IMG_ZOOM" : "//div[contains(@class, 'ai') or contains(@class, 'response')]//img",
+    
+    
 }
 

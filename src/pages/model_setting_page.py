@@ -4,6 +4,8 @@ from utils.defines import XPATH, SELECTORS, ID, ACTIVE, DEACTIVE, DEFAULT_MODEL
 from pages.base_page import BasePage
 from enums.ui_status import ModelState
 
+WAIT_TIME = 5
+
 class ModelSettingPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
@@ -28,21 +30,22 @@ class ModelSettingPage(BasePage):
         el = self.get_element_by_xpath(XPATH["SELECTED_MODEL"])
         return el.text.strip()
 
-    def select_last_model(self):       
-        model_namse = self.get_all_model_names()
-        
-        model_name = None
-        if len(model_namse) > 1:
-            model_name = model_namse[-1]
+    def select_last_model(self):    
+        model_names = self.get_all_model_names()
+
+        if len(model_names) > 1:
+            model_name = model_names[-1]
         else:
             model_name = DEFAULT_MODEL
-            
-        xpath = XPATH["MODEL_BY_NAME"].format(model_name = model_name)
-        self.get_element_by_xpath(xpath).click()
+
+        xpath = XPATH["MODEL_BY_NAME"].format(model_name=model_name)
+        self.get_element_by_xpath(xpath, option="clickable").click()
+
+        WebDriverWait(self.driver, WAIT_TIME).until(
+            lambda d: self.is_dropdown_closed()
+        )
         selected = self.get_current_model()
-        time.sleep(0.5) 
-        
-        assert self.is_dropdown_closed(), "메뉴 닫힘 확인"
+
         assert model_name in selected, "selected model 불일치"
     
     # ================ ai 모델 설정 화면 - 정보 가져오기 ================ 
@@ -50,7 +53,6 @@ class ModelSettingPage(BasePage):
         btn  = self.get_element_by_xpath(XPATH["BTN_MODEL_SETTING"], option="clickable")
         if btn and btn.is_enabled():
             btn.click()
-            time.sleep(0.5) 
         
     def get_all_models_in_setting(self):
         items = self.get_elements_by_xpath(XPATH["MODEL_LI"]) 
@@ -78,16 +80,18 @@ class ModelSettingPage(BasePage):
     def enable_model(self, model_name: str):
         li = self.get_model_li(model_name)
         checkbox = li.find_element(By.XPATH, XPATH["MODEL_CHECKBOX"])
+
         if not checkbox.is_selected():
             checkbox.click()
-            time.sleep(0.5)  
+            WebDriverWait(self.driver, WAIT_TIME).until(lambda d: checkbox.is_selected())
 
     def disable_model(self, model_name: str):
         li = self.get_model_li(model_name)
         checkbox = li.find_element(By.XPATH, XPATH["MODEL_CHECKBOX"])
+
         if checkbox.is_selected():
             checkbox.click()
-            time.sleep(0.5)  
+            WebDriverWait(self.driver, WAIT_TIME).until(lambda d: not checkbox.is_selected())
             
     def verify_snackbar_message(self, expected_msg: str):
         try:
@@ -102,8 +106,7 @@ class ModelSettingPage(BasePage):
             raise AssertionError(f"{expected_msg} 메시지를 찾기 실패")
     
     def go_back(self):
-        self.driver.back()
-        time.sleep(0.5)         
+        self.driver.back()       
     
     # ================== E2E - 버튼 클릭 후 정말로 정보가 변경되었는지 확인 ====================
     def toggle_all_models_and_verify(self):

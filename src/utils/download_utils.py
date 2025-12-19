@@ -21,3 +21,17 @@ def wait_for_download(download_dir, filename, timeout=10):
                 return True
         time.sleep(0.5)
     return False
+
+def wait_for_download_contains(download_dir, keyword="", ext="", timeout=20):
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        files = os.listdir(download_dir)
+
+        # 크롬 다운로드 중 파일(.crdownload) 제외하고 보려면
+        files = [f for f in files if not f.endswith(".crdownload")]
+
+        for f in files:
+            if (keyword in f) and (ext == "" or f.lower().endswith(ext.lower())):
+                return f  # 실제 파일명 반환
+        time.sleep(0.5)
+    return None

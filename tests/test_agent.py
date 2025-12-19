@@ -1223,10 +1223,10 @@ def test_modify_in_my_agent(logged_in_agent, fm) :
         agent_page.go_to_my_agent()
         agent_page.go_to_modify_in_my_agent()
         data = fm.read_json_file("agent_text_data.json")
-        name = data["modify_inputs"][0]["content"]
-        intro = data["modify_inputs"][1]["content"]
-        rule = data["modify_inputs"][2]["content"]
-        card = data["modify_inputs"][3]["content"]
+        name = data["another_inputs"][0]["content"]
+        intro = data["another_inputs"][0]["content"]
+        rule = data["another_inputs"][0]["content"]
+        card = data["another_inputs"][0]["content"]
         agent_page.modify_name(name)
         agent_page.modify_intro(intro)
         agent_page.modify_rule(rule)

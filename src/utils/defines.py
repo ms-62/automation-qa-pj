@@ -99,11 +99,12 @@ NAME = {
     "INPUT_NEW_PWD" : "newPassword",
     "TEACHER_COMMENT_AREA" : "teacher_comment",
     "ACHIEVEMENT_STANDARD_AREA" : "achievement_criteria",
-    "PPT_TOPIC": "topic",
+    "TOPIC": "topic",
     "INSTRUCTION" : "instructions",
     "PPT_NUM_SLIDE" : "slides_count",
     "PPT_NUM_SECTION" : "section_count",
     "BTN_DEEP_DIVE" : "simple_mode",
+    "QUIZ_TOPIC" : "content",
 }
 
 # By.XPATH
@@ -272,12 +273,12 @@ XPATH = {
     "BTN_AUTO_CREATE" : "//button[normalize-space()='자동 생성']",
     "CREATE_ABORT_MESSAGE" : "//div[contains(text(),'답변 생성을 중지했습니다.')]",
     "RECREATE_CONFIRM_MODAL" : "//div[@role='dialog']",
-    "BTN_RECREATE" : "//button[contains(@class, 'css-1az3dby') and normalize-space()='다시 생성']",         # 다른 도구에서도 같은지 확인 필요
-    "BTN_SURE_RECREATE" : "//div[@role='dialog']//button[normalize-space()='다시 생성']",                   # 다른 도구에서도 같은지 확인 필요
+    "BTN_RECREATE" : "//button[contains(@class, 'css-1az3dby') and normalize-space()='다시 생성']", 
+    "BTN_SURE_RECREATE" : "//div[@role='dialog']//button[normalize-space()='다시 생성']",
     "BTN_CREATE_REJECT" : "//button[normalize-space()='취소']",
 
 
-    "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                       # 다른 도구에서도 같은지 확인 필요
+    "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]", 
     "BTN_DOWNLOAD_RESULT" : "//a[contains(@href, 'elicebackendstorage.blob.core')]",
     "BTN_DOWNLOAD_RESULT" : "//a[contains(@href,'elicebackendstorage.blob.core.') and contains(@rel,'noopener noreferrer')]",
     
@@ -301,6 +302,19 @@ XPATH = {
     "CREATE_PPT_PAGE_TITLE" : "//span[contains(text(),'PPT 생성')]",
     "ON_DEEP_DIVE" : "//input[@value='false']",
     
+    # 퀴즈생성 탭
+    "BTN_CREATE_QUIZ" : "//a[contains(@href, '/ai-helpy-chat/tools/98b00265-c2fb-43cc-8785-5330e18f8c28')]",
+    "CREATE_QUIZ_TITLE" : "//span[contains(text(),'퀴즈 생성')]",
+    "CATEGORY_DROPDOWN" : "//label[contains(normalize-space(), '유형')]/following::div[@role='combobox'][1]",
+    "DIFFICULTY_DROPDOWN" : "//label[contains(normalize-space(), '난이도')]/following::div[@role='combobox'][1]",
+    "QUIZ_RESULT" : "//p[contains(normalize-space(),'퀴즈를 생성했습니다.')]",
+    
+    # 심층조사 탭
+    "BTN_CREATE_DEEPDIVE" : "//a[contains(@href, '/ai-helpy-chat/tools/50d0e558-488c-4ed6-8d1a-dcb16dd2cb6d')]",
+    "CREATE_DEEPDIVE_TITLE" : "//span[contains(text(),'심층 조사')]",
+    "BTN_DOWNLOAD_DEEPDIVE_RESULT" : "//button[contains(.,'다운받기')]",
+    "BTN_DOWNLOAD_DEEPDIVE_MARKDOWN" : "//span[normalize-space()='마크다운 다운로드']/ancestor::a",
+    "BTN_DOWNLOAD_DEEPDIVE_HWP" : "//span[normalize-space()='HWP파일 다운로드']/ancestor::a",
     
 
 

@@ -106,8 +106,27 @@ class BasePage:
                     print(f"계정 창 발견: {current_url[:50]}")
                     self.debug_current_window_safe()
                     return True
-            
-            time.sleep(0.5)
         
         print("계정 창 없음")
         return False
+
+    #get_element 추가 보완 업데이트
+    def wait_for_element(self, by: By, value: str, timeout: float = 10, condition: str = "presence") -> object:
+        wait = WebDriverWait(self.driver, timeout)
+        locator = (by, value)
+        
+        # EC 조건 매핑
+        conditions = {
+            "presence": EC.presence_of_element_located(locator),
+            "visibility": EC.visibility_of_element_located(locator),
+            "clickable": EC.element_to_be_clickable(locator), # clickable = visible + enabled
+            "enabled": EC.element_to_be_clickable(locator),  
+        }
+        
+        try:
+            condition_func = conditions.get(condition, EC.presence_of_element_located(locator))
+            element = wait.until(condition_func)
+            return element
+        except TimeoutException:
+            print(f"요소 대기 실패: {by}={value} ({condition})")
+            return None

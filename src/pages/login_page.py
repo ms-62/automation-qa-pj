@@ -13,14 +13,14 @@ class LoginPage(BasePage):
         element.click()
         element.clear()
         element.send_keys(username)
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
 
     def input_pw(self, password):
         element = self.get_element_by_name(NAME["INPUT_PW"])
         element.click()
         element.clear()
         element.send_keys(password)
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
 
     def input_user_data(self, user_data):
         # user_data가 리스트인 경우 첫 번째 원소 사용
@@ -33,13 +33,13 @@ class LoginPage(BasePage):
         element = self.get_element_by_name(NAME["INPUT_ID"])
         element.click()
         element.clear()
-        time.sleep(0.1)
+        self.driver.implicitly_wait(0.1)
 
     def clear_pw(self):
         element = self.get_element_by_name(NAME["INPUT_PW"])
         element.click()
         element.clear()
-        time.sleep(0.1)
+        self.driver.implicitly_wait(0.1)
 
     def clear_all_inputs(self):
         self.clear_id()
@@ -49,7 +49,7 @@ class LoginPage(BasePage):
     def click_login_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_LOGIN"])
         btn.click()
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
         
     # 로그인 실패/유효성 검증 메서드
     def is_error_msg_displayed(self):
@@ -104,27 +104,31 @@ class LoginPage(BasePage):
     def click_account_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_ACCOUNT"])
         btn.click()
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
         
     def click_logout_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_LOGOUT"])
         btn.click()
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
         
     def logout(self):
         self.click_account_button()
+        WebDriverWait(self.driver, 3).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, XPATH["BTN_LOGOUT"])
+            )
+        )
         self.click_logout_button()
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
         
     def is_logged_out_page(self):
-        url = self.driver.current_url
-        return "/accounts/signin/history" in url
+        return len(self.driver.find_elements(By.XPATH, XPATH["NICE_TO_MEET_YOU_AGIN_PAGE"])) > 0
     
     # View Password 기능 메서드
     def click_view_password_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_VIEW_PASSWORD"])
         btn.click()
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
     
     def is_password_visible(self):
         pw_input = self.get_element_by_name(NAME["INPUT_PW"])
@@ -142,7 +146,7 @@ class LoginPage(BasePage):
     def click_forgot_password_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_FORGOT_PASSWORD"])
         btn.click()
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
         
     def get_current_url(self): # 현재 URL 가져오기
         return self.driver.current_url  
@@ -155,13 +159,13 @@ class LoginPage(BasePage):
     def click_diff_account_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_DIFF_ACCOUNT"])
         btn.click()
-        time.sleep(0.3)   
+        self.driver.implicitly_wait(0.3)   
     
     # Remove history 기능 메서드
     def click_remove_history_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_REMOVE_HISTORY"])
         btn.click()
-        time.sleep(0.3)
+        self.driver.implicitly_wait(0.3)
         
     def get_id_value(self): # 
         element = self.get_element_by_name(NAME["INPUT_ID"])

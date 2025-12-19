@@ -115,6 +115,7 @@ XPATH = {
     "TXT_PW_INVALID" : "//p[normalize-space()='Please enter a password of at least 8 digits.']",    
     "BTN_ACCOUNT" : "//button[contains(@class, 'css-jgzpb4')]",
     "BTN_LOGOUT" : "//p[normalize-space()='로그아웃']/parent::div",
+    "NICE_TO_MEET_YOU_AGIN_PAGE" : "//h2[normalize-space()='Nice to meet you again']",
     "BTN_VIEW_PASSWORD" : "//button[contains(@aria-label, 'View password')]",
     "BTN_FORGOT_PASSWORD" : "//a[normalize-space()='Forgot your password?']",
     "BTN_DIFF_ACCOUNT" : "//a[normalize-space()='Sign in with a different account']",

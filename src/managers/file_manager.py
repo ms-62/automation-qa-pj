@@ -17,10 +17,14 @@ class FileManager:
         
         self.report_log_dir = os.path.join(project_root, "reports", "logs")
         self.report_screenshot_dir = os.path.join(project_root, "reports", "screenshots")
-        
+
         #log dir 없는 경우 자동 생성
         os.makedirs(self.report_log_dir, exist_ok=True)
         os.makedirs(self.report_screenshot_dir, exist_ok=True)
+
+        self.save_data_dir = os.path.join(project_root, "reports", "chat_data")
+
+        
 
     # =================== 파일 가져오기 =========================
     def get_asset_path(self, file_name: str):

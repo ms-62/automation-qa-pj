@@ -23,7 +23,7 @@ class ResponseState:
         if passed >= self.stop_time and not self.stop_clicked:
             try:
                 btn = self.resp_btn_stop()
-                if btn and btn.is_displayed():
+                if btn and btn.is_enabled():
                     btn.click()
                     self.stop_clicked = True
                     self.result = AIresponse.STOPPED

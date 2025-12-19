@@ -23,6 +23,7 @@ class FileManager:
         os.makedirs(self.report_screenshot_dir, exist_ok=True)
 
         self.save_data_dir = os.path.join(project_root, "reports", "chat_data")
+
         
 
     # =================== 파일 가져오기 =========================
@@ -52,7 +53,7 @@ class FileManager:
             return None
     
     def save_json_file(self, file_name:str, data):
-        file_path = os.path.join(self.save_data_dir, file_name)
+        file_path = os.path.join(self.testdata_dir, file_name)
         try: 
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)

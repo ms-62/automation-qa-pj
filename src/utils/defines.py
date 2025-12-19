@@ -5,7 +5,7 @@ SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 FULLSCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 TIMEOUT_MAX = 20
 STOPPED_MAX = 15
-STEP = 500
+STEP = 200
 
 class ChatType:
     TEXT = "text"               # 질문/일반 텍스트
@@ -77,7 +77,7 @@ SELECTORS = {
     "BTN_EDIT_NOWCHAT" : "button[data-testid='ellipsis-verticalIcon']",
     "BTN_EDIT_PASTCHAT": "div.menu-button button",
     "INPUT_CHAT_NAME" : "input[name='name']",
-
+    #"SCROLL_MAIN_CHAT" : "div.css-134v8t0.es3brm60",
 
 }
 
@@ -166,8 +166,8 @@ XPATH = {
     "BTN_EDIT_CANCEL" : '//button[normalize-space()="취소"]',
     
     # 메인 화면 '메뉴' 확인용
-    "BTN_MENU_OPEN": "//button[normalize-space(.)='메뉴 열기']",
-    "BTN_MENU_CLOSE": "//button[normalize-space(.)='메뉴 접기']",
+    "BTN_MENU_HAMBURGER": "//button[contains(@class,'EliceLayoutSidenavHamburger-root')]",
+    #"BTN_MENU_CLOSE": "//button[normalize-space(.)='메뉴 접기']",
         
     # ai 모델
     "BTN_MODEL_DROPDOWN" : '//button[.//p[normalize-space()="{model_name}"]]',
@@ -330,7 +330,12 @@ XPATH = {
     "LATEST_MESSAGE_XPATH" : '({base_xpath}//div[@data-status="complete"])[last()]',
 
     "MAIN_CHAT_HAMBURGER" : "//div[@class='css-16qm689 eq52xil2']//button[.//svg[@data-testid='ellipsis-verticalIcon']]",
+    "BTN_PLAN" : '//a[contains(@href, "/ai-helpy-chat/admin/general")]',
 
-
+    "SCROLL_SEARCH_AREA" : "//div[contains(@class,'MuiBox-root') and contains(@class,'css-1xmno1m')]",
+    # 이미지
+    "BTN_IMG_ZOOM" : "//div[contains(@class, 'ai') or contains(@class, 'response')]//img",
+    
+    
 }
 

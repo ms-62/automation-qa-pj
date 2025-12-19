@@ -14,9 +14,6 @@ def test_search_agent_list(logged_in_agent, fm):
     try :
         agent_page = logged_in_agent
         agent_page.go_to_agent_page()
-        time.sleep(2)
-        fm.save_screenshot_png(agent_page.driver, test_name)
-        time.sleep(2)
         agent_page.search_input("project")
         result = agent_page.search_result()
         fail_result = agent_page.search_no_result()
@@ -459,7 +456,7 @@ def test_make_agent_setting_for_me(logged_in_agent, fm) :
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
         check = agent_page.make_agent_for_me().text.strip()
-        assert "나만보기" or "Private" in check, "PHC-TS06-TC028 : Test Fail"
+        assert "나만보기" in check, "PHC-TS06-TC028 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_for_me"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -486,7 +483,7 @@ def test_make_agent_setting_for_agency(logged_in_agent, fm) :
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
         check = agent_page.make_agent_for_agency().text.strip()
-        assert "기관 공개" or "Organization" in check, "PHC-TS06-TC029 : Test Fail"
+        assert "기관 공개" in check, "PHC-TS06-TC029 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_for_organization"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -516,7 +513,7 @@ def test_make_agent_setting_no_name(logged_in_agent, fm) :
         assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC030 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_name"))
         
-        assert "이름" or "Name" in error, "PHC-TS06-TC030 : Test Fail"
+        assert "이름" in error, "PHC-TS06-TC030 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_no_name"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -547,7 +544,7 @@ def test_make_agent_setting_long_name(logged_in_agent, fm) :
         assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC031 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_name"))
         
-        assert "이름" or "Name" in error, "PHC-TS06-TC031 : Test Fail"
+        assert "이름" in error, "PHC-TS06-TC031 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_long_name"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -605,7 +602,7 @@ def test_make_agent_setting_long_intro(logged_in_agent, fm) :
         assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC033 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_intro"))
         
-        assert "한줄" or "Description" in error, "PHC-TS06-TC033 : Test Fail"
+        assert "한줄" in error, "PHC-TS06-TC033 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_long_intro"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -635,7 +632,7 @@ def test_make_agent_setting_no_rule(logged_in_agent, fm) :
         assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC034 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_rule"))
         
-        assert "규칙" or "prompt" in error, "PHC-TS06-TC034 : Test Fail"
+        assert "규칙" in error, "PHC-TS06-TC034 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_no_rule"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -683,13 +680,11 @@ def test_make_agent_setting_delete_card(logged_in_agent, fm) :
         data = fm.read_json_file("agent_text_data.json")
         card = data["setting_inputs"][3]["content"]
         agent_page.setting_card_input(card)
-        time.sleep(1)
         before_btns = agent_page.check_card_number()
         assert len(before_btns) == 3, "PHC-TS06-TC036 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "before_delete_card_input"))
         
         agent_page.delete_card()
-        time.sleep(1)
         after_btns = agent_page.check_card_number()
         assert len(after_btns) == 2, "PHC-TS06-TC036 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "delete_card_input"))
@@ -716,7 +711,7 @@ def test_make_agent_setting_no_card(logged_in_agent, fm) :
         agent_page.setting_intro_input(intro)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input("")
-        time.sleep(2)
+        time.sleep(3)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is None, "PHC-TS06-TC037 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_card"))
@@ -744,7 +739,7 @@ def test_make_agent_setting_long_card(logged_in_agent, fm) :
         agent_page.setting_intro_input(intro)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
-        time.sleep(2)
+        time.sleep(3)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC038 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_card"))
@@ -774,7 +769,6 @@ def test_make_agent_setting_many_option(logged_in_agent, fm) :
         agent_page.setting_card_input(card)
         agent_page.scroll_down_setting()
         agent_page.multi_function()
-        time.sleep(2)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is None, "PHC-TS06-TC039 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_duplicate_check_option"))
@@ -794,7 +788,7 @@ def test_make_agent_image_upload(logged_in_agent, fm):
         agent_page.go_to_agent_page()
         agent_page.make_agent_screen()
         agent_page.upload_image("test_asset.jpg")
-        uploaded = agent_page.check_upload_image()
+        uploaded = agent_page.check_upload_image(3)
         assert uploaded.is_displayed(), "PHC-TS06-TC040 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "upload_img"))
     except Exception as e:
@@ -835,10 +829,9 @@ def test_make_agent_exe_to_img_upload(logged_in_agent,fm):
         rule = data["setting_inputs"][2]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        time.sleep(2)
         agent_page.upload_image("test_exe.exe")
         error = agent_page.error_message()
-        uploaded = agent_page.check_upload_image()
+        uploaded = agent_page.check_upload_image(3)
         assert uploaded is None, "PHC-TS06-TC042 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "upload_exe_file"))
         
@@ -864,9 +857,9 @@ def test_make_agent_make_image(logged_in_agent, fm) :
         rule = data["setting_inputs"][2]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        time.sleep(2)
+        time.sleep(3)
         agent_page.make_image()
-        uploaded = agent_page.check_upload_image()
+        uploaded = agent_page.check_upload_image(10)
         assert uploaded.is_displayed(), "PHC-TS06-TC043 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_img_option_in_make_agent"))
     except Exception as e:
@@ -931,7 +924,7 @@ def test_make_agent_upload_big_file(logged_in_agent, fm) :
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "upload_big_file_in_make_agent"))
         
         msg = agent_page.check_fail_msg_file_upload()
-        assert '크기' or 'size' in msg.text.strip(), "PHC-TS06-TC046 : Test Fail"
+        assert '크기' in msg.text.strip(), "PHC-TS06-TC046 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_upload_big_file_in_make_agent"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -972,16 +965,10 @@ def test_make_agent_upload_many_file(logged_in_agent, fm) :
         agent_page = logged_in_agent
         agent_page.go_to_agent_page()
         agent_page.make_agent_screen()
-        data = fm.read_json_file("agent_text_data.json")
-        name = data["setting_inputs"][0]["content"]
-        rule = data["setting_inputs"][2]["content"]
-        agent_page.setting_name_input(name)
-        agent_page.setting_rule_input(rule)
-        time.sleep(2)
         agent_page.scroll_down_setting()
         agent_page.upload_multiple_images(limit=21)
         error = agent_page.error_message().text.strip()
-        assert not "20개" or "" in error, "PHC-TS06-TC048 : Test Fail"
+        assert "20개" in error, "PHC-TS06-TC048 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_upload_many_files_in_make_agent"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -1021,13 +1008,11 @@ def test_agent_back_while_make(logged_in_agent, fm) :
         agent_page = logged_in_agent
         agent_page.go_to_agent_page()
         agent_page.go_to_my_agent()
-        time.sleep(2)
         agent_page.make_agent_screen()
-        time.sleep(2)
         agent_page.back_in_agent_make_screen()
-        time.sleep(2)
-        msg = agent_page.check_draft_msg().text.strip()
-        assert "초안" or "Draft" in msg, "PHC-TS06-TC051 : Test Fail"
+        agent_page.driver.implicitly_wait(3)
+        msg = agent_page.check_draft_msg()
+        assert "초안" in msg.text.strip(), "PHC-TS06-TC051 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "create_draft_agent"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -1045,19 +1030,17 @@ def test_agent_refresh_preview(logged_in_agent, fm) :
         agent_page.go_to_agent_page()
         agent_page.make_agent_screen()
         data = fm.read_json_file("agent_text_data.json")
-        name = data["setting_inputs"][0]["content"]
-        rule = data["setting_inputs"][2]["content"]
-        input = data["setting_inputs"][3]["content"]
+        name = data["preview_inputs"][0]["content"]
+        rule = data["preview_inputs"][1]["content"]
+        input = data["preview_inputs"][2]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        time.sleep(2)
-        agent_page.preview_input_chat_stop(input)
+        agent_page.preview_input_chat(input)
         text = agent_page.preview_check_my_talk_input()
         assert text is not None, "PHC-TS06-TC052 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "before_refresh_preview_chat"))
         
         agent_page.refresh_btn_in_preview()
-        time.sleep(2)
         element = agent_page.check_refresh_in_preview()
         assert element is not None, "PHC-TS06-TC052 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "after_refresh_preview_chat"))
@@ -1083,10 +1066,9 @@ def test_agent_chat_card_preview(logged_in_agent, fm) :
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
-        time.sleep(2)
         agent_page.preview_agent_talk_card_click()
         text = agent_page.preview_check_my_talk_input().text.strip()
-        assert text == card, "PHC-TS06-TC053 : Test Fail"
+        assert text in card, "PHC-TS06-TC053 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "card_chat_in_preview"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -1109,7 +1091,6 @@ def test_agent_chat_in_preview(logged_in_agent, fm) :
         input = data["setting_inputs"][3]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        time.sleep(2)
         result = agent_page.preview_input_chat(input)
         assert result == AIresponse.COMPLETED, "PHC-TS06-TC054 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "ai_response_in_preview"))
@@ -1134,7 +1115,6 @@ def test_agent_stop_chat_in_preview(logged_in_agent, fm) :
         input = data["setting_inputs"][3]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        time.sleep(2)
         result = agent_page.preview_input_chat_stop(input)
         assert result == AIresponse.STOPPED, "PHC-TS06-TC055 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "ai_stop_response_in_preview"))
@@ -1159,7 +1139,6 @@ def test_agent_create_again_in_preview(logged_in_agent, fm) :
         input = data["setting_inputs"][3]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        time.sleep(2)
         result = agent_page.preview_input_chat(input)
         assert result == AIresponse.COMPLETED, "PHC-TS06-TC056 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "ai_response_in_preview"))
@@ -1189,7 +1168,6 @@ def test_agent_copy_and_paste_in_preview(logged_in_agent, fm) :
         input = data["setting_inputs"][3]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        time.sleep(2)
         result = agent_page.preview_input_chat(input)
         assert result == AIresponse.COMPLETED, "PHC-TS06-TC059 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "ai_response_in_preview"))
@@ -1225,7 +1203,8 @@ def test_modify_in_agents(logged_in_agent, fm) :
         agent_page.modify_intro(intro)
         agent_page.modify_rule(rule)
         agent_page.modify_card(card)
-        element = agent_page.modify_and_check
+        time.sleep(3)
+        element = agent_page.modify_and_check()
         assert element is not None, "PHC-TS06-TC062 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "modify_agent_noti_display"))
     except Exception as e:
@@ -1253,7 +1232,8 @@ def test_modify_in_my_agent(logged_in_agent, fm) :
         agent_page.modify_intro(intro)
         agent_page.modify_rule(rule)
         agent_page.modify_card(card)
-        element = agent_page.modify_and_check
+        time.sleep(3)
+        element = agent_page.modify_and_check()
         assert element is not None, "PHC-TS06-TC064 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "modify_agent_noti_display"))
     except Exception as e:

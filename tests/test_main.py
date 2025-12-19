@@ -61,7 +61,7 @@ def test_conversation_scenario(logged_in_main, fm):
         result = TestResult.PASSED if page.delete_main_chat() else TestResult.FAILED
         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "delete_main_chat"))
         
-        page.reset_chat()
+        #page.reset_chat()  #테스트 용도  
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_conversation_scenario_ended"))
         
@@ -69,29 +69,10 @@ def test_conversation_scenario(logged_in_main, fm):
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
-
-
-# def test_chat_image(logged_in_main, fm):
-#     page = logged_in_main
-    
-#     test_name = "test_conversation_scenario"
-#     ctx = TextContext(test_name, page="chat")
-#     start = time.perf_counter()
-#     try:
-#         page.click_btn_home_menu(ChatMenu.DEFAULT_CHAT)
-#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
-        
-#         page
-        
-        
-#     except:
-#         elapsed = time.perf_counter() - start
-#         fm.save_screenshot_png(page.driver, test_name)
-#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
-
+        raise 
     
     
-# ====================== 스크롤  ============================== 
+# # ====================== 스크롤  ============================== 
 def test_chat_scroll(logged_in_main, fm):
     page = logged_in_main
     
@@ -102,26 +83,27 @@ def test_chat_scroll(logged_in_main, fm):
         page.select_latest_chat()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
 
-        # 스크롤 업
-        page.scroll_up_chat()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_up_chat"))
+            # 스크롤 업
+            # page.scroll_up_chat()
+            # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_up_chat"))
         
-        # 아래 스크롤 버튼
-        page.click_btn_scroll_to_bottom()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_scroll_to_bottom"))
+            # # 아래 스크롤 버튼
+            # page.click_btn_scroll_to_bottom()
+            # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_scroll_to_bottom"))
 
-        # 스크롤 업
-        page.scroll_up_chat()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_up_chat"))
-        
-        # 스크롤 다운
-        page.scroll_down_chat()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_down_chat"))
+            # 스크롤 업
+            # page.scroll_up_chat()
+            # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_up_chat"))
+            
+            # # 스크롤 다운
+            # page.scroll_down_chat()
+            # log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_down_chat"))
         
     except:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+        raise
 
 
 # ======================= 검색 ==========================
@@ -155,7 +137,7 @@ def test_search_chat(logged_in_main, fm):
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
-
+        raise
 
     
 # ======================== E2E - 기존 대화 시나리오 ==============================  
@@ -181,9 +163,8 @@ def test_past_chats_scenario(logged_in_main, fm):
         result = TestResult.PASSED if page.delete_chat() else TestResult.FAILED
         log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "delete_chat"))
         
-        page.cancel_edit()
         elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "cancel_edit"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_past_chats_scenario_ended"))
         
     except:
         elapsed = time.perf_counter() - start
@@ -191,7 +172,7 @@ def test_past_chats_scenario(logged_in_main, fm):
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
         
         
-# ======================== 기존 대화 - 취소 ==============================  
+# # ----------------- 단위 - 기존 대화 취소 ------------------- 
 def test_cancel_past_edit(logged_in_main, fm):
     page = logged_in_main
     
@@ -211,6 +192,9 @@ def test_cancel_past_edit(logged_in_main, fm):
         page.click_cancel_edit()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_cancel_edit"))
         
+        page.select_latest_chat()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
+        
         page.open_selected_edit_menu()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "open_selected_edit_menu"))
         
@@ -227,22 +211,36 @@ def test_cancel_past_edit(logged_in_main, fm):
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
     
     
-    
+# # ----------------- 단위 - 기존 대화 이름 편집 -------------------
 def test_rename_past_chat(logged_in_main, fm):
     page = logged_in_main
     
     test_name = "test_rename_chat"
     ctx = TextContext(test_name, page="chat")
     start = time.perf_counter()
-    
-    page.select_latest_chat()
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
-    
-    elapsed = time.perf_counter() - start
-    result = TestResult.PASSED if page.rename_past_chats() else TestResult.FAILED
-    log_action(ctx, ActionResult(test_name, result, elapsed, detail = "PHC-TS03-TC021 ended"))
+    try:   
+        page.select_latest_chat()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
+        
+        page.open_selected_edit_menu()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "open_selected_edit_menu"))
+            
+        page.click_change_chat_name()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_change_chat_name"))
+            
+        page.action_rename_chat()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "action_rename_chat"))
+        
+        elapsed = time.perf_counter() - start
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_rename_chat ended"))
 
+    except:
+        elapsed = time.perf_counter() - start
+        fm.save_screenshot_png(page.driver, test_name)
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+    
 
+# # ----------------- 기존 대화 삭제 -------------------
 def test_delete_past_chat(logged_in_main, fm):
     page = logged_in_main
     
@@ -250,7 +248,7 @@ def test_delete_past_chat(logged_in_main, fm):
     ctx = TextContext(test_name, page="chat")
     start = time.perf_counter()
     try:    
-        # 안에서 해줘야 하는데 ...
+        # 나중에 안에서 확인하는 걸로 변경 ... 아마도 발표후에
         prev_len = len(page.get_all_chats())
 
         page.select_latest_chat()
@@ -275,7 +273,7 @@ def test_delete_past_chat(logged_in_main, fm):
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
 
 
-# ====================== 이미지 생성 요청 ============================== 
+# # ====================== 이미지 생성 요청 ============================== 
 def test_gen_image_scenario(logged_in_main, fm):
     page = logged_in_main
     
@@ -302,9 +300,10 @@ def test_gen_image_scenario(logged_in_main, fm):
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+        raise
+    
         
-        
-# ====================== 웹 검색 요청 ============================== 
+# # ====================== 웹 검색 요청 ============================== 
 def test_web_sarch_scenario(logged_in_main, fm):
     page = logged_in_main
     
@@ -330,7 +329,7 @@ def test_web_sarch_scenario(logged_in_main, fm):
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
 
 
-# ====================== E2E 파일 업로드 ============================== 
+# # ====================== E2E 파일 업로드 ============================== 
 def test_file_upload_scenario(logged_in_main, fm):
     page = logged_in_main
 
@@ -356,9 +355,9 @@ def test_file_upload_scenario(logged_in_main, fm):
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(page.driver, test_name)
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed))
+        raise
         
-        
-# # ====================== 메뉴 테스트 ============================== 
+# # # ====================== 메뉴 테스트 ============================== 
 def test_menu_scenario(logged_in_main):
     page = logged_in_main
     
@@ -387,7 +386,7 @@ def test_menu_scenario(logged_in_main):
     
     
     
-# ======================== E2E - AI 모델 활성화 테스트 ============================== 
+# # ======================== E2E - AI 모델 활성화 테스트 ============================== 
 def test_model_scenario(logged_in_main, driver):
     logged_in_main
     

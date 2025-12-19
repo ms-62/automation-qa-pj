@@ -362,23 +362,31 @@ class ToolsPage(BasePage):
         self.driver.implicitly_wait(0.3)
         
     def click_deepdive_markdown_download_button(self):
-        self.get_element_by_xpath(XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"]).click()
-        self.driver.implicitly_wait(0.3)
+        wait = WebDriverWait(self.driver, 10)
+
+        download_btn = wait.until(
+        EC.element_to_be_clickable((By.XPATH, XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"]))
+        )
+        download_btn.click()
+
+        markdown_btn = wait.until(
+        EC.element_to_be_clickable((By.XPATH, XPATH["BTN_DOWNLOAD_DEEPDIVE_MARKDOWN"]))
+        )
+        markdown_btn.click()
         
-        btn = self.get_element_by_xpath(XPATH["BTN_DOWNLOAD_DEEPDIVE_MARKDOWN"])
-        btn.click()
-        self.driver.implicitly_wait(0.3)
-        
-        self.get_element_by_xpath(XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"]).click()
-        self.driver.implicitly_wait(0.3)
+        self.driver.switch_to.active_element.send_keys(Keys.ESCAPE)
         
     def click_deepdive_HWP_download_button(self):
-        self.get_element_by_xpath(XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"]).click()
-        self.driver.implicitly_wait(0.3)
+        wait = WebDriverWait(self.driver, 10)
+
+        download_btn = wait.until(
+        EC.element_to_be_clickable((By.XPATH, XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"]))
+        )
+        download_btn.click()
+
+        hwp_btn = wait.until(
+        EC.element_to_be_clickable((By.XPATH, XPATH["BTN_DOWNLOAD_DEEPDIVE_HWP"]))
+        )
+        hwp_btn.click()
         
-        btn = self.get_element_by_xpath(XPATH["BTN_DOWNLOAD_DEEPDIVE_HWP"])
-        btn.click()
-        self.driver.implicitly_wait(0.3)
-        
-        self.get_element_by_xpath(XPATH["BTN_DOWNLOAD_DEEPDIVE_RESULT"]).click()
-        self.driver.implicitly_wait(0.3)
+        self.driver.switch_to.active_element.send_keys(Keys.ESCAPE)

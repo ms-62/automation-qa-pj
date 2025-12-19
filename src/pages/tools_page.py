@@ -2,6 +2,7 @@ from utils.headers import *
 
 from pages.base_page import BasePage
 from utils.defines import NAME,XPATH,SELECTORS,TARGET_URL
+from selenium.webdriver.common.keys import Keys
 
 class ToolsPage(BasePage):    
     ## 공용 메서드 ##
@@ -54,12 +55,12 @@ class ToolsPage(BasePage):
         except:
             return False
         
-    
     # 추가입력 칸 내용 입력
     def input_teacher_comment(self, add_data):
         element = self.get_element_by_name(NAME["TEACHER_COMMENT_AREA"])
         element.click()
-        element.clear()
+        element.send_keys(Keys.CONTROL, "a")
+        element.send_keys(Keys.DELETE)
         element.send_keys(add_data)
         time.sleep(0.3)
                 
@@ -229,7 +230,8 @@ class ToolsPage(BasePage):
     def input_achievement_standard(self,standard):
         element = self.get_element_by_name(NAME["ACHIEVEMENT_STANDARD_AREA"])
         element.click()
-        element.clear()
+        element.send_keys(Keys.CONTROL, "a")
+        element.send_keys(Keys.DELETE)
         element.send_keys(standard)
         time.sleep(0.3)
     
@@ -239,4 +241,58 @@ class ToolsPage(BasePage):
             self.driver.find_elements((By.XPATH, XPATH["TEACHING_RESULT_VALID"]))
             return True
         except:
-            return False    
+            return False
+        
+    ## PPT 탭 메서드 ##
+    def click_create_ppt_page(self):
+        btn = self.get_element_by_xpath(XPATH["BTN_CREATE_PPT_PAGE"])
+        btn.click()
+        time.sleep(0.3)
+        
+    def is_creat_ppt_page(self):
+        try:
+            self.get_element_by_xpath(XPATH["CREATE_PPT_PAGE_TITLE"])
+            return True
+        except:
+            return False
+    
+    def ppt_input_information(self,topic,instruction,num_slide,num_section):
+        element = self.get_element_by_name(NAME["PPT_TOPIC"])
+        element.click()
+        element.send_keys(Keys.CONTROL, "a")
+        element.send_keys(Keys.DELETE)
+        element.send_keys(topic)
+        time.sleep(0.3)
+        
+        element = self.get_element_by_name(NAME["INSTRUCTION"])
+        element.click()
+        element.send_keys(Keys.CONTROL, "a")
+        element.send_keys(Keys.DELETE)
+        element.send_keys(instruction)
+        time.sleep(0.3)
+        
+        element = self.get_element_by_name(NAME["PPT_NUM_SLIDE"])
+        element.click()
+        element.send_keys(Keys.CONTROL, "a")
+        element.send_keys(Keys.DELETE)
+        element.send_keys(num_slide)
+        time.sleep(0.3)
+        
+        element = self.get_element_by_name(NAME["PPT_NUM_SECTION"])
+        element.click()
+        element.send_keys(Keys.CONTROL, "a")
+        element.send_keys(Keys.DELETE)
+        element.send_keys(num_section)
+        time.sleep(0.3)
+    
+    def is_deepdive_on(self) -> bool:
+        return len(self.driver.find_elements(By.XPATH, XPATH["ON_DEEP_DIVE"])) > 0
+           
+    def ppt_turn_on_deepdive(self):
+        if not self.is_deepdive_on():
+            self.get_element_by_name(NAME["BTN_DEEP_DIVE"]).click()
+    
+    def ppt_turn_off_deepdive(self):
+        if self.is_deepdive_on():
+            self.get_element_by_name(NAME["BTN_DEEP_DIVE"]).click()
+        

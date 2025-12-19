@@ -99,6 +99,11 @@ NAME = {
     "INPUT_NEW_PWD" : "newPassword",
     "TEACHER_COMMENT_AREA" : "teacher_comment",
     "ACHIEVEMENT_STANDARD_AREA" : "achievement_criteria",
+    "PPT_TOPIC": "topic",
+    "INSTRUCTION" : "instructions",
+    "PPT_NUM_SLIDE" : "slides_count",
+    "PPT_NUM_SECTION" : "section_count",
+    "BTN_DEEP_DIVE" : "simple_mode",
 }
 
 # By.XPATH
@@ -291,8 +296,12 @@ XPATH = {
     "CLASS_TIME" : "//label[contains(normalize-space(), '수업 시간 (분)')]/following::div[@role='combobox'][1]",
     "TEACHING_RESULT_VALID" : "//p[contains(.,'수업 지도안을 생성했습니다.')]",
     
-
-    "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]",                                      # 다른 도구에서도 같은지 확인 필요
+    # PPT 탭
+    "BTN_CREATE_PPT_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/b11ea464-c1bc-45e0-8140-85e38f5ec1e1')]",
+    "CREATE_PPT_PAGE_TITLE" : "//span[contains(text(),'PPT 생성')]",
+    "ON_DEEP_DIVE" : "//input[@value='false']",
+    
+    
 
 
     # 기존 대화창

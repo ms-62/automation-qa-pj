@@ -318,7 +318,7 @@ def logged_in_agent(driver, fm, user_data):
 #     assert wait_for_download(download_dir, "student_record_generation_template")
 
 
-####################################################
+################################################################################################
 ## 수업지도안 
 # # PHC-TS04-TC023: 수업지도안 탭 이동
 # def test_go_to_teaching_note(logged_in_agent,tools_page, fm):
@@ -415,11 +415,130 @@ def logged_in_agent(driver, fm, user_data):
 #     tools_page.switch_to_new_tab()
 #     assert tools_page.is_achievement_page(), "페이지 이동 안됨"
 
-####################################################
-# PHC-TS04-TC023: PPT 생성 탭 이동
+################################################################################################
+# # PHC-TS04-TC023: PPT 생성 탭 이동
+# # PHC-TS04-TC023: 수업지도안 탭 이동
+# def test_go_to_create_ppt(logged_in_agent,tools_page, fm):
+#     test_name = "test_go_to_create_ppt"
+#     ctx = TextContext(test_name, page="tools_page")
+#     start = time.perf_counter()
 
+#     tools_page.go_to_tools_page()
+#     tools_page.click_create_ppt_page()
+#     assert tools_page.is_creat_ppt_page(), "PPT 탭으로 이동 실패"
+#     log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_success"))
 
-# PHC-TS04-TC024: 정보 입력 및 결과 출력 확인
+# # PHC-TS04-TC024: 정보 입력 및 결과 출력 확인
+# def test_ppt_input_info_result(logged_in_agent,tools_page):
+#     # PHC-TS04-TC034~TC036
+#     tools_page.go_to_tools_page()
+#     tools_page.click_create_ppt_page()
+#     tools_page.ppt_input_information("보안테스팅","차트를 포함해서 작성해","10","5")
+#     tools_page.ppt_turn_off_deepdive()
+    
+#     try:
+#         tools_page.click_auto_create_button()
+#     except:
+#         # PHC-TS04-TC035: 다시 생성 후 다시 생성 버튼 동작
+#         tools_page.click_recreate_button()
+#         WebDriverWait(tools_page.driver, 10).until(
+#             EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+#         )
+        
+#         tools_page.click_sure_recreate_button()
+#         WebDriverWait(tools_page.driver, 10).until(
+#             EC.invisibility_of_element_located(
+#                 (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+#             )
+#         )
+    
+#     # PHC-TS04-TC036: 생성 결과 다운받기 버튼 확인  
+#     WebDriverWait(tools_page.driver, 120).until(
+#     EC.element_to_be_clickable(
+#         (By.XPATH, XPATH["BTN_DOWNLOAD_RESULT"])
+#         )
+#     )
+#     tools_page.click_download_result_button()
+#     # 다운로드 확인 메서드
+#     download_dir = "src/resources/downloads"
+#     downloaded = wait_for_download_contains(download_dir, ext=".pptx", timeout=30)
+#     assert downloaded is not None, "다운로드가 안됨"
 
+# # PHC-TS04-TC037 : 생성 이후 중지 버튼 확인
+# def test_ppt_create_abort(logged_in_agent,tools_page):
+#     tools_page.go_to_tools_page()
+#     tools_page.click_create_ppt_page()
+#     tools_page.ppt_input_information("보안테스팅","차트를 포함해서 작성해","10","5")
+#     tools_page.ppt_turn_off_deepdive()
 
-# PHC-TS04-TC025: 
+#     try:
+#         tools_page.click_auto_create_button()
+#     except:
+#         tools_page.click_recreate_button()
+#         WebDriverWait(tools_page.driver, 10).until(
+#             EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+#         )
+        
+#         tools_page.click_sure_recreate_button()
+#         WebDriverWait(tools_page.driver, 10).until(
+#             EC.invisibility_of_element_located(
+#                 (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+#             )
+#         )
+        
+#     tools_page.click_create_abort_button()
+#     assert tools_page.is_create_abort_page(), "생성 중지에 실패했습니다."
+
+# # PHC-TS04-TC038 : 다시 생성 이후 취소 버튼 확인
+# def test_ppt_create_reject(logged_in_agent,tools_page):
+#     tools_page.go_to_tools_page()
+#     tools_page.click_create_ppt_page()
+#     tools_page.ppt_input_information("보안테스팅","차트를 포함해서 작성해","10","5")
+#     tools_page.ppt_turn_off_deepdive()
+
+#     try:
+#         tools_page.click_auto_create_button()
+#     except:
+#         tools_page.click_recreate_button()
+#         WebDriverWait(tools_page.driver, 10).until(
+#             EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+#         )
+    
+#     tools_page.click_create_reject_button()
+#     assert not tools_page.is_recreate_modal_open(), "취소 버튼이 동작하지 않습니다."
+
+# # PHC-TS04-TC039 : 심층조사 모드 활성화 후 동작 확인
+# def test_ppt_deep_dive_input_info_result(logged_in_agent,tools_page):
+#     tools_page.go_to_tools_page()
+#     tools_page.click_create_ppt_page()
+#     tools_page.ppt_input_information("보안테스팅","차트를 포함해서 작성해","10","5")
+#     tools_page.ppt_turn_on_deepdive()
+    
+#     try:
+#         tools_page.click_auto_create_button()
+#     except:
+#         tools_page.click_recreate_button()
+#         WebDriverWait(tools_page.driver, 10).until(
+#             EC.element_to_be_clickable((By.XPATH, XPATH["BTN_SURE_RECREATE"]))
+#         )
+        
+#         tools_page.click_sure_recreate_button()
+#         WebDriverWait(tools_page.driver, 10).until(
+#             EC.invisibility_of_element_located(
+#                 (By.XPATH, XPATH["RECREATE_CONFIRM_MODAL"])
+#             )
+#         )
+      
+#     WebDriverWait(tools_page.driver, 200).until(
+#     EC.element_to_be_clickable(
+#         (By.XPATH, XPATH["BTN_DOWNLOAD_RESULT"])
+#         )
+#     )
+#     tools_page.click_download_result_button()
+#     # 다운로드 확인 메서드
+#     download_dir = "src/resources/downloads"
+#     downloaded = wait_for_download_contains(download_dir, ext=".pptx", timeout=30)
+#     assert downloaded is not None, "다운로드가 안됨"
+
+################################################################################################
+

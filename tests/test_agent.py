@@ -1203,7 +1203,6 @@ def test_modify_in_agents(logged_in_agent, fm) :
         agent_page.modify_intro(intro)
         agent_page.modify_rule(rule)
         agent_page.modify_card(card)
-        time.sleep(3)
         element = agent_page.modify_and_check()
         assert element is not None, "PHC-TS06-TC062 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "modify_agent_noti_display"))
@@ -1232,7 +1231,6 @@ def test_modify_in_my_agent(logged_in_agent, fm) :
         agent_page.modify_intro(intro)
         agent_page.modify_rule(rule)
         agent_page.modify_card(card)
-        time.sleep(3)
         element = agent_page.modify_and_check()
         assert element is not None, "PHC-TS06-TC064 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "modify_agent_noti_display"))

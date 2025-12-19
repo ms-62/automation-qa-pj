@@ -569,7 +569,7 @@ def test_make_agent_setting_no_intro(logged_in_agent, fm) :
         agent_page.setting_intro_input("")
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
-        time.sleep(3)
+        agent_page.driver.implicitly_wait(3)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is None, "PHC-TS06-TC032 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_intro"))
@@ -658,7 +658,7 @@ def test_make_agent_setting_long_rule(logged_in_agent, fm) :
         agent_page.setting_intro_input(intro)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
-        time.sleep(3)
+        agent_page.driver.implicitly_wait(3)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC035 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_rule"))
@@ -711,7 +711,7 @@ def test_make_agent_setting_no_card(logged_in_agent, fm) :
         agent_page.setting_intro_input(intro)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input("")
-        time.sleep(3)
+        agent_page.driver.implicitly_wait(3)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is None, "PHC-TS06-TC037 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_card"))
@@ -739,7 +739,7 @@ def test_make_agent_setting_long_card(logged_in_agent, fm) :
         agent_page.setting_intro_input(intro)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
-        time.sleep(3)
+        agent_page.driver.implicitly_wait(3)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC038 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_card"))
@@ -857,7 +857,7 @@ def test_make_agent_make_image(logged_in_agent, fm) :
         rule = data["setting_inputs"][2]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        time.sleep(3)
+        agent_page.driver.implicitly_wait(3)
         agent_page.make_image()
         uploaded = agent_page.check_upload_image(10)
         assert uploaded.is_displayed(), "PHC-TS06-TC043 : Test Fail"
@@ -1223,10 +1223,10 @@ def test_modify_in_my_agent(logged_in_agent, fm) :
         agent_page.go_to_my_agent()
         agent_page.go_to_modify_in_my_agent()
         data = fm.read_json_file("agent_text_data.json")
-        name = data["modify_inputs"][0]["content"]
-        intro = data["modify_inputs"][1]["content"]
-        rule = data["modify_inputs"][2]["content"]
-        card = data["modify_inputs"][3]["content"]
+        name = data["another_inputs"][0]["content"]
+        intro = data["another_inputs"][0]["content"]
+        rule = data["another_inputs"][0]["content"]
+        card = data["another_inputs"][0]["content"]
         agent_page.modify_name(name)
         agent_page.modify_intro(intro)
         agent_page.modify_rule(rule)

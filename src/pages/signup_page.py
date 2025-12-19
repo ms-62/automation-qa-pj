@@ -8,13 +8,13 @@ logger = logging.getLogger()
 class SignupPage(BasePage):
     def go_to_signup_page(self):
         self.go_to_page(TARGET_URL["MAIN_URL"])
-        time.sleep(1)
+        self.driver.implicitly_wait(5)
         create_button = self.get_element_by_xpath(XPATH["BTN_CREATE_ACCOUNT"])
         create_button.click()
-        time.sleep(1)
+        self.driver.implicitly_wait(5)
         create_withemail = self.get_element_by_xpath(XPATH["BTN_CREATE_EMAIL"])
         create_withemail.click()
-        time.sleep(1)
+        self.driver.implicitly_wait(5)
         logger.info("회원 가입 페이지로 이동")
         
     def signup_email(self, email) :
@@ -22,7 +22,7 @@ class SignupPage(BasePage):
         element.click()
         element.clear()
         element.send_keys(email)
-        time.sleep(0.5)
+        self.driver.implicitly_wait(0.5)
         logger.info("이메일 입력 완료")
         return element
         
@@ -31,7 +31,7 @@ class SignupPage(BasePage):
         element.click()
         element.clear()
         element.send_keys(password)
-        time.sleep(0.5)
+        self.driver.implicitly_wait(0.5)
         logger.info("비밀번호 입력 완료")
         return element
         
@@ -40,14 +40,14 @@ class SignupPage(BasePage):
         element.click()
         element.clear()
         element.send_keys(name)
-        time.sleep(0.5)
+        self.driver.implicitly_wait(0.5)
         logger.info("이름 입력 완료")
         return element
         
     def checkbox_spread(self) :
         header = self.get_element_by_id(ID["CHECKBOX_HEADER"])
         header.click()
-        time.sleep(0.5)
+        self.driver.implicitly_wait(0.5)
         
     def signup_checkbox(self) :
         elements = self.get_elements_by_xpath(XPATH["SIGNUP_AGREE"])

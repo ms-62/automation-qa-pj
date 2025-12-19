@@ -77,8 +77,13 @@ SELECTORS = {
     "BTN_EDIT_NOWCHAT" : "button[data-testid='ellipsis-verticalIcon']",
     "BTN_EDIT_PASTCHAT": "div.menu-button button",
     "INPUT_CHAT_NAME" : "input[name='name']",
-    #"SCROLL_MAIN_CHAT" : "div.css-134v8t0.es3brm60",
-
+  
+    
+    "SEARCH_CHAT_ITEMS": "div.MuiBox-root ul.MuiList-root li.MuiListItem-root a.MuiListItemButton-root",
+    "MAIN_HOME_SCREEN" : "div.MuiStack-root.css-j7qwjs p",
+        #"div.MuiStack-root.css-j7qwjs p",
+    "SCROLL_MAIN_CHAT_" : "MuiBox-root css-oo4pfk eglo0y11",
+    
 }
 
 # By.ID
@@ -127,7 +132,7 @@ XPATH = {
     "BTN_SIGNUP" : "//button[@type = 'submit']",
     "BTN_MEMBER" : "//a[contains(@href,'account')]",
     "SIGNUP_FAIL" : "//p",
-    "SCROLL_MAIN_CHAT" : "//div[contains(@class,'css-ovflmb')]",
+    
     "BTN_UPLOAD_PLUS" : "//button[contains(@class,'MuiIconButton-root') and .//svg[@data-icon='plus']]",
     "BTN_SEND" : "//button[@aria-label='보내기']",
     "PASS_ELEMENT" : "//p[contains(text(), '통신사')]",
@@ -178,7 +183,7 @@ XPATH = {
         
     # ai 모델
     "BTN_MODEL_DROPDOWN" : '//button[.//p[normalize-space()="{model_name}"]]',
-    "MENU_PAPER": '//div[contains(@class,"MuiMenu-paper") and contains(@class,"MuiPopover-paper")]',  # 왜 못찾냐
+    "MENU_PAPER": '//div[contains(@class,"MuiMenu-paper") and contains(@class,"MuiPopover-paper")]', 
     "MODEL_ITEMS": '//div[contains(@class,"MuiMenu-paper")]//li[@role="menuitem"]',
     "SELECTED_MODEL": '//button//p[contains(@class,"MuiTypography-body2")]',
     "MODEL_BY_NAME":'//div[contains(@class,"MuiMenu-paper")]''//li[@role="menuitem"]''[.//span[normalize-space()="{model_name}"]]',
@@ -298,6 +303,7 @@ XPATH = {
     "CLASS_TIME" : "//label[contains(normalize-space(), '수업 시간 (분)')]/following::div[@role='combobox'][1]",
     "TEACHING_RESULT_VALID" : "//p[contains(.,'수업 지도안을 생성했습니다.')]",
     
+
     # PPT 탭
     "BTN_CREATE_PPT_PAGE" : "//a[contains(@href, '/ai-helpy-chat/tools/b11ea464-c1bc-45e0-8140-85e38f5ec1e1')]",
     "CREATE_PPT_PAGE_TITLE" : "//span[contains(text(),'PPT 생성')]",
@@ -316,7 +322,10 @@ XPATH = {
     "BTN_DOWNLOAD_DEEPDIVE_RESULT" : "//button[contains(.,'다운받기')]",
     "BTN_DOWNLOAD_DEEPDIVE_MARKDOWN" : "//span[normalize-space()='마크다운 다운로드']/ancestor::a",
     "BTN_DOWNLOAD_DEEPDIVE_HWP" : "//span[normalize-space()='HWP파일 다운로드']/ancestor::a",
-    
+
+
+    "BTN_CREATE_ABORT" : "//button[contains(@class,'css-1sm1qtn')]", 
+
 
 
     # 기존 대화창
@@ -332,34 +341,29 @@ XPATH = {
     "BTN_DELETE_CONFIRM" : "//button[normalize-space()='삭제']",
     "INPUT_SEARCH_CHAT" : '//input[@placeholder="Search"]',
     
-    # E2E - 
-    # unit test - 
-    # 메뉴 버튼 다시 정리
+    "BTN_SEARCH_CANCEL" : "button[data-testid='xmarkIcon']",
+    
+    # ------------------------------------ (하드코딩 저장소) -----------------------------------
     "BTNS_HOME_MENU" : '//ul[contains(@class,"MuiList-root") and contains(@class,"EliceLayoutList-root")]',
     "MENU_ITEM_BY_TEXT" : './/li[.//span[normalize-space()="{text}"]]',
     "BTN_EACH_MENU" : './/*[self::a or @role="button"]',
-    
-    "SEARCH_CHAT_LIST": '//div[contains(@class,"MuiBox-root") and .//ul[contains(@class,"MuiList-root")]]/ul',
-    "SEARCH_CHAT_ITEMS": (
-        '//div[contains(@class,"MuiBox-root") and .//ul[contains(@class,"MuiList-root")]]'
-        '//ul/li/a[starts-with(@href,"/ai-helpy-chat/chats/")]'
-    ),
-    "SEARCH_CHAT_ITEM_TEXT": './/div[contains(@class,"MuiListItemText-root")]/span[contains(@class,"MuiListItemText-primary")]',
 
-
+    # 코치님 팁 = 사용자 메시지를 색상값 같은 요소로 찾기 
     "MESSAGE_XPATH" : {
         "user": '//div[contains(@class,"css-12or7o0") and contains(@class,"eyhsuw33")]',
         "ai": '//div[contains(@class,"css-h9lp2s") and contains(@class,"e1qzu3c82")]'
     },
     "LATEST_MESSAGE_XPATH" : '({base_xpath}//div[@data-status="complete"])[last()]',
 
+    # 코치님 팁 = 기존내역 hamburger(왼쪽 사이드) 오른쪽 사이드 구별해서 예 - EliceLayoutSidenav-content
     "MAIN_CHAT_HAMBURGER" : "//div[@class='css-16qm689 eq52xil2']//button[.//svg[@data-testid='ellipsis-verticalIcon']]",
     "BTN_PLAN" : '//a[contains(@href, "/ai-helpy-chat/admin/general")]',
 
     "SCROLL_SEARCH_AREA" : "//div[contains(@class,'MuiBox-root') and contains(@class,'css-1xmno1m')]",
-    # 이미지
-    "BTN_IMG_ZOOM" : "//div[contains(@class, 'ai') or contains(@class, 'response')]//img",
-    
+    #  이미지 - 사용자 / ai 메시지 구별
+    #"BTN_IMG_ZOOM" : "//div[contains(@class, 'ai') or contains(@class, 'response')]//img",
+   
+    # ----------------------------------------------------------------------------------------
     
 }
 

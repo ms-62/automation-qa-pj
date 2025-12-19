@@ -16,7 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 CHAT_TIME = 10
 WAIT_TIME = 5
-MINI_SCROLL_STEP = 70
+MINI_SCROLL_STEP = 200
 
 class MainPage(BasePage):
     def __init__(self, driver):
@@ -26,13 +26,16 @@ class MainPage(BasePage):
         self.go_to_page(TARGET_URL["MAIN_URL"])
 
     # ================= main 공용 ===================== #
-    def click_btn_by_xpath(self, xpath, option):
+    def click_btn_by_xpath(self, xpath, option, timeout=WAIT_TIME):
         btn = self.get_element_by_xpath(xpath, option)
-        if btn and btn.is_enabled():
+        if not btn:
+            return False
+        try:
+            WebDriverWait(self.driver, timeout).until(lambda d: btn.is_enabled())
             btn.click()
-            time.sleep(0.5)
             return True
-        return False
+        except:
+            return False
         
     # ================= home_menu ==================== #        
     def click_btn_home_menu(self, button_text: str):
@@ -47,61 +50,85 @@ class MainPage(BasePage):
     
     # ---------- 검색 ----------
     def get_search_chat_items(self):
-        chat_list = self.get_element_by_xpath(XPATH["SEARCH_CHAT_LIST"], option="presence")
-        chat_items = WebDriverWait(chat_list, WAIT_TIME, poll_frequency=0.1).until(
-            lambda el: el.find_elements(By.XPATH, XPATH["SEARCH_CHAT_ITEMS"])
+        chat_items = WebDriverWait(self.driver, WAIT_TIME, poll_frequency=0.1).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, SELECTORS["SEARCH_CHAT_ITEMS"]))
         )
         return chat_items
+        
+    def get_first_chat_name(self, chat_item):
+        if not chat_item:
+            return None
+        return chat_item.get_attribute("innerText").strip() or None
     
     def search_past_chats_by_click(self):
         chat_items = self.get_search_chat_items()
         if not chat_items:
             return False
 
-        first_item = chat_items[0]
-        WebDriverWait(self.driver, WAIT_TIME, poll_frequency=0.3).until(
-            lambda d: first_item.is_enabled()
+        first_item = chat_items[-1] 
+        WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.element_to_be_clickable(first_item)
         )
         self.driver.execute_script("arguments[0].click();", first_item)
-        time.sleep(1) # UI 반영용
-        return True
 
-    def search_past_chats_by_input(self):
+        # 서치 완료된건지 알기위해 btn_cancel이 사라졌는지 
+        WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.invisibility_of_element_located((By.CSS_SELECTOR, XPATH["BTN_SEARCH_CANCEL"]))
+        )
+        return True
+    
+    def get_after_search_chat_items(self):
         input_search = self.get_element_by_xpath(XPATH["INPUT_SEARCH_CHAT"], option="clickable")
-        
-        chat_items = self.get_search_chat_items()
-        chat_name = None
-        for item in chat_items:
-            name = item.find_element(By.XPATH, XPATH["SEARCH_CHAT_ITEM_TEXT"]).text.strip()
-            if name:
-                chat_name = name
-                break
+
+        # 일단, 테스트를 위해서 검색 리스트에서 마지막 index로 지정
+        # 만약 기존에 대화한 내역이 없다면?? fail로 처리할 것인가? 생각해보기 
+        chat_item = self.get_search_chat_items()[-1] if self.get_search_chat_items() else None
+        if not chat_item:
+            return False
+
+        chat_name = self.get_first_chat_name(chat_item=chat_item)
+        if not chat_name:
+            return False
 
         ChatInputController.send_text(input_search, chat_name)
+
+        # 검색해서, 채팅내역이 나온다면 
         WebDriverWait(self.driver, WAIT_TIME).until(
             lambda d: len(self.get_search_chat_items()) > 0
         )
-        time.sleep(1) # UI 반영 확인용
-        
         after_chat_items = self.get_search_chat_items()
-        chat_item = after_chat_items[0] if after_chat_items else None
-        time.sleep(1) # UI 반영 확인용
+        return after_chat_items
+    
+    def search_past_chats_by_input(self):
+        after_chat_items = self.get_after_search_chat_items()
+        if not after_chat_items:
+            return False
+
+        chat_item = after_chat_items[0] 
+        WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.element_to_be_clickable(chat_item)
+        )
+        self.driver.execute_script("arguments[0].click();", chat_item)
         
-        if chat_item:
-            WebDriverWait(self.driver, WAIT_TIME).until(
-                EC.element_to_be_clickable(chat_item)
-            )
-            self.driver.execute_script("arguments[0].click();", chat_item)
-            return True
-        return False
+        # 서치 완료된건지 알기위해 btn_cancel이 사라졌는지 
+        # WebDriverWait(self.driver, WAIT_TIME).until(
+        #     EC.invisibility_of_element_located((By.CSS_SELECTOR, XPATH["BTN_SEARCH_CANCEL"]))
+        # )
+        return True
     
     def scroll_up_search(self):
         area = self.find_element_presence_by_xpath(XPATH["SCROLL_SEARCH_AREA"])
+        if not area:
+            return False
         ScrollController.scroll_up(self.driver, area, step = MINI_SCROLL_STEP)
+        return True
     
     def scroll_down_search(self):
         area = self.find_element_presence_by_xpath(XPATH["SCROLL_SEARCH_AREA"])
+        if not area:
+            return False
         ScrollController.scroll_down(self.driver, area, step = MINI_SCROLL_STEP)
+        return True
     
 
     # ---------------------------------- (12/19 회고용) 메인 챗 상단 햄버거메뉴 ----------------------------------- 
@@ -177,11 +204,18 @@ class MainPage(BasePage):
     
     def scroll_up_past_chats(self):
         area = self.get_element_by_xpath(XPATH["SCROLL_PAST_CHATS"])
+        if not area:
+            return False
         ScrollController.scroll_up(self.driver, area, step = MINI_SCROLL_STEP)
+        return True
 
     def scroll_down_past_chats(self):
         area = self.get_element_by_xpath(XPATH["SCROLL_PAST_CHATS"])
+        if not area:
+            return False
         ScrollController.scroll_down(self.driver, area, step = MINI_SCROLL_STEP)
+        return True
+
 
     # ---------- E2E 용도 ----------
     def rename_past_chats(self):
@@ -225,14 +259,26 @@ class MainPage(BasePage):
         self.click_cancel_edit()
         
     # ================  Scroll ================ 
+    def get_main_screen_area(self):
+        area = WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, SELECTORS["SCROLL_MAIN_CHAT_"]))
+        )
+        return area
+    
     def scroll_up_chat(self):
-        area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
+        area = self.get_main_screen_area()
+        if not area:
+            return False
         ScrollController.scroll_up(self.driver, area)
-
+        return True 
+    
     def scroll_down_chat(self):
-        area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
+        area = self.get_main_screen_area()
+        if not area:
+            return False
         ScrollController.scroll_down(self.driver, area)
-
+        return True 
+        
     def click_btn_scroll_to_bottom(self, timeout = TIMEOUT_MAX):
         start = time.time()
 
@@ -241,12 +287,14 @@ class MainPage(BasePage):
             if btn and btn.is_enabled():
                 try:
                     btn.click()
-                    time.sleep(3)
+                    WebDriverWait(self.driver, WAIT_TIME).until(
+                        lambda d: not btn.is_enabled()
+                    )
                     return True
                 except Exception:
                     pass
 
-            self.scroll_up_chat()
+            #self.scroll_up_chat()
     
     # ================  main Chat ================ 
     def input_chat(self, text: str):
@@ -277,7 +325,6 @@ class MainPage(BasePage):
             elems = self.get_elements_by_xpath(last_msg_xpath)
 
             if not elems:
-                time.sleep(0.5)
                 continue
             
             elem = elems[-1]
@@ -286,7 +333,7 @@ class MainPage(BasePage):
                 if status == "complete":
                     self.fm.save_json_file("ai_response_completed.json", {elem.text})
                     return AIresponse.COMPLETED
-            time.sleep(0.5)
+            time.sleep(0.5) ###
             
         if stop:
             # self.fm.save_json_file("ai_response_stopped.json", {elem.text}) -> [회고] element가 없으면?
@@ -301,7 +348,8 @@ class MainPage(BasePage):
                 btn = self.get_element_by_xpath(XPATH["BTN_STOP"])
                 if btn and btn.is_enabled():
                     btn.click()
-                    time.sleep(1)
+                    # 비활성화 되었는지 판별 후 return 또는 나중에 보내기 버튼이 활성화 되었는지 확인하는거로 바꿀것
+                    time.sleep(0.5)
                     return True    
             case AIresponse.COMPLETED:
                 return True
@@ -324,7 +372,6 @@ class MainPage(BasePage):
     # ------------------- action ---------------------------- 
     def click_send(self):
         self.click_btn_by_xpath(XPATH["BTN_SEND"], option = "presence")
-        time.sleep(0.5)
     
     def click_btn_retry(self):
         btns = self.get_elements_by_xpath(XPATH["BTN_RETRY"])
@@ -411,7 +458,6 @@ class MainPage(BasePage):
         edit_btn = tooltip.find_element(By.XPATH, XPATH["BTN_TOOLTIP_EDIT"])
         if edit_btn and edit_btn.is_enabled():
             self.driver.execute_script("arguments[0].click();", edit_btn)
-            time.sleep(1)
         else:
             return False
 
@@ -426,8 +472,8 @@ class MainPage(BasePage):
             lambda d: self.get_element_by_xpath(XPATH["BTN_EDIT_AREA"])
         )
 
-        ClipboardController.copy(content)
         ChatInputController.reset_text(textarea)
+        ClipboardController.copy(content)
         ClipboardController.paste(textarea)
         try:
             btn_send = WebDriverWait(self.driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, XPATH["BTN_EDIT_SEND"])))
@@ -543,38 +589,45 @@ class MainPage(BasePage):
         self.open_upload_file_dialog()
         self.click_btn_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "visibility")
         ClipboardController.copy(file_path)
-        ClipboardController.paste_file_path()
+        ClipboardController.paste_file_path(file_path)
 
-    def action_upload_file(self, file_path):
-        self.paste_file_path_finder(file_path)
-        self.click_send()
-        ResponseController.wait_for_response_with_timeout(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]), stop_time=CHAT_TIME)
-         
-    # def upload_files(self, format):
-    #     files = self.fm.get_asset_files(format)
-
-    #     for file in files:
-    #         prev_count = len(self.get_attached_files())
-    #         self.action_upload_file(file_path=file)
-
-    #         WebDriverWait(self.driver, WAIT_TIME).until(lambda d: len(self.get_attached_files()) > prev_count)
-    
     def upload_files(self, format):
         files = self.fm.get_asset_files(format)
+        if not files:
+            return False 
+        
         for file in files:
-            self.action_upload_file(file_path = file)
-            time.sleep(1) 
-    
+            self.paste_file_path_finder(file)
+            self.click_send()
+            ResponseController.wait_for_response_with_timeout(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]), stop_time=CHAT_TIME)
+            
+            WebDriverWait(self.driver, WAIT_TIME).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, SELECTORS["BTN_UPLOAD_PLUS_CSS"]))
+            )
+        return True     
+            
     def upload_multi_files(self):
         files = self.fm.get_asset_files(".pdf")
-        files_sorted = sorted(files, key=lambda x: int(re.search(r'test_pdf_(\d+)\.pdf', x).group(1)))
+        if not files:
+            return False 
+        
+        matched_files = []
+        for f in files:
+            filename = os.path.basename(f)
+            match = re.search(r'test_pdf_(\d+)\.pdf', filename)
+            if match:
+                matched_files.append((f, int(match.group(1))))
+        
+        files_sorted = [f for f, _ in sorted(matched_files, key=lambda x: x[1])]
+        results = []
 
         for file in files_sorted:
-            result = self.paste_file_path_finder(file_path=file)
-            time.sleep(1) 
+            res = self.paste_file_path_finder(file_path=file)
+            results.append(res)
+
         self.click_send()
-        return result
-    
+        ResponseController.wait_for_response_with_timeout(btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]), stop_time=CHAT_TIME)
+        return True 
 
 
 

@@ -16,7 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 CHAT_TIME = 10
 WAIT_TIME = 5
-MINI_SCROLL_STEP = 70
+MINI_SCROLL_STEP = 200
 
 class MainPage(BasePage):
     def __init__(self, driver):
@@ -71,9 +71,9 @@ class MainPage(BasePage):
         )
         self.driver.execute_script("arguments[0].click();", first_item)
 
-       # 서치 완료된건지 메인 화면 화면 확인용 - 나중에 함수 빼놓는게 좋을듯
+        # 서치 완료된건지 알기위해 btn_cancel이 사라졌는지 
         WebDriverWait(self.driver, WAIT_TIME).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, SELECTORS["MAIN_HOME_SCREEN"]))
+            EC.invisibility_of_element_located((By.CSS_SELECTOR, XPATH["BTN_SEARCH_CANCEL"]))
         )
         return True
     
@@ -110,10 +110,10 @@ class MainPage(BasePage):
         )
         self.driver.execute_script("arguments[0].click();", chat_item)
         
-        # 서치 완료된건지 메인 화면 화면 확인용
-        WebDriverWait(self.driver, WAIT_TIME).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, SELECTORS["MAIN_HOME_SCREEN"]))
-        )
+        # 서치 완료된건지 알기위해 btn_cancel이 사라졌는지 
+        # WebDriverWait(self.driver, WAIT_TIME).until(
+        #     EC.invisibility_of_element_located((By.CSS_SELECTOR, XPATH["BTN_SEARCH_CANCEL"]))
+        # )
         return True
     
     def scroll_up_search(self):
@@ -325,7 +325,6 @@ class MainPage(BasePage):
             elems = self.get_elements_by_xpath(last_msg_xpath)
 
             if not elems:
-                time.sleep(0.5)
                 continue
             
             elem = elems[-1]
@@ -334,7 +333,7 @@ class MainPage(BasePage):
                 if status == "complete":
                     self.fm.save_json_file("ai_response_completed.json", {elem.text})
                     return AIresponse.COMPLETED
-            time.sleep(0.5)
+            time.sleep(0.5) ###
             
         if stop:
             # self.fm.save_json_file("ai_response_stopped.json", {elem.text}) -> [회고] element가 없으면?
@@ -373,7 +372,6 @@ class MainPage(BasePage):
     # ------------------- action ---------------------------- 
     def click_send(self):
         self.click_btn_by_xpath(XPATH["BTN_SEND"], option = "presence")
-        time.sleep(0.5)
     
     def click_btn_retry(self):
         btns = self.get_elements_by_xpath(XPATH["BTN_RETRY"])
@@ -460,7 +458,6 @@ class MainPage(BasePage):
         edit_btn = tooltip.find_element(By.XPATH, XPATH["BTN_TOOLTIP_EDIT"])
         if edit_btn and edit_btn.is_enabled():
             self.driver.execute_script("arguments[0].click();", edit_btn)
-            time.sleep(1)
         else:
             return False
 
@@ -475,8 +472,8 @@ class MainPage(BasePage):
             lambda d: self.get_element_by_xpath(XPATH["BTN_EDIT_AREA"])
         )
 
-        ClipboardController.copy(content)
         ChatInputController.reset_text(textarea)
+        ClipboardController.copy(content)
         ClipboardController.paste(textarea)
         try:
             btn_send = WebDriverWait(self.driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, XPATH["BTN_EDIT_SEND"])))
@@ -593,7 +590,6 @@ class MainPage(BasePage):
         self.click_btn_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "visibility")
         ClipboardController.copy(file_path)
         ClipboardController.paste_file_path(file_path)
-
 
     def upload_files(self, format):
         files = self.fm.get_asset_files(format)

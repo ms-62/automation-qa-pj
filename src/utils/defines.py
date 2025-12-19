@@ -341,7 +341,8 @@ XPATH = {
     "BTN_DELETE_CONFIRM" : "//button[normalize-space()='삭제']",
     "INPUT_SEARCH_CHAT" : '//input[@placeholder="Search"]',
     
-
+    "BTN_SEARCH_CANCEL" : "button[data-testid='xmarkIcon']",
+    
     # ------------------------------------ (하드코딩 저장소) -----------------------------------
     "BTNS_HOME_MENU" : '//ul[contains(@class,"MuiList-root") and contains(@class,"EliceLayoutList-root")]',
     "MENU_ITEM_BY_TEXT" : './/li[.//span[normalize-space()="{text}"]]',

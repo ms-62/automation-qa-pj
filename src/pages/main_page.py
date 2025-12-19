@@ -111,9 +111,9 @@ class MainPage(BasePage):
         self.driver.execute_script("arguments[0].click();", chat_item)
         
         # 서치 완료된건지 알기위해 btn_cancel이 사라졌는지 
-        # WebDriverWait(self.driver, WAIT_TIME).until(
-        #     EC.invisibility_of_element_located((By.CSS_SELECTOR, XPATH["BTN_SEARCH_CANCEL"]))
-        # )
+        WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.invisibility_of_element_located((By.CSS_SELECTOR, XPATH["BTN_SEARCH_CANCEL"]))
+        )
         return True
     
     def scroll_up_search(self):
@@ -155,11 +155,13 @@ class MainPage(BasePage):
         
     def delete_main_chat(self):
         self.click_main_chat_hamburger()
-        prev_chats = self.get_all_chats()
+        prev_chats_texts = [chat.text.strip() for chat in self.get_all_chats()]
+        #prev_chats = self.get_all_chats() 
         self.click_btn_by_xpath(XPATH["DELETE_NOWCHAT"], option="presence")
         self.click_delete_confirm()
-        after_chats = self.get_all_chats()
-        return False if prev_chats == after_chats else True
+        #after_chats = self.get_all_chats()
+        after_chats = self.compare_prev_and_after_chats(prev_chats_texts)
+        return False if prev_chats_texts == after_chats else True
     
     
     # ================ past_chat_page (기존 대화 내용 기록) ================ #
@@ -174,6 +176,12 @@ class MainPage(BasePage):
     def get_all_chats(self):
         return self.get_elements_by_css_selector(SELECTORS["CHAT_LIST_ITEMS"])
 
+    def compare_prev_and_after_chats(self, prev_chats_texts):
+        WebDriverWait(self.driver, WAIT_TIME).until(
+            lambda d: [chat.text for chat in self.get_all_chats()] != prev_chats_texts
+        )
+        after_chats_texts = [chat.text for chat in self.get_all_chats()]
+        return prev_chats_texts != after_chats_texts
 
     # ---------- actions ----------
     def open_selected_edit_menu(self):
@@ -242,12 +250,14 @@ class MainPage(BasePage):
         return False if curname == prev_name else True
         
     def delete_chat(self):
-        prev_chats = self.get_all_chats()
+        #prev_chats = self.get_all_chats()
+        prev_chats_texts = [chat.text.strip() for chat in self.get_all_chats()]
         self.open_selected_edit_menu()
         self.click_delete_chat()
         self.click_delete_confirm()
-        after_chats = self.get_all_chats()
-        return False if prev_chats == after_chats else True
+        # after_chats = self.get_all_chats()
+        after_chats = self.compare_prev_and_after_chats(prev_chats_texts)  #  * [회고] -> 이렇게 비교하니까 계속 after값이 같음. 
+        return False if prev_chats_texts == after_chats else True
         
     def cancel_edit(self):
         self.select_latest_chat()
@@ -411,7 +421,7 @@ class MainPage(BasePage):
             return False  
         return WebDriverWait(self.driver, timeout, poll_frequency=0.2).until(_find_tooltip)    
             
-    def copy_last_question(self):
+    def copy_last_question(self):  ## 질문쓰할것
         tooltip = WebDriverWait(self.driver, CHAT_TIME).until(
             lambda d: self.get_user_last_tooltip()  
         )

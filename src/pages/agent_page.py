@@ -101,9 +101,8 @@ class AgentPage(BasePage) :
     
         result = ResponseController.wait_for_response_with_timeout(
             btn_stop=lambda: chat_area.find_element(By.XPATH, './/button[@aria-label="취소"]'),
-            stop_time=3
+            stop_time=1.5
         )
-        time.sleep(1)
         return result
     
     # 대화로 만들기 다시 생성
@@ -189,7 +188,6 @@ class AgentPage(BasePage) :
         me.click()
         btn = self.get_element_by_xpath(XPATH["BTN_AGENT_PUBLISH"])
         btn.click()
-        time.sleep(3)
         check = self.get_element_by_xpath(XPATH["CHECK_MAKE"])
         return check
         
@@ -208,7 +206,7 @@ class AgentPage(BasePage) :
         return element
     
     def error_message(self) :
-        element = self.get_element_by_xpath(XPATH["ERROR_MSG"])
+        element = self.get_element_by_xpath(XPATH["ERROR_MSG"], timeout=3)
         return element
     
     def delete_card(self) :
@@ -228,7 +226,6 @@ class AgentPage(BasePage) :
         for element in elements :
             if not element.is_selected():
                 element.click()
-                time.sleep(0.2)
                 
 #======================= 에이전트 설정으로 만들기 - 이미지 ==============================================
                 
@@ -241,8 +238,8 @@ class AgentPage(BasePage) :
         file_input.send_keys(file_path)
         
     # 이미지 업로드 체크
-    def check_upload_image(self) :
-        uploaded = self.get_element_by_xpath(XPATH["UPLOADED_IMAGE_PREVIEW"], timeout=10)
+    def check_upload_image(self, timeout) :
+        uploaded = self.get_element_by_xpath(XPATH["UPLOADED_IMAGE_PREVIEW"], timeout=timeout)
         return uploaded
     
     def check_upload_big_img(self) :
@@ -310,8 +307,7 @@ class AgentPage(BasePage) :
     
     # 에이전트 만들기 뒤로가기 버튼
     def back_in_agent_make_screen(self) :
-        btns = self.get_elements_by_xpath(XPATH["BTN_BACK_IN_MAKE_AGENT"])
-        btn = btns[1]
+        btn = self.get_element_by_xpath(XPATH["BTN_BACK_IN_MAKE_AGENT"])
         btn.click()
         
     # 내 에이전트 창 이동
@@ -322,7 +318,7 @@ class AgentPage(BasePage) :
         
     # 초안 메시지 확인
     def check_draft_msg(self) :
-        msg = self.get_element_by_xpath(XPATH["CHECK_DRAFT"])
+        msg = self.get_element_by_xpath(XPATH["CHECK_DRAFT"], option="visibility")
         return msg
     
 #=================== 에이전트 만들기 - 미리보기 ==========================================================
@@ -389,7 +385,6 @@ class AgentPage(BasePage) :
             btn_stop=lambda: preview_area.find_element(By.XPATH, '//button[@aria-label="취소"]'),
             stop_time=3
         )
-        time.sleep(1)
         return result
     
     # 에이전트 미리보기 다시 생성
@@ -421,7 +416,11 @@ class AgentPage(BasePage) :
     # 미리보기 새로고침 확인
     def check_refresh_in_preview(self) :
         preview_area = self.get_preview_area()
-        element = preview_area.find_element(By.XPATH, "//div[contains(@class, 'css-j7q6vj')]")
+        element = WebDriverWait(self.driver, 3).until(
+            lambda d: preview_area.find_element(
+                By.XPATH, ".//div[contains(@class, 'css-j7q6vj')]"
+            )
+        )
         return element
     
     # 미리보기 응답 부분 복사
@@ -453,29 +452,6 @@ class AgentPage(BasePage) :
     def scroll_up_chat(self):
         area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
         ScrollController.scroll_up(self.driver, area)
-
-    def scroll_down_chat(self):
-        area = self.get_element_by_xpath(XPATH["SCROLL_MAIN_CHAT"])
-        ScrollController.scroll_down(self.driver, area)
-        
-    def click_btn_scroll_to_bottom(self, timeout = TIMEOUT_MAX, wait_time=3):
-        start = time.time()
-
-        while time.time() - start < timeout:
-            btn = self.get_element_by_css_selector(SELECTORS["SCROLL_TO_BOTTOM_BUTTON"])
-
-            if btn and btn.is_enabled():
-                try:
-                    btn.click()
-                    print("맨 밑으로 이동스크롤 클릭")
-                    return True
-                except Exception:
-                    pass
-
-            self.scroll_up_chat()
-            time.sleep(0.3)
-
-        raise TimeoutError("스크롤 버튼 안보임")
     
     # 에이전트 대화창 들어가기
     def talk_with_agent_screen(self) :
@@ -531,7 +507,6 @@ class AgentPage(BasePage) :
             btn_stop=lambda: self.get_element_by_xpath(XPATH["BTN_STOP"]),
             stop_time=3
         )
-        time.sleep(1)
         return result
     
     # 다시 생성 버튼
@@ -701,14 +676,13 @@ class AgentPage(BasePage) :
         cardarea = self.get_element_by_xpath(XPATH["CARD_SETT"])
         ChatInputController.reset_text(cardarea)
         ChatInputController.send_text(cardarea, text)
-        time.sleep(2)
     
     def modify_and_check(self) :
         self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"]).click()
         time.sleep(0.5)
         self.get_element_by_xpath(XPATH["BTN_AGENT_PUBLISH"]).click()
         time.sleep(0.5)
-        element = self.get_element_by_css_selector(SELECTORS["UPDATE_CHECK"])
+        element = self.get_element_by_css_selector(SELECTORS["UPDATE_CHECK"], timeout=5)
         return element
         
 # =========================== 에이전트 삭제 ===================================================================
@@ -729,7 +703,6 @@ class AgentPage(BasePage) :
         options = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_AGENTS"])
         if options :
             options[1].click()
-            time.sleep(2)
         
     def go_to_not_delete_in_agents(self) :
         element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"])
@@ -743,7 +716,6 @@ class AgentPage(BasePage) :
             options = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_AGENTS"])
         if options :
             options[0].click()
-            time.sleep(0.5)
             
     def check_delete_in_my_agent(self) :
         element = self.get_element_by_xpath(XPATH["DELETE_CHECK"], timeout=5)
@@ -756,7 +728,6 @@ class AgentPage(BasePage) :
         btns = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_MY_AGENT"])
         if btns :
             btns[1].click()
-            time.sleep(2)
         
     def go_to_not_delete_in_my_agent(self) :
         btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"])
@@ -765,4 +736,3 @@ class AgentPage(BasePage) :
         btns = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_MY_AGENT"])
         if btns :
             btns[0].click()
-            time.sleep(0.5)

@@ -227,7 +227,7 @@ XPATH = {
     "FAIL_UPLOAD_FILE" : "//*[name()='svg' and @data-testid='circle-exclamationIcon']",
     "FAIL_UPLOAD_FILE_MSG" : "//p[contains(@class, 'css-wrn3u')]",
     "BTN_FOR_UPLOADED_FILE" : "//button[contains(@class, 'css-1rssx7s')]",
-    "BTN_BACK_IN_MAKE_AGENT" : "//button[contains(@class, 'css-1p4tfme')]",
+    "BTN_BACK_IN_MAKE_AGENT" : "//div[contains(@class, 'css-cbovu4')]//button",
     "CHECK_DRAFT" : "//div[contains(@class, 'css-1alszk2')]",
     "PREVIEW_INPUT" :"//textarea[@data-gtm-form-interact-field-id = '5']",
     "BTN_PREVIEW_SEND" : "//button[contains(@class, 'css-rhb320')]",

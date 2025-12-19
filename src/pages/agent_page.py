@@ -182,7 +182,7 @@ class AgentPage(BasePage) :
         ChatInputController.send_text(cardarea, text)
         
     def make_agent_for_me(self) :
-        element = self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"])
+        element = self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"], option="clickable")
         element.click()
         me = self.get_element_by_xpath(XPATH["BTN_FOR_ME"])
         me.click()
@@ -192,7 +192,7 @@ class AgentPage(BasePage) :
         return check
         
     def make_agent_for_agency(self) :
-        element = self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"])
+        element = self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"], option="clickable")
         element.click()
         agency = self.get_element_by_xpath(XPATH["BTN_FOR_AGENCY"])
         agency.click()
@@ -678,7 +678,7 @@ class AgentPage(BasePage) :
         ChatInputController.send_text(cardarea, text)
     
     def modify_and_check(self) :
-        self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"]).click()
+        self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"], option="clickable").click()
         time.sleep(0.5)
         self.get_element_by_xpath(XPATH["BTN_AGENT_PUBLISH"]).click()
         time.sleep(0.5)

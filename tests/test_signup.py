@@ -28,10 +28,11 @@ def test_signup_success(signup_page, fm) :
         success = signup_page.check_signup_success()
         assert success is not None, "PHC-TS02-TC001 : Test fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_success"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_success"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
 
 # PHC-TS02-TC002
 def test_signup_fail_duplicate(signup_page, fm) :
@@ -50,10 +51,11 @@ def test_signup_fail_duplicate(signup_page, fm) :
         fail = signup_page.check_signup_fail()
         assert "already" in fail, "PHC-TS02-TC002 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_duplicate_email"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_duplicate_email"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC003
 def test_signup_fail_no_a(signup_page, fm) :
@@ -72,10 +74,11 @@ def test_signup_fail_no_a(signup_page, fm) :
         fail = signup_page.check_signup_fail()
         assert "incorrect" in fail, "PHC-TS02-TC003 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_no_a_in_email"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_no_a_in_email"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC004
 def test_signup_fail_no_address(signup_page, fm) :
@@ -97,10 +100,11 @@ def test_signup_fail_no_address(signup_page, fm) :
         )
         assert "@" in msg, "PHC-TS02-TC004 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_no_address_in_email"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_no_address_in_email"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
 
 # PHC-TS02-TC005
 def test_signup_fail_notcomplete_address(signup_page, fm) :
@@ -119,10 +123,11 @@ def test_signup_fail_notcomplete_address(signup_page, fm) :
         fail = signup_page.check_signup_fail()
         assert "incorrect" in fail, "PHC-TS02-TC005 : Test fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_incomplete_address_in_email")) 
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_incomplete_address_in_email"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC006
 def test_signup_fail_empty_email(signup_page, fm) : 
@@ -143,10 +148,11 @@ def test_signup_fail_empty_email(signup_page, fm) :
         )
         assert "입력란" in msg, "PHC-TS02-TC006 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_empty_email")) 
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_empty_email"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC007
 def test_signup_fail_pw_less(signup_page, fm) :
@@ -165,10 +171,11 @@ def test_signup_fail_pw_less(signup_page, fm) :
         fail = signup_page.check_signup_fail()
         assert "password stronger!" in fail, "PHC-TS02-TC007 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_less_than_eight_pw")) 
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_less_than_eight_pw"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC008
 def test_signup_success_pw_criteria(signup_page, fm) :  
@@ -187,10 +194,11 @@ def test_signup_success_pw_criteria(signup_page, fm) :
         success = signup_page.check_signup_success()
         assert success is not None, "PHC-TS02-TC008 : Test fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_success_pw_standard_len"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_success_pw_standard_len"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC009
 def test_signup_fail_pw_no_english(signup_page, fm) :
@@ -209,10 +217,11 @@ def test_signup_fail_pw_no_english(signup_page, fm) :
         fail = signup_page.check_signup_fail()
         assert "password stronger!" in fail, "PHC-TS02-TC009 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_no_english_in_pw"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_no_english_in_pw"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC010
 def test_signup_fail_pw_no_number(signup_page, fm) :
@@ -231,10 +240,11 @@ def test_signup_fail_pw_no_number(signup_page, fm) :
         fail = signup_page.check_signup_fail()
         assert "password stronger!" in fail, "PHC-TS02-TC010 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_no_number_in_pw"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_no_number_in_pw"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC011
 def test_signup_fail_pw_no_character(signup_page, fm) :
@@ -253,10 +263,11 @@ def test_signup_fail_pw_no_character(signup_page, fm) :
         fail = signup_page.check_signup_fail()
         assert "password stronger!" in fail, "PHC-TS02-TC011 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_no_character_in_pw"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_no_character_in_pw"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC012
 def test_signup_fail_empty_pw(signup_page, fm) : 
@@ -278,10 +289,11 @@ def test_signup_fail_empty_pw(signup_page, fm) :
         )
         assert "입력란" in msg, "PHC-TS02-TC012 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_empty_pw"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_empty_pw"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC013
 def test_signup_fail_empty_name(signup_page, fm) : 
@@ -303,10 +315,11 @@ def test_signup_fail_empty_name(signup_page, fm) :
         )
         assert "입력란" in msg, "PHC-TS02-TC013 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_empty_name"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_empty_name"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC014
 def test_signup_fail_no_agree(signup_page, fm) :
@@ -322,10 +335,11 @@ def test_signup_fail_no_agree(signup_page, fm) :
         btn = signup_page.btn_element()
         assert btn.get_attribute("disabled") is not None, "PHC-TS02-TC014 : Test fail" 
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_with_no_agree"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_with_no_agree"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC015
 def test_signup_success_no_optional(signup_page, fm) :
@@ -347,10 +361,11 @@ def test_signup_success_no_optional(signup_page, fm) :
         success = signup_page.check_signup_success()
         assert success is not None, "PHC-TS02-TC015 : Test fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_success_with_no_optional_agree"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_success_with_no_optional_agree"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC016
 def test_signup_fail_no_required(signup_page, fm) :
@@ -371,10 +386,11 @@ def test_signup_fail_no_required(signup_page, fm) :
         btn = signup_page.btn_element()
         assert btn.get_attribute("disabled") is not None, "PHC-TS02-TC016 : Test fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "signup_fail_with_no_required_agree"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "signup_fail_with_no_required_agree"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
     
 # PHC-TS02-TC017
 def test_signup_14_age_verify(signup_page, fm) :
@@ -403,14 +419,16 @@ def test_signup_14_age_verify(signup_page, fm) :
         else :
             try :
                 signup_page.iframe_element()
-            except TimeoutException :
+            except TimeoutException as e:
                 elapsed = time.perf_counter() - start
                 fm.save_screenshot_png(signup_page.driver, test_name)
-                log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "verify_age_screen_when_signup_14_age"))
-    except :
+                log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+                raise
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "verify_age_screen_when_signup_14_age"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise
             
 # PHC-TS02-TC018
 def test_signup_view_password(signup_page, fm) :
@@ -430,7 +448,8 @@ def test_signup_view_password(signup_page, fm) :
         signup_page.view_password()
         assert element.get_attribute("type") == "password", "PHC-TS02-TC018 : Test fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "view_password_option_again"))
-    except :
+    except Exception as e:
         elapsed = time.perf_counter() - start
         fm.save_screenshot_png(signup_page.driver, test_name)
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = "view_password_option"))
+        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+        raise

@@ -553,7 +553,7 @@ class AgentPage(BasePage) :
         btn = self.get_element_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "visibility")
         if btn and btn.is_enabled() :
             btn.click()
-            time.sleep(0.5)
+            time.sleep(2)
 
     # 단일 파일 업로드
     def upload_file_in_chat(self) :
@@ -681,7 +681,6 @@ class AgentPage(BasePage) :
         self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"], option="clickable").click()
         time.sleep(0.5)
         self.get_element_by_xpath(XPATH["BTN_AGENT_PUBLISH"]).click()
-        time.sleep(0.5)
         element = self.get_element_by_css_selector(SELECTORS["UPDATE_CHECK"], timeout=5)
         return element
         

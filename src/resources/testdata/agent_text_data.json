@@ -87,5 +87,12 @@
       "type" : "text",
       "content" : "아무 유머나"
     }
+  ],
+
+  "another_inputs" : [
+    {
+      "type" : "text",
+      "content" : "엽떡"
+    }
   ]
 }

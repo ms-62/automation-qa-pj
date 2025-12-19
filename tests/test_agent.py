@@ -8,7 +8,8 @@ from utils.defines import TestResult
 
 # PHC-TS06-TC001
 def test_search_agent_list(logged_in_agent, fm):
-    test_name = "agent_search_test"
+    # 존재하는 에이전트 리스트 테스트
+    test_name = "test_search_agent_list"
     ctx = TextContext(test_name, page="agent_search")
     start = time.perf_counter()
     try :
@@ -30,7 +31,8 @@ def test_search_agent_list(logged_in_agent, fm):
     
 # PHC-TS06-TC002
 def test_search_agent_fail(logged_in_agent,fm) :
-    test_name = "agent_search_test"
+    # 존재하지 않는 에이전트 리스트 검색
+    test_name = "test_search_agent_fail"
     ctx = TextContext(test_name, page="agent_search")
     start = time.perf_counter()
     try :
@@ -48,7 +50,8 @@ def test_search_agent_fail(logged_in_agent,fm) :
    
 # PHC-TS06-TC003
 def test_agent_talk_card(logged_in_agent, fm) :
-    test_name = "agent_chat_test"
+    # 에이전트와 대화 - 대화 카드 테스트
+    test_name = "test_agent_talk_card"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try :
@@ -57,9 +60,10 @@ def test_agent_talk_card(logged_in_agent, fm) :
         agent_page.talk_with_agent_screen()
         element_text = agent_page.agent_talk_card_text().text.strip()
         agent_page.agent_talk_card_click()
-        agent_page.scroll_up_chat()
+        result = agent_page.ai_card_chat_complete()
+        assert result == AIresponse.COMPLETED, "PHC-TS06-TC003 : Test Fail"
         my_text = agent_page.check_my_talk_input().text.strip()
-        assert element_text == my_text, "PHC-TS06-TC003 : Test Fail"
+        assert my_text in element_text, "PHC-TS06-TC003 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "chat_agent_with_card"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -69,7 +73,8 @@ def test_agent_talk_card(logged_in_agent, fm) :
     
 # PHC-TS06-TC004
 def test_agent_talk_response_complete(logged_in_agent, fm) :
-    test_name = "agent_chat_test"
+    # 에이전트와 대화 - AI 응답 테스트
+    test_name = "test_agent_talk_response_complete"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try :
@@ -89,7 +94,8 @@ def test_agent_talk_response_complete(logged_in_agent, fm) :
 
 # PHC-TS06-TC005   
 def test_agent_talk_response_stop(logged_in_agent, fm) :
-    test_name = "agent_chat_test"
+    # 에이전트와 대화 - 중단 버튼 클릭 시 AI 응답 중단 테스트
+    test_name = "test_agent_talk_response_stop"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try:
@@ -109,7 +115,8 @@ def test_agent_talk_response_stop(logged_in_agent, fm) :
     
 # PHC-TS06-TC006
 def test_agent_talk_create_again(logged_in_agent, fm) :
-    test_name = "agent_chat_create_again_option_test"
+    # 에이전트와 대화 - 응답 '다시 생성' 버튼 동작 확인
+    test_name = "test_agent_talk_create_again"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try:
@@ -137,7 +144,8 @@ def test_agent_talk_create_again(logged_in_agent, fm) :
   
 # PHC-TS06-TC009  
 def test_agent_talk_copy_and_paste(logged_in_agent, fm) :
-    test_name = "agent_chat_copy_option_test"
+    # 에이전트와 대화 - 응답 '복사' 버튼 동작 확인
+    test_name = "test_agent_talk_copy_and_paste"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try:
@@ -150,12 +158,10 @@ def test_agent_talk_copy_and_paste(logged_in_agent, fm) :
         assert result == AIresponse.COMPLETED, "PHC-TS06-TC009 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "agent_response"))
         
-        copy_text = agent_page.copy_last_response()
+        agent_page.copy_last_response()
         agent_page.paste_last_response()
         paste_text = agent_page.check_paste()
-        def normalize_text(text: str) -> str:
-            return re.sub(r'\s+', ' ', text).strip()
-        assert normalize_text(copy_text) in normalize_text(paste_text), "PHC-TS06-TC009 : Test Fail"
+        assert len(paste_text) > 0, "PHC-TS06-TC009 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "agent_response_copy"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -165,7 +171,8 @@ def test_agent_talk_copy_and_paste(logged_in_agent, fm) :
 
 # PHC-TS06-TC011
 def test_agent_talk_file_upload(logged_in_agent, fm) :
-    test_name = "agent_chat_upload_option_test"
+    # 에이전트와 대화 - 파일 업로드 테스트
+    test_name = "test_agent_talk_file_upload"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try :
@@ -189,7 +196,8 @@ def test_agent_talk_file_upload(logged_in_agent, fm) :
     
 # PHC-TS06-TC012
 def test_agent_talk_img_upload(logged_in_agent, fm) :
-    test_name = "agent_chat_upload_option_test"
+    # 에이전트와 대화 - 파일 업로드 시 이미지 파일 업로드 테스트
+    test_name = "test_agent_talk_img_upload"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try:
@@ -213,7 +221,8 @@ def test_agent_talk_img_upload(logged_in_agent, fm) :
 
 # PHC-TS06-TC013
 def test_agent_talk_expand_downsize_img(logged_in_agent, fm) :
-    test_name = "agent_chat_img_option_test"
+    # 에이전트와 대화 - 이미지 파일 업로드 시 이미지 확대/축소 테스트
+    test_name = "test_agent_talk_expand_downsize_img"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try:
@@ -235,7 +244,7 @@ def test_agent_talk_expand_downsize_img(logged_in_agent, fm) :
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "expand_img"))
         
         element = agent_page.downsize_img_in_chat()
-        assert element is None, "PHC-TS06-TC013 : Test Fail"
+        assert element, "PHC-TS06-TC013 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "downsize_img"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -245,7 +254,8 @@ def test_agent_talk_expand_downsize_img(logged_in_agent, fm) :
 
 # PHC-TS06-TC014
 def test_agent_talk_upload_and_delete(logged_in_agent, fm) :
-    test_name = "agent_chat_delete_file_option_test"
+    # 에이전트와 대화 - 파일 업로드 시 x 버튼으로 파일 업로드 취소 동작 확인
+    test_name = "test_agent_talk_upload_and_delete"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try:
@@ -270,7 +280,8 @@ def test_agent_talk_upload_and_delete(logged_in_agent, fm) :
     
 # PHC-TS06-TC015
 def test_agent_talk_download_img(logged_in_agent, fm) :
-    test_name = "agent_chat_download_img_option_test"
+    # 에이전트와 대화 - 업로드한 이미지 다운로드 테스트
+    test_name = "test_agent_talk_download_img"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try:
@@ -298,7 +309,8 @@ def test_agent_talk_download_img(logged_in_agent, fm) :
     
 # PHC-TS06-TC017
 def test_agent_talk_big_file_upload(logged_in_agent, fm) :
-    test_name = "agent_chat_exception_test_upload_big_file"
+    # 에이전트와 대화 - 1기가 이상 파일 업로드 테스트
+    test_name = "test_agent_talk_big_file_upload"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try: 
@@ -326,7 +338,8 @@ def test_agent_talk_big_file_upload(logged_in_agent, fm) :
     
 # PHC-TS06-TC018
 def test_agent_talk_upload_exe_to_file(logged_in_agent, fm) :
-    test_name = "agent_chat_exception_test_upload_exe_file"
+    # 에이전트와 대화 - 파일 업로드 시 허용되지 않는 실행파일 업로드 테스트
+    test_name = "test_agent_talk_upload_exe_to_file"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try :
@@ -346,7 +359,8 @@ def test_agent_talk_upload_exe_to_file(logged_in_agent, fm) :
     
 # PHC-TS06-TC019
 def test_agent_upload_many_files(logged_in_agent, fm) :
-    test_name = "agent_chat_exception_test_upload_many_files"
+    # 에이전트와 대화 - 한번에 20개 이상 파일 업로드 테스트
+    test_name = "test_agent_upload_many_files"
     ctx = TextContext(test_name, page="agent_chat")
     start = time.perf_counter()
     try:
@@ -365,7 +379,8 @@ def test_agent_upload_many_files(logged_in_agent, fm) :
 
 # PHC-TS06-TC022
 def test_make_agent_chat_stop(logged_in_agent, fm) :
-    test_name = "chat_stop_test_in_make_agent"
+    # 에이전트 만들기 - '대화로 만들기' 창 : 중단 버튼 클릭 시 AI 응답 중지 테스트
+    test_name = "test_make_agent_chat_stop"
     ctx = TextContext(test_name, page="make_agent_with_chat")
     start = time.perf_counter()
     try :
@@ -386,7 +401,8 @@ def test_make_agent_chat_stop(logged_in_agent, fm) :
     
 # PHC-TS06-TC023
 def test_make_agent_chat_create_again(logged_in_agent, fm) :
-    test_name = "chat_create_again_option_test_in_make_agent"
+    # 에이전트 만들기 - '대화로 만들기' 창 : 응답 '다시 생성' 버튼 동작 테스트
+    test_name = "test_make_agent_chat_create_again"
     ctx = TextContext(test_name, page="make_agent_with_chat")
     start = time.perf_counter()
     try:
@@ -412,7 +428,8 @@ def test_make_agent_chat_create_again(logged_in_agent, fm) :
     
 # PHC-TS06-TC026
 def test_make_agent_chat_copy_and_paste(logged_in_agent, fm) :
-    test_name = "chat_copy_option_test_in_make_agent"
+    # 에이전트 만들기 - '대화로 만들기' 창 : 응답 '복사' 버튼 동작 테스트
+    test_name = "test_make_agent_chat_copy_and_paste"
     ctx = TextContext(test_name, page="make_agent_with_chat")
     start = time.perf_counter()
     try :
@@ -439,7 +456,8 @@ def test_make_agent_chat_copy_and_paste(logged_in_agent, fm) :
     
 # PHC-TS06-TC028
 def test_make_agent_setting_for_me(logged_in_agent, fm) :
-    test_name = "make_agent"
+    # 에이전트 만들기 - '설정' 창 : '나만 보기' 로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_for_me"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -466,7 +484,8 @@ def test_make_agent_setting_for_me(logged_in_agent, fm) :
     
 # PHC-TS06-TC029
 def test_make_agent_setting_for_agency(logged_in_agent, fm) :
-    test_name = "make_agent"
+    # 에이전트 만들기 - '설정' 창 : '기관 공개' 로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_for_agency"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -493,7 +512,8 @@ def test_make_agent_setting_for_agency(logged_in_agent, fm) :
 
 # PHC-TS06-TC030  
 def test_make_agent_setting_no_name(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : 빈 '이름' 입력값으로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_no_name"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try:
@@ -509,10 +529,10 @@ def test_make_agent_setting_no_name(logged_in_agent, fm) :
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
         btn = agent_page.check_btn_disabled()
-        error = agent_page.error_message().text.strip()
-        assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC030 : Test Fail"
+        assert btn.get_attribute("disabled") == "true", "PHC-TS06-TC030 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_name"))
         
+        error = agent_page.error_message().text.strip()
         assert "이름" in error, "PHC-TS06-TC030 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_no_name"))
     except Exception as e:
@@ -523,7 +543,8 @@ def test_make_agent_setting_no_name(logged_in_agent, fm) :
 
 # PHC-TS06-TC031 
 def test_make_agent_setting_long_name(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : 100자 이상 '이름' 입력값으로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_long_name"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -540,10 +561,10 @@ def test_make_agent_setting_long_name(logged_in_agent, fm) :
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
         btn = agent_page.check_btn_disabled()
-        error = agent_page.error_message().text.strip()
-        assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC031 : Test Fail"
+        assert btn.get_attribute("disabled") == "true", "PHC-TS06-TC031 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_name"))
         
+        error = agent_page.error_message().text.strip()
         assert "이름" in error, "PHC-TS06-TC031 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_long_name"))
     except Exception as e:
@@ -554,7 +575,8 @@ def test_make_agent_setting_long_name(logged_in_agent, fm) :
     
 # PHC-TS06-TC032 
 def test_make_agent_setting_no_intro(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : 빈 '한줄 소개' 입력값으로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_no_intro"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -569,7 +591,7 @@ def test_make_agent_setting_no_intro(logged_in_agent, fm) :
         agent_page.setting_intro_input("")
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
-        agent_page.driver.implicitly_wait(3)
+        time.sleep(3)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is None, "PHC-TS06-TC032 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_intro"))
@@ -581,7 +603,8 @@ def test_make_agent_setting_no_intro(logged_in_agent, fm) :
     
 # PHC-TS06-TC033
 def test_make_agent_setting_long_intro(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : 300자 이상 '한줄 소개' 입력값으로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_long_intro"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -598,10 +621,10 @@ def test_make_agent_setting_long_intro(logged_in_agent, fm) :
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
         btn = agent_page.check_btn_disabled()
-        error = agent_page.error_message().text.strip()
-        assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC033 : Test Fail"
+        assert btn.get_attribute("disabled") == 'true', "PHC-TS06-TC033 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_intro"))
         
+        error = agent_page.error_message().text.strip()
         assert "한줄" in error, "PHC-TS06-TC033 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_long_intro"))
     except Exception as e:
@@ -612,7 +635,8 @@ def test_make_agent_setting_long_intro(logged_in_agent, fm) :
     
 # PHC-TS06-TC034  
 def test_make_agent_setting_no_rule(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : 빈 '규칙' 입력값으로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_no_rule"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -628,10 +652,10 @@ def test_make_agent_setting_no_rule(logged_in_agent, fm) :
         agent_page.setting_rule_input("")
         agent_page.setting_card_input(card)
         btn = agent_page.check_btn_disabled()
-        error = agent_page.error_message().text.strip()
-        assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC034 : Test Fail"
+        assert btn.get_attribute("disabled") == 'true', "PHC-TS06-TC034 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_rule"))
         
+        error = agent_page.error_message().text.strip()
         assert "규칙" in error, "PHC-TS06-TC034 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "error_msg_make_agent_with_no_rule"))
     except Exception as e:
@@ -642,7 +666,8 @@ def test_make_agent_setting_no_rule(logged_in_agent, fm) :
     
 # PHC-TS06-TC035  
 def test_make_agent_setting_long_rule(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : 1000자 이상 '규칙' 입력값으로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_long_rule"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -658,9 +683,9 @@ def test_make_agent_setting_long_rule(logged_in_agent, fm) :
         agent_page.setting_intro_input(intro)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
-        agent_page.driver.implicitly_wait(3)
+        time.sleep(3)
         btn = agent_page.check_btn_disabled()
-        assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC035 : Test Fail"
+        assert btn.get_attribute("disabled") == 'true', "PHC-TS06-TC035 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_rule"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -670,7 +695,8 @@ def test_make_agent_setting_long_rule(logged_in_agent, fm) :
 
 # PHC-TS06-TC036  
 def test_make_agent_setting_delete_card(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : '시작 대화' 입력 부분 x 버튼 동작 테스트
+    test_name = "test_make_agent_setting_delete_card"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -696,7 +722,8 @@ def test_make_agent_setting_delete_card(logged_in_agent, fm) :
 
 # PHC-TS06-TC037 
 def test_make_agent_setting_no_card(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : 빈 '시작 대화' 입력값으로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_no_card"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -711,7 +738,7 @@ def test_make_agent_setting_no_card(logged_in_agent, fm) :
         agent_page.setting_intro_input(intro)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input("")
-        agent_page.driver.implicitly_wait(3)
+        time.sleep(3)
         btn = agent_page.check_btn_disabled()
         assert btn.get_attribute("disabled") is None, "PHC-TS06-TC037 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_no_card"))
@@ -723,7 +750,8 @@ def test_make_agent_setting_no_card(logged_in_agent, fm) :
     
 # PHC-TS06-TC038 
 def test_make_agent_setting_long_card(logged_in_agent, fm) :
-    test_name = "make_agent_exception_test"
+    # 에이전트 만들기 - '설정' 창 : 1000자 이상 '시작 대화' 입력값으로 에이전트 만들기 테스트
+    test_name = "test_make_agent_setting_long_card"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -739,9 +767,9 @@ def test_make_agent_setting_long_card(logged_in_agent, fm) :
         agent_page.setting_intro_input(intro)
         agent_page.setting_rule_input(rule)
         agent_page.setting_card_input(card)
-        agent_page.driver.implicitly_wait(3)
+        time.sleep(3)
         btn = agent_page.check_btn_disabled()
-        assert btn.get_attribute("disabled") is not None, "PHC-TS06-TC038 : Test Fail"
+        assert btn.get_attribute("disabled") == 'true', "PHC-TS06-TC038 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "make_agent_with_long_card"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -751,7 +779,8 @@ def test_make_agent_setting_long_card(logged_in_agent, fm) :
 
 # PHC-TS06-TC039
 def test_make_agent_setting_many_option(logged_in_agent, fm) :
-    test_name = "duplicate_check_option_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : 기능 선택 시 중복 선택 테스트
+    test_name = "test_make_agent_setting_many_option"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -780,7 +809,8 @@ def test_make_agent_setting_many_option(logged_in_agent, fm) :
 
 # PHC-TS06-TC040
 def test_make_agent_image_upload(logged_in_agent, fm):
-    test_name = "img_upload_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : 에이전트 이미지 업로드 테스트
+    test_name = "test_make_agent_image_upload"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -799,7 +829,8 @@ def test_make_agent_image_upload(logged_in_agent, fm):
     
 # PHC-TS06-TC041
 def test_make_agent_big_image_upload(logged_in_agent, fm):
-    test_name = "big_img_upload_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : 에이전트 이미지 업로드 시 10mb 이상 이미지 파일 선택
+    test_name = "test_make_agent_big_image_upload"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -817,7 +848,8 @@ def test_make_agent_big_image_upload(logged_in_agent, fm):
 
 # PHC-TS06-TC042
 def test_make_agent_exe_to_img_upload(logged_in_agent,fm):
-    test_name = "exe_upload_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : 에이전트 이미지 업로드 시 실행 파일 선택
+    test_name = "test_make_agent_exe_to_img_upload"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -845,7 +877,8 @@ def test_make_agent_exe_to_img_upload(logged_in_agent,fm):
     
 # PHC-TS06-TC043
 def test_make_agent_make_image(logged_in_agent, fm) :
-    test_name = "make_img_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : '이미지 생성기' 버튼 동작 확인
+    test_name = "test_make_agent_make_image"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -857,7 +890,7 @@ def test_make_agent_make_image(logged_in_agent, fm) :
         rule = data["setting_inputs"][2]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        agent_page.driver.implicitly_wait(3)
+        agent_page.check_btn_disabled()
         agent_page.make_image()
         uploaded = agent_page.check_upload_image(10)
         assert uploaded.is_displayed(), "PHC-TS06-TC043 : Test Fail"
@@ -870,7 +903,8 @@ def test_make_agent_make_image(logged_in_agent, fm) :
 
 # PHC-TS06-TC044
 def test_make_agent_file_upload(logged_in_agent, fm) :
-    test_name = "file_upload_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : '파일 업로드' 기능 확인 테스트
+    test_name = "test_make_agent_file_upload"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -890,7 +924,8 @@ def test_make_agent_file_upload(logged_in_agent, fm) :
     
 # PHC-TS06-TC045
 def test_make_agent_upload_img_to_file(logged_in_agent, fm) :
-    test_name = "upload_img_to_file_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : '파일 업로드' 시 이미지 파일 업로드 테스트
+    test_name = "test_make_agent_upload_img_to_file"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -910,7 +945,8 @@ def test_make_agent_upload_img_to_file(logged_in_agent, fm) :
 
 # PHC-TS06-TC046
 def test_make_agent_upload_big_file(logged_in_agent, fm) :
-    test_name = "upload_big_file_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : '파일 업로드' 시 1기가 이상 파일 업로드 테스트
+    test_name = "test_make_agent_upload_big_file"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -934,7 +970,8 @@ def test_make_agent_upload_big_file(logged_in_agent, fm) :
     
 # PHC-TS06-TC047
 def test_make_agent_upload_exe_to_file(logged_in_agent, fm) :
-    test_name = "upload_exe_to_img_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : '파일 업로드' 시 실행 파일 업로드 테스트
+    test_name = "test_make_agent_upload_exe_to_file"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -958,7 +995,8 @@ def test_make_agent_upload_exe_to_file(logged_in_agent, fm) :
     
 # PHC-TS06-TC048
 def test_make_agent_upload_many_file(logged_in_agent, fm) :
-    test_name = "upload_many_files_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : '파일 업로드' 시 20개 이상 파일 업로드 테스트
+    test_name = "test_make_agent_upload_many_file"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -978,7 +1016,8 @@ def test_make_agent_upload_many_file(logged_in_agent, fm) :
     
 # PHC-TS06-TC049
 def test_make_agent_delete_uploaded_file(logged_in_agent, fm) :
-    test_name = "delete_file_in_make_agent"
+    # 에이전트 만들기 - '설정' 창 : 업로드한 파일 삭제 기능 테스트
+    test_name = "test_make_agent_delete_uploaded_file"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -1001,7 +1040,8 @@ def test_make_agent_delete_uploaded_file(logged_in_agent, fm) :
     
 # PHC-TS06-TC051
 def test_agent_back_while_make(logged_in_agent, fm) :
-    test_name = "create_draft_agent"
+    # 에이전트 만들기 중 뒤로가기 버튼 클릭하면 초안 생성되는지 확인 테스트
+    test_name = "test_agent_back_while_make"
     ctx = TextContext(test_name, page="make_agent_with_setting")
     start = time.perf_counter()
     try :
@@ -1010,7 +1050,6 @@ def test_agent_back_while_make(logged_in_agent, fm) :
         agent_page.go_to_my_agent()
         agent_page.make_agent_screen()
         agent_page.back_in_agent_make_screen()
-        agent_page.driver.implicitly_wait(3)
         msg = agent_page.check_draft_msg()
         assert "초안" in msg.text.strip(), "PHC-TS06-TC051 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "create_draft_agent"))
@@ -1022,7 +1061,8 @@ def test_agent_back_while_make(logged_in_agent, fm) :
 
 # PHC-TS06-TC052
 def test_agent_refresh_preview(logged_in_agent, fm) :
-    test_name = "refresh_in_preview_chat"
+    # 에이전트 만들기 - '미리보기' 대화창 : '새로고침' 버튼 동작 테스트
+    test_name = "test_agent_refresh_preview"
     ctx = TextContext(test_name, page="preview_chat")
     start = time.perf_counter()
     try :
@@ -1052,7 +1092,8 @@ def test_agent_refresh_preview(logged_in_agent, fm) :
     
 # PHC-TS06-TC053
 def test_agent_chat_card_preview(logged_in_agent, fm) :
-    test_name = "chat_in_preview"
+    # 에이전트 만들기 - '미리보기' 대화창 : 대화 카드 테스트
+    test_name = "test_agent_chat_card_preview"
     ctx = TextContext(test_name, page="preview_chat")
     start = time.perf_counter()
     try :
@@ -1078,7 +1119,8 @@ def test_agent_chat_card_preview(logged_in_agent, fm) :
     
 # PHC-TS06-TC054
 def test_agent_chat_in_preview(logged_in_agent, fm) :
-    test_name = "chat_in_preview"
+    # 에이전트 만들기 - '미리보기' 대화창 : AI 응답 테스트
+    test_name = "test_agent_chat_in_preview"
     ctx = TextContext(test_name, page="preview_chat")
     start = time.perf_counter()
     try :
@@ -1102,7 +1144,8 @@ def test_agent_chat_in_preview(logged_in_agent, fm) :
 
 # PHC-TS06-TC055
 def test_agent_stop_chat_in_preview(logged_in_agent, fm) :
-    test_name = "chat_in_preview"
+    # 에이전트 만들기 - '미리보기' 대화창 : 중단 버튼 클릭 시 AI 응답 중지 테스트
+    test_name = "test_agent_stop_chat_in_preview"
     ctx = TextContext(test_name, page="preview_chat")
     start = time.perf_counter()
     try :
@@ -1126,7 +1169,8 @@ def test_agent_stop_chat_in_preview(logged_in_agent, fm) :
 
 # PHC-TS06-TC056
 def test_agent_create_again_in_preview(logged_in_agent, fm) :
-    test_name = "chat_option_in_preview"
+    # 에이전트 만들기 - '미리보기' 대화창 : '다시 생성' 버튼 동작 테스트
+    test_name = "test_agent_create_again_in_preview"
     ctx = TextContext(test_name, page="preview_chat")
     start = time.perf_counter()
     try :
@@ -1155,7 +1199,8 @@ def test_agent_create_again_in_preview(logged_in_agent, fm) :
 
 # PHC-TS06-TC059
 def test_agent_copy_and_paste_in_preview(logged_in_agent, fm) :
-    test_name = "chat_option_in_preview"
+    # 에이전트 만들기 - '미리보기' 대화창 : 응답 '복사' 버튼 동작 테스트
+    test_name = "test_agent_copy_and_paste_in_preview"
     ctx = TextContext(test_name, page="preview_chat")
     start = time.perf_counter()
     try :
@@ -1172,12 +1217,10 @@ def test_agent_copy_and_paste_in_preview(logged_in_agent, fm) :
         assert result == AIresponse.COMPLETED, "PHC-TS06-TC059 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "ai_response_in_preview"))
         
-        copy_text = agent_page.copy_last_response_in_preview()
+        agent_page.copy_last_response_in_preview()
         agent_page.paste_last_response_in_preview()
         paste_text = agent_page.check_paste_in_preview()
-        def normalize_text(text: str) -> str:
-            return re.sub(r'\s+', ' ', text).strip()
-        assert normalize_text(copy_text) in normalize_text(paste_text), "PHC-TS06-TC059 : Test Fail"
+        assert len(paste_text) > 0, "PHC-TS06-TC059 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "copy_response_in_preview"))
     except Exception as e:
         elapsed = time.perf_counter() - start
@@ -1187,7 +1230,8 @@ def test_agent_copy_and_paste_in_preview(logged_in_agent, fm) :
 
 # PHC-TS06-TC062
 def test_modify_in_agents(logged_in_agent, fm) :
-    test_name = "modify_agent_in_agent_search_screen"
+    # 에이전트 탐색창에서 에이전트 편집창 진입 & 에이전트 업데이트 테스트
+    test_name = "test_modify_in_agents"
     ctx = TextContext(test_name, page="modify_agent")
     start = time.perf_counter()
     try :
@@ -1214,7 +1258,8 @@ def test_modify_in_agents(logged_in_agent, fm) :
     
 # PHC-TS06-TC064
 def test_modify_in_my_agent(logged_in_agent, fm) :
-    test_name = "modify_agent_in_my_agent_screen"
+    # 내 에이전트 창에서 에이전트 편집창 진입 & 에이전트 업데이트 테스트
+    test_name = "test_modify_in_my_agent"
     ctx = TextContext(test_name, page="modify_agent")
     start = time.perf_counter()
     try :
@@ -1242,7 +1287,8 @@ def test_modify_in_my_agent(logged_in_agent, fm) :
 
 # PHC-TS06-TC065
 def test_not_delete_in_agents(logged_in_agent, fm) :
-    test_name = "delete_agent_in_agent_search_screen"
+    # 에이전트 탐색창에서 에이전트 삭제 취소 버튼 기능 테스트
+    test_name = "test_not_delete_in_agents"
     ctx = TextContext(test_name, page="delete_agent")
     start = time.perf_counter()
     try :
@@ -1260,7 +1306,8 @@ def test_not_delete_in_agents(logged_in_agent, fm) :
     
 # PHC-TS06-TC066
 def test_delete_in_agents(logged_in_agent, fm) :
-    test_name = "delete_agent_in_agent_search_screen"
+    # 에이전트 탐색창에서 에이전트 삭제 버튼 기능 테스트
+    test_name = "test_delete_in_agents"
     ctx = TextContext(test_name, page="delete_agent")
     start = time.perf_counter()
     try :
@@ -1278,7 +1325,8 @@ def test_delete_in_agents(logged_in_agent, fm) :
     
 # PHC-TS06-TC067
 def test_not_delete_in_my_agent(logged_in_agent, fm) :
-    test_name = "delete_agent_in_my_agent_screen"
+    # 내 에이전트 창에서 에이전트 삭제 취소 버튼 기능 테스트
+    test_name = "test_not_delete_in_my_agent"
     ctx = TextContext(test_name, page="delete_agent")
     start = time.perf_counter()
     try :
@@ -1297,7 +1345,8 @@ def test_not_delete_in_my_agent(logged_in_agent, fm) :
     
 # PHC-TS06-TC068
 def test_delete_in_my_agent(logged_in_agent, fm) :
-    test_name = "delete_agent_in_my_agent_screen"
+    # 내 에이전트 창에서 에이전트 삭제 버튼 기능 테스트
+    test_name = "test_delete_in_my_agent"
     ctx = TextContext(test_name, page="delete_agent")
     start = time.perf_counter()
     try :

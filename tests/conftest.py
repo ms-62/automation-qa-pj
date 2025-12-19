@@ -91,7 +91,6 @@ def user_data(fm):
     return fm.read_json_file("user_data.json")
 
 @pytest.fixture
-
 def logged_in_main(driver, fm, login_page, main_page, member_page, agent_page, user_data):
     ctx = LoginContext(
         driver=driver,
@@ -140,3 +139,4 @@ def logged_in_agent(driver, fm, login_page, main_page, member_page, agent_page, 
 @pytest.fixture(scope="session", autouse=True)
 def _setup_logging_once():
     setup_logging()
+

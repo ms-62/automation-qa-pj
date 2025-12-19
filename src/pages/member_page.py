@@ -10,12 +10,20 @@ logger = logging.getLogger()
 class MemberPage(BasePage):        
     #우측 사람 이미지 > 계정관리 순차 클릭 > 새 창 이동
     def go_to_member_page(self):
-        modal_btn = self.get_element_by_css_selector(SELECTORS["MEMBER_MODAL"])
+        modal_btn = self.wait_for_element(
+            By.CSS_SELECTOR,
+            SELECTORS["MEMBER_MODAL"],
+            condition="clickable",
+            timeout=3)
         self.driver.execute_script("arguments[0].click();", modal_btn) #모달 무조건 스크립트로 클릭
-        self.driver.implicitly_wait(5)
-        member_btn = self.get_element_by_xpath(XPATH["BTN_MEMBER"])
+
+        member_btn = self.wait_for_element(
+            By.XPATH,
+            XPATH["BTN_MEMBER"],
+            condition="clickable",
+            timeout=3)
         self.driver.execute_script("arguments[0].click();", member_btn)
-        self.driver.implicitly_wait(5)
+
         
         self.ensure_account_window()
         return True
@@ -26,7 +34,6 @@ class MemberPage(BasePage):
             if not self.go_to_member_page():
                 return False
         self.driver.refresh()
-        self.driver.implicitly_wait(5)
         return True
 
     #이름 관련 테스트 케이스를 위한 메서드
@@ -34,10 +41,10 @@ class MemberPage(BasePage):
         logger.info("open_name_edit_form 시작")
 
         # 0) '이름' 행 스크롤 위치 맞추기
-        name_row = self.get_element(
+        name_row = self.wait_for_element(
             By.XPATH,
             XPATH["NAME_ROW"],
-            option="presence",
+            condition="visibility",
             timeout=timeout,
         )
         if not name_row:
@@ -49,13 +56,12 @@ class MemberPage(BasePage):
             const y = rect.top + window.scrollY - 120;
             window.scrollTo({top: y, behavior: 'instant'});
         """, name_row)
-        self.driver.implicitly_wait(0.3)
 
         # 1) '이름' 수정 버튼 찾기
-        edit_btn = self.get_element(
+        edit_btn = self.wait_for_element(
             By.XPATH,
             XPATH["BTN_NAME_EDIT"],
-            option="visibility",
+            condition="clickable",
             timeout=timeout,
         )
         if not edit_btn:
@@ -65,23 +71,27 @@ class MemberPage(BasePage):
         logger.info("'이름' 수정 버튼 찾음, 클릭 시도")
 
         # 스크롤 + JS 클릭 
-        edit_btn_click = self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
-        self.driver.implicitly_wait(0.3)
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
         self.driver.execute_script("arguments[0].click();", edit_btn)
-        self.driver.implicitly_wait(0.5)
 
+        wait = WebDriverWait(self.driver, timeout)
         # 2) 이름 입력 필드 대기
-        input_name = self.get_element_by_name(NAME["INPUT_NAME"], option="visibility", timeout=timeout)
-        if not input_name:
-            logger.error("이름 입력란 안 나타남 (폼 안 열림)")
-            return False
-
-        logger.info("이름 수정 폼 열림")
+        input_name = wait.until(EC.presence_of_element_located((
+        By.NAME, NAME["INPUT_NAME"])))
+        wait.until(EC.element_to_be_clickable(input_name))
+        wait.until(lambda d: d.find_element(By.NAME, NAME["INPUT_NAME"]).get_attribute("value") is not None)
+    
+        logger.info("이름 수정 폼 완전 열림")
         return True
 
 
     def member_name(self, name) -> bool:
-        input_name = self.get_element_by_name(NAME["INPUT_NAME"], option="visibility", timeout=3)
+        input_name = self.wait_for_element(
+            By.NAME,
+            NAME["INPUT_NAME"], 
+            condition="clickable", 
+            timeout=3
+            )
         if not input_name:
             logger.error("이름 입력란 못 찾음")
             return False
@@ -102,7 +112,6 @@ class MemberPage(BasePage):
         self.driver.execute_script("arguments[0].value = '';", input_name)
         input_name.send_keys(name)
 
-        self.driver.implicitly_wait(0.5)
         logger.info(f"테스트 내용 입력 완료: {repr(name)}")
         return True
 
@@ -111,7 +120,12 @@ class MemberPage(BasePage):
         """저장 버튼 JS 클릭 + '이름' 행으로 스크롤 복귀 + enabled 상태로 성공/실패 판단."""
         xpath = XPATH["SUBMIT_NAME"] 
 
-        submit_btn = self.get_element(By.XPATH, xpath, option="visibility", timeout=3)
+        submit_btn = self.wait_for_element(
+            By.XPATH,
+            xpath, 
+            condition="clickable", 
+            timeout=3)
+        
         if not submit_btn:
             logger.error(" 저장 버튼 없음 (DOM에 없음)")
             return False
@@ -128,14 +142,16 @@ class MemberPage(BasePage):
                 const y = rect.top + window.scrollY - 100;
                 window.scrollTo({top: y, behavior: 'instant'});
             """, submit_btn)
-            self.driver.implicitly_wait(0.3)
 
             # JS 클릭
             self.driver.execute_script("arguments[0].click();", submit_btn)
-            self.driver.implicitly_wait(0.8)
 
             # 저장 후 다시 '이름' 행으로 스크롤 복귀
-            name_row = self.get_element(By.XPATH, XPATH["NAME_ROW"], option="presence", timeout=3)
+            name_row = self.wait_for_element(
+                By.XPATH, 
+                XPATH["NAME_ROW"], 
+                condition="visibility", 
+                timeout=3)
             if name_row:
                 self.driver.execute_script("""
                     const rect = arguments[0].getBoundingClientRect();
@@ -145,7 +161,6 @@ class MemberPage(BasePage):
             else:
                 self.driver.execute_script("window.scrollTo({top: 0, behavior: 'instant'});")
 
-            self.driver.implicitly_wait(0.5)
             logger.info("저장 버튼 JS 클릭 + 이름 행으로 복귀")
             return True
 
@@ -178,7 +193,7 @@ class MemberPage(BasePage):
         edit_btn = self.wait_for_element(
             By.XPATH,
             XPATH["BTN_EMAIL_EDIT"],
-            condition="visibility",
+            condition="clickable",
             timeout=timeout,
         )
         if not edit_btn:
@@ -192,24 +207,25 @@ class MemberPage(BasePage):
         self.driver.execute_script("arguments[0].click();", edit_btn)
 
         # 2) 이메일 입력 필드 대기
-        input_email = self.wait_for_element(
-            By.NAME,
-            NAME["INPUT_EMAIL"], 
-            condition="visibility", 
-            timeout=timeout
-        )
-        if not input_email:
-            logger.error("이메일 입력란 안 나타남 (폼 안 열림)")
-            return False
+        wait = WebDriverWait(self.driver, timeout)
 
-        logger.info("이메일 수정 폼 열림")
+        input_email = wait.until(EC.presence_of_element_located((
+            By.NAME, NAME["INPUT_EMAIL"])))
+        
+        # 3-2) 입력란 clickable까지 (폼 완전 로딩)
+        wait.until(EC.element_to_be_clickable(input_email))
+        
+        # 3-3) 또는 텍스트/속성 로딩 완료 확인
+        wait.until(lambda d: d.find_element(By.NAME, NAME["INPUT_EMAIL"]).get_attribute("value") is not None)
+        
+        logger.info("이메일 수정 폼 완전 열림")
         return True
     
     def member_email(self, email) -> bool:
         input_email = self.wait_for_element(
             By.NAME,
             NAME["INPUT_EMAIL"], 
-            condition="visibility", 
+            condition="clickable", 
             timeout=3
         )
         if not input_email:
@@ -230,7 +246,6 @@ class MemberPage(BasePage):
         self.driver.execute_script("arguments[0].value = '';", input_email)
         input_email.send_keys(email)
 
-        self.driver.implicitly_wait(0.5)
         logger.info(f"테스트 내용 입력 완료: {repr(email)}")
         return True
     
@@ -284,7 +299,7 @@ class MemberPage(BasePage):
             input_email = self.wait_for_element(
                 By.NAME,
                 NAME["INPUT_EMAIL"],
-                condition="visibility",
+                condition="clickable",
                 timeout=3,
             )
 
@@ -426,7 +441,6 @@ class MemberPage(BasePage):
     
     def certification_mobile(self) -> bool:
         """4시간 내 최대 5회 발송 시도 후 확인"""
-        #certi_btn = self.get_element(By.XPATH, XPATH["BTN_CERTI_MOBIL"] , option="visibility", timeout=3)
         certi_btn = self.wait_for_element(
             By.XPATH, 
             XPATH["BTN_CERTI_MOBIL"],
@@ -436,41 +450,48 @@ class MemberPage(BasePage):
         if not certi_btn:
             logger.error("인증 문자 버튼 없음 (DOM에 없음)")
             return False
+        
+        click_attempts = 0
+        max_attempts = 6
+        server_responses = 0  # 서버 실제 반응 횟수 추적
+        
         try:
-            for i in range(6):
-                logger.info(f"인증 버튼 {i+1}/5 클릭 시도")
+            while click_attempts < max_attempts:
+                click_attempts += 1
+                logger.info(f"클릭 {click_attempts}/{max_attempts}")
+                
                 self.driver.execute_script("arguments[0].click();", certi_btn)
                 
-                # 클릭 후 다시 휴대폰 번호 행으로 스크롤 복귀
-                mobile_row = self.wait_for_element(
-                    By.XPATH, 
-                    XPATH["EMAIL_ROW"], 
-                    condition="presence", 
-                    timeout=3)
+                # 🔑 점진적 대기 (초기 0.5s → 후반 1.2s)
+                wait_time = 0.5 + (click_attempts * 0.1)  # 0.5→1.2s 증가
+                time.sleep(wait_time)
                 
-                if mobile_row:
-                    self.driver.execute_script("""
-                        const rect = arguments[0].getBoundingClientRect();
-                        const y = rect.top + window.scrollY - 120;
-                        window.scrollTo({top: y, behavior: 'instant'});
-                    """, mobile_row)
-                else:
-                    self.driver.execute_script("window.scrollTo({top: 0, behavior: 'instant'});")
-            logger.info("인증 버튼 5회 연속 클릭 완료")
+                # 서버 응답 확인 (토스트/버튼 상태 변화)
+                try:
+                    toast = self.driver.find_element(By.XPATH, XPATH["TOAST_CONTAINER"])
+                    if toast.is_displayed() and toast.text.strip():
+                        server_responses += 1
+                        logger.info(f"서버 응답 #{server_responses}: {toast.text.strip()}")
+                        time.sleep(0.3)  # 토스트 읽고 난 후 추가 대기
+                except:
+                    pass  # 토스트 없음 = 서버 무시
+                
+                # 스크롤 복귀 (생략)
             
-            #toast 문구 확인
-            toast_container = self.wait_for_element(
-                By.XPATH,
-                XPATH["TOAST_CONTAINER"],
-                condition="visibility", 
-                timeout=5 
-                )
-            toast_msg = toast_container.text
-            logger.info(toast_msg)
-            return True
-                
+            logger.info(f"클릭:{click_attempts}회, 서버응답:{server_responses}회")
+            
+            # 최대 횟수 초과 토스트 대기
+            wait = WebDriverWait(self.driver, 10)
+            toast_xpath = XPATH["TOAST_CONTAINER"]
+            wait.until(EC.visibility_of_element_located((By.XPATH, toast_xpath)))
+            
+            toast_msg = self.driver.find_element(By.XPATH, toast_xpath).text.strip()
+            logger.info(f"최종 토스트: {repr(toast_msg)}")
+            
+            return "최대" in toast_msg or "5회" in toast_msg
+            
         except Exception as e:
-            logger.error(f"인증발송 최대횟수 시도 후 토스트 확인 실패: {e}")
+            logger.error(f"실패: {e}")
             return False
         
     #비밀번호 관련 테스트 메서드
@@ -478,10 +499,10 @@ class MemberPage(BasePage):
         logger.info("open_pwd_edit_form 시작")
 
         # 0) 비밀번호 행 스크롤 위치 맞추기
-        pwd_row = self.get_element(
+        pwd_row = self.wait_for_element(
             By.XPATH,
             XPATH["PWD_ROW"],
-            option="presence",
+            condition="presence",
             timeout=timeout,
         )
         if not pwd_row:
@@ -493,13 +514,12 @@ class MemberPage(BasePage):
             const y = rect.top + window.scrollY - 120;
             window.scrollTo({top: y, behavior: 'instant'});
         """, pwd_row)
-        self.driver.implicitly_wait(0.3)
 
         # 1) 비밀번호 수정 버튼 찾기
-        edit_btn = self.get_element(
+        edit_btn = self.wait_for_element(
             By.XPATH,
             XPATH["BTN_PWD_EDIT"],
-            option="visibility",
+            condition="clickable",
             timeout=timeout,
         )
         if not edit_btn:
@@ -510,12 +530,15 @@ class MemberPage(BasePage):
 
         # 스크롤 + JS 클릭
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
-        self.driver.implicitly_wait(0.3)
         self.driver.execute_script("arguments[0].click();", edit_btn)
-        self.driver.implicitly_wait(0.5)
+
 
         # 2) 비밀번호 입력 필드 대기
-        input_pwd = self.get_element_by_name(NAME["INPUT_PWD"], option="visibility", timeout=timeout)
+        input_pwd = self.wait_for_element(
+            By.NAME,
+            NAME["INPUT_PWD"],
+            condition="clickable",
+            timeout=timeout)
         if not input_pwd:
             logger.error("비밀번호 입력란 안 나타남 (폼 안 열림)")
             return False
@@ -524,8 +547,16 @@ class MemberPage(BasePage):
         return True
     
     def member_fail_pwd(self, pwd) -> bool:
-        input_pwd = self.get_element_by_name(NAME["INPUT_PWD"], option="visibility", timeout=3)
-        input_new_pwd = self.get_element_by_name(NAME["INPUT_NEW_PWD"], option="visibility", timeout=3)
+        input_pwd = self.wait_for_element(
+            By.NAME,
+            NAME["INPUT_PWD"], 
+            condition="clickable",
+            timeout=3)
+        input_new_pwd = self.wait_for_element(
+            By.NAME,
+            NAME["INPUT_NEW_PWD"],
+            condition="clickable",
+            timeout=3)
         
         if not input_pwd:
             logger.error("비밀번호 입력란 못 찾음")
@@ -536,13 +567,12 @@ class MemberPage(BasePage):
             const y = rect.top + window.scrollY - 100;
             window.scrollTo({top: y, behavior: 'instant'});
         """, input_pwd)
-        self.driver.implicitly_wait(0.3)
+        
         self.driver.execute_script("""
             const rect = arguments[0].getBoundingClientRect();
             const y = rect.top + window.scrollY - 100;
             window.scrollTo({top: y, behavior: 'instant'});
         """, input_new_pwd)
-        self.driver.implicitly_wait(0.3)
 
         try:
             input_pwd.click()
@@ -557,21 +587,28 @@ class MemberPage(BasePage):
         input_pwd.send_keys(pwd)
         input_new_pwd.send_keys(pwd)
 
-        self.driver.implicitly_wait(0.5)
         logger.info(f"비밀번호 입력 완료: {repr(pwd)}")
         return True
     
     def change_fail_pwd(self) -> bool :
         """동일한 비밀번호 기입한 상태로 변경 시도 : 테스트 내용 실패가 성공"""
-        submit_pwd = self.get_element(By.XPATH, XPATH["SUBMIT_PWD"] , option="visibility", timeout=3)
+        submit_pwd = self.wait_for_element(
+            By.XPATH,
+            XPATH["SUBMIT_PWD"] , 
+            condition="clickable",
+            timeout=3)
+        
         if not submit_pwd:
             logger.error("완료 버튼 없음 (DOM에 없음)")
             return False
         try:
             self.driver.execute_script("arguments[0].click();", submit_pwd)
-            self.driver.implicitly_wait(0.8)
 
-            invalid_msg = self.get_element_by_xpath(XPATH["INVALID_MSG"]).text
+            invalid_msg = self.wait_for_element(
+                By.XPATH,
+                XPATH["INVALID_MSG"],
+                condition="visibility",
+                timeout=4).text
             
             if invalid_msg:
                 logger.error(f"비밀번호 변경 실패 : {invalid_msg}")
@@ -585,8 +622,16 @@ class MemberPage(BasePage):
             return False
     
     def member_success_pwd(self, pwd , pwd_new) -> bool:
-        input_pwd = self.get_element_by_name(NAME["INPUT_PWD"], option="visibility", timeout=3)
-        input_new_pwd = self.get_element_by_name(NAME["INPUT_NEW_PWD"], option="visibility", timeout=3)
+        input_pwd = self.wait_for_element(
+            By.NAME,
+            NAME["INPUT_PWD"],
+            condition="clickable",
+            timeout=3)
+        input_new_pwd = self.wait_for_element(
+            By.NAME,
+            NAME["INPUT_NEW_PWD"],
+            condition="clickable",
+            timeout=3)
         
         if not input_pwd:
             logger.error("비밀번호 입력란 못 찾음")
@@ -597,13 +642,12 @@ class MemberPage(BasePage):
             const y = rect.top + window.scrollY - 100;
             window.scrollTo({top: y, behavior: 'instant'});
         """, input_pwd)
-        self.driver.implicitly_wait(0.3)
+        
         self.driver.execute_script("""
             const rect = arguments[0].getBoundingClientRect();
             const y = rect.top + window.scrollY - 100;
             window.scrollTo({top: y, behavior: 'instant'});
         """, input_new_pwd)
-        self.driver.implicitly_wait(0.3)
 
         try:
             input_pwd.click()
@@ -625,16 +669,25 @@ class MemberPage(BasePage):
     
     def change_success_pwd(self) -> bool:
         """비밀번호 변경 성공"""
-        submit_pwd = self.get_element(By.XPATH, XPATH["SUBMIT_PWD"] , option="visibility", timeout=3)
+        submit_pwd = self.wait_for_element(
+            By.XPATH,
+            XPATH["SUBMIT_PWD"] ,
+            condition="clickable",
+            timeout=3)
+        
         if not submit_pwd:
             logger.error("완료 버튼 없음 (DOM에 없음)")
             return False
         try:
             self.driver.execute_script("arguments[0].click();", submit_pwd)
-            self.driver.implicitly_wait(0.8)
 
             #toast 문구 확인
-            toast_container = self.get_element(By.XPATH,XPATH["TOAST_CONTAINER"],option="visibility", timeout=5 )
+            toast_container = self.wait_for_element(
+                By.XPATH,
+                XPATH["TOAST_CONTAINER"],
+                condition="visibility",
+                timeout=5 )
+            
             toast_msg = toast_container.text
             if toast_msg:
                 logger.info(f"비밀번호 변경 성공 : {toast_msg}")
@@ -652,10 +705,10 @@ class MemberPage(BasePage):
         logger.info("open_lang_edit_form 시작")
 
         # 0) 선호언어 행 스크롤 위치 맞추기
-        lang_row = self.get_element(
+        lang_row = self.wait_for_element(
             By.XPATH,
             XPATH["LANG_ROW"],
-            option="presence",
+            condition="presence",
             timeout=timeout,
         )
         if not lang_row:
@@ -667,56 +720,118 @@ class MemberPage(BasePage):
             const y = rect.top + window.scrollY - 120;
             window.scrollTo({top: y, behavior: 'instant'});
         """, lang_row)
-        self.driver.implicitly_wait(0.3)
         logger.info("선호 언어 행 찾음")
         return True
         
     def choose_lang_dropbox(self) -> bool:
-        lang_box = self.get_element_by_xpath(XPATH["BOX_LANG"])
+        lang_box = self.wait_for_element(
+            By.XPATH,
+            XPATH["BOX_LANG"],
+            condition="visibility",
+            timeout=3)
         lang_box.click()
-        self.driver.implicitly_wait(2)
+        
         logger.info("선호 언어 행 클릭")
-        choose_eng =  self.get_element_by_css_selector(SELECTORS["BOX_LANG_ENG"])
+        choose_eng =  self.wait_for_element(
+            By.CSS_SELECTOR,
+            SELECTORS["BOX_LANG_ENG"],
+            condition="clickable",
+            timeout=3)
         choose_eng.click()
-        self.driver.implicitly_wait(2)
         return choose_eng
     
     def choose_lang_check(self) -> bool: #언어변경 확인을 위한 계정관리 창 종료 후 다시 접속
-        handles = self.driver.window_handles
-        original_window = handles[0] 
-        self.driver.close()
-        self.driver.switch_to.window(original_window)
-        self.go_to_member_page()
-        current_url = self.driver.current_url
         try:
-            if'lang=en-US' in current_url:
+            handles = self.driver.window_handles
+            if not handles:
+                logger.error("choose_lang_check: 윈도우 핸들이 없음")
+                return False
+            #현재창종료
+            current_handle = self.driver.current_window_handle
+            logger.info(f"choose_lang_check: current_handle={current_handle}")
+            self.driver.close()
+
+            remaining_handles = self.driver.window_handles
+            if not remaining_handles:
+                logger.error("choose_lang_check: close 후 남은 창이 없음")
+                return False
+
+            main_handle = remaining_handles[0]
+            self.driver.switch_to.window(main_handle)
+            logger.info(f"choose_lang_check: main_handle={main_handle}")
+
+            try:
+                WebDriverWait(self.driver, 5).until(
+                    lambda d: d.find_element(By.TAG_NAME, "body")
+                )
+            except Exception:
+                pass  # 로딩이 조금 느려도 아래에서 다시 URL/요소로 검증
+            self.go_to_member_page()
+            try:
+                WebDriverWait(self.driver, 5).until(
+                    EC.url_contains("lang=en-US")
+                )
+            except Exception:
+                pass
+
+            current_url = self.driver.current_url
+            logger.info(f"choose_lang_check: 최종 URL={current_url}")
+
+            if "lang=en-US" in current_url:
                 logger.info("선호 언어 변경 성공")
                 return True
             else:
-                logger.error(f"선호 언어 변경 실패:{current_url}")
+                logger.error(f"선호 언어 변경 실패: {current_url}")
                 return False
+
         except Exception as e:
-            logger.info(f"예외 발생: {e}")
+            logger.error(f"choose_lang_check 예외 발생: {e}")
             return False
     
     def revoke_lang_kor(self) -> bool:
         handles = self.driver.window_handles
-        original_window = handles[0] 
-        #다음 테스트를 위한 한국어 변경
-        lang_box = self.get_element_by_xpath(XPATH["BOX_LANG"])
+        if not handles:
+            logger.error("revoke_lang_kor: 윈도우 핸들이 없음")
+            return False
+
+        original_window = handles[0]
+
+        # 언어 드롭박스
+        lang_box = self.wait_for_element(
+            By.XPATH,
+            XPATH["BOX_LANG"],
+            condition="clickable",  
+            timeout=5,
+        )
+        if not lang_box:
+            logger.error("revoke_lang_kor: 언어 드롭박스 못 찾음")
+            return False
+
         lang_box.click()
-        self.driver.implicitly_wait(2)
         logger.info("선호 언어 행 클릭")
-        
-        choose_kor =  self.get_element_by_css_selector(SELECTORS["BOX_LANG_KOR"])
+
+        #  한국어 옵션 (드롭다운 열리고 나서 클릭 가능 상태까지)
+        choose_kor = self.wait_for_element(
+            By.CSS_SELECTOR,
+            SELECTORS["BOX_LANG_KOR"],
+            condition="clickable",
+            timeout=5,
+        )
+        if not choose_kor:
+            logger.error("revoke_lang_kor: 한국어 옵션 못 찾음")
+            return False
+
         choose_kor.click()
+        logger.info("한국어 옵션 선택")
+
+        # 3) 현재 창 닫기
         self.driver.close()
-        self.driver.switch_to.window(original_window)
-        self.go_to_member_page()
-        logger.info("한국어 원복")
-        return choose_kor
-        
-    #oauth 계정 연동 테스트 메서드
+
+        # 4) 남은 창으로 전환 + 로딩 짧게 대기
+        remaining_handles = self.driver.window_handles
+        if not remaining_handles:
+            logger.error("revoke_lang_kor: close 후 남은 창이 없음")
+            return False
     def open_oauth_edit_form(self, timeout=5) -> bool:
         logger.info("open_oauth_edit_form 시작")
 
@@ -739,109 +854,50 @@ class MemberPage(BasePage):
         self.driver.implicitly_wait(0.3)
         logger.info("소셜 계정 연동 행 찾음")
         return True
-    
-    def oauth_google_click(self) -> bool:
-        btn_oauth_google = self.wait_for_element(
-            By.XPATH, XPATH["BTN_OAUTH_GOOGLE"], 
-            condition="clickable", timeout=5
-        )
-        if not btn_oauth_google:
-            logger.error("구글 버튼 못 찾음")
-            return False
-        btn_oauth_google.click()
-        logger.info("구글 연결하기 클릭 + 팝업 확인")
-        self.oauth_popup_open_close()
-        return btn_oauth_google
-    
-    def oauth_naver_click(self) -> bool:
-        btn_oauth_naver = self.wait_for_element(
-            By.XPATH, XPATH["BTN_OAUTH_NAVER"], 
-            condition="clickable", timeout=5
-        )
-        if not btn_oauth_naver:
-            logger.error("네이버 버튼 못 찾음")
-            return False
-        btn_oauth_naver.click()
-        self.oauth_popup_open_close()
-        return btn_oauth_naver
+  
+    #oauth 계정 연동 테스트 메서드
+    OAUTH_PROVIDERS = [
+    ("BTN_OAUTH_GOOGLE", "Google"),
+    ("BTN_OAUTH_NAVER", "Naver"), 
+    ("BTN_OAUTH_KKO", "Kakao"),
+    ("BTN_OAUTH_GITHUB", "GitHub"),
+    ("BTN_OAUTH_WHALESPACE", "Whalespace"),
+    ("BTN_OAUTH_APPLE", "Apple"),
+    ("BTN_OAUTH_FACEBOOK", "Facebook"),
+    ("BTN_OAUTH_MICROSOFT", "Microsoft"),
+]
 
-    def oauth_kko_click(self) -> bool:
-        btn_oauth_kko = self.wait_for_element(
-            By.XPATH, XPATH["BTN_OAUTH_KKO"], 
-            condition="clickable", timeout=5
+    def click_oauth_provider(self, xpath_key: str, provider_name: str) -> bool:
+        """OAuth 버튼 클릭만 (스크롤 + 클릭 + 팝업)"""
+        logger.info(f"{provider_name} OAuth")
+        
+        # 1. 소셜 영역 스크롤
+        social_row = self.wait_for_element(
+            By.XPATH, XPATH["SOCIAL_ROW"], 
+            condition="presence", timeout=5
         )
-        if not btn_oauth_kko:
-            logger.error("카카오 버튼 못 찾음")
-            return False
-        btn_oauth_kko.click()
-        logger.info("카카오 연결하기 클릭 + 팝업 확인")
-        self.oauth_popup_open_close()
-        return btn_oauth_kko
-    
-    def oauth_github_click(self) -> bool:
-        btn_oauth_github = self.wait_for_element(
-            By.XPATH, XPATH["BTN_OAUTH_GITHUB"], 
-            condition="clickable", timeout=5
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", social_row)
+        
+        wait = WebDriverWait(self.driver, 5)
+        wait.until(lambda d: social_row.is_displayed()) 
+        
+        # 2. 버튼 클릭
+        btn_xpath = XPATH[xpath_key]
+        btn = self.wait_for_element(
+            By.XPATH, btn_xpath, 
+            condition="clickable", timeout=10
         )
-        if not btn_oauth_github:
-            logger.error("깃허브 버튼 못 찾음")
+        if not btn:
+            logger.error(f"{provider_name} 버튼 timeout: {btn_xpath}")
             return False
-        btn_oauth_github.click()
-        logger.info("깃허브 연결하기 클릭 + 팝업 확인")
-        self.oauth_popup_open_close()
-        return btn_oauth_github
-
-    def oauth_apple_click(self) -> bool:
-        btn_oauth_apple = self.wait_for_element(
-            By.XPATH, XPATH["BTN_OAUTH_APPLE"], 
-            condition="clickable", timeout=5
-        )
-        if not btn_oauth_apple:
-            logger.error("애플 버튼 못 찾음")
-            return False
-        btn_oauth_apple.click()
-        logger.info("애플 연결하기 클릭 + 팝업 확인")
-        self.oauth_popup_open_close()
-        return btn_oauth_apple
-    
-    def oauth_facebook_click(self) -> bool:
-        btn_oauth_facebook = self.wait_for_element(
-            By.XPATH, XPATH["BTN_OAUTH_FACEBOOK"], 
-            condition="clickable", timeout=5
-        )
-        if not btn_oauth_facebook:
-            logger.error("페이스북 버튼 못 찾음")
-            return False
-        btn_oauth_facebook.click()
-        logger.info("페이스북 연결하기 클릭 + 팝업 확인")
-        self.oauth_popup_open_close()
-        return btn_oauth_facebook
-
-    def oauth_whalespace_click(self) -> bool:
-        btn_oauth_whalespace = self.wait_for_element(
-            By.XPATH, XPATH["BTN_OAUTH_WHALESPACE"], 
-            condition="clickable", timeout=5
-        )
-        if not btn_oauth_whalespace:
-            logger.error("웨일스페이스 버튼 못 찾음")
-            return False
-        btn_oauth_whalespace.click()
-        logger.info("웨일스페이스 연결하기 클릭 + 팝업 확인")
-        self.oauth_popup_open_close()
-        return btn_oauth_whalespace
-    
-    def oauth_microsoft_click(self) -> bool:
-        btn_oauth_microsoft = self.wait_for_element(
-            By.XPATH, XPATH["BTN_OAUTH_MICROSOFT"], 
-            condition="clickable", timeout=5
-        )
-        if not btn_oauth_microsoft:
-            logger.error("웨일스페이스 버튼 못 찾음")
-            return False
-        btn_oauth_microsoft.click()
-        logger.info("웨일스페이스 연결하기 클릭 + 팝업 확인")
-        self.oauth_popup_open_close()
-        return btn_oauth_microsoft
+        
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", btn)
+        wait.until(EC.element_to_be_clickable(btn))
+        self.driver.execute_script("arguments[0].click();", btn)
+        wait.until(lambda d: len(d.window_handles) > 1) 
+        
+        success = self.oauth_popup_open_close()
+        return success
     
     def oauth_popup_open_close(self) -> bool:
         handles = self.driver.window_handles
@@ -865,19 +921,3 @@ class MemberPage(BasePage):
         
         self.driver.switch_to.window(original_account_window) 
         return True   
-        
-    #항목 별 저장 시 토스트 팝업 문구 비교 메서드
-        
-    def toast_save_msg_compare(self) -> bool:
-        #toast 문구 확인
-        toast_containers = self.get_elements(By.XPATH,XPATH["TOAST_CONTAINER"],option="visibility", timeout=5 )
-        for toast_container in toast_containers:
-            toast_msg = toast_container.text
-            logger.info(f"{toast_msg}")
-            return True
-    
-    def click_to_promotion(self) -> bool:
-        element = self.get_element_by_name(NAME["BTN_MKT"])
-        element.click()
-        return True
-    

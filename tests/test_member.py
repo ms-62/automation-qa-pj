@@ -169,23 +169,23 @@ def test_update_fail_pwd(member_page,test_cases):
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
 
-PHC-TS05-TC009 비밀번호 변경이라 이후 작업을 위해 블락
-def test_update_pass_pwd(member_page,test_cases):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_update_pass_pwd"))
-    try:
-        data = test_cases["exist_pwd"]
-        data_new = test_cases["valid_pwd"]
-        assert member_page.refresh_member_account_page()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "refresh_member_account_page"))
-        assert member_page.open_pwd_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_pwd_edit_form"))
-        assert member_page.member_success_pwd(data["value"],data_new["value"])
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "member_success_pwd"))
-        assert member_page.change_success_pwd()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "change_success_pwd"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
+#PHC-TS05-TC009 비밀번호 변경이라 이후 작업을 위해 블락
+# def test_update_pass_pwd(member_page,test_cases):
+#     log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_update_pass_pwd"))
+#     try:
+#         data = test_cases["exist_pwd"]
+#         data_new = test_cases["valid_pwd"]
+#         assert member_page.refresh_member_account_page()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "refresh_member_account_page"))
+#         assert member_page.open_pwd_edit_form()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_pwd_edit_form"))
+#         assert member_page.member_success_pwd(data["value"],data_new["value"])
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "member_success_pwd"))
+#         assert member_page.change_success_pwd()
+#         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "change_success_pwd"))
+#     except Exception as e:
+#         elapsed = time.perf_counter() - start
+#         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
 
 #PHC-TS05-TC010
 def test_update_lang(member_page):
@@ -205,119 +205,8 @@ def test_update_lang(member_page):
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
 
 #PHC-TS05-TC011 DOM 아닌 영역 새로고침 메서드 제외하고 진행
-def test_oauth_google(member_page):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_oauth_google"))
-    try:
-        assert member_page.open_oauth_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_oauth_edit_form"))
-        assert member_page.oauth_google_click()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_google_click"))
-        assert member_page.oauth_popup_open_close()    
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_popup_open_close"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
-
-#PHC-TS05-TC012
-def test_oauth_naver(member_page):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_oauth_naver"))
-    try:
-        assert member_page.open_oauth_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_oauth_edit_form"))
-        assert member_page.oauth_naver_click()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_naver_click"))
-        assert member_page.oauth_popup_open_close()    
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_popup_open_close"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
-    
-#PHC-TS05-TC013
-def test_oauth_kko(member_page):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_oauth_kko"))
-    try:
-        assert member_page.open_oauth_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_oauth_edit_form"))
-        assert member_page.oauth_kko_click()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_kko_click"))
-        assert member_page.oauth_popup_open_close()    
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_popup_open_close"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
-
-#PHC-TS05-TC014
-def test_oauth_github(member_page):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_oauth_github"))
-    try:
-        assert member_page.open_oauth_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_oauth_edit_form"))
-        assert member_page.oauth_github_click()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_github_click"))
-        assert member_page.oauth_popup_open_close()    
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_popup_open_close"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
-
-#PHC-TS05-TC015
-def test_oauth_whalespace(member_page):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_oauth_whalespace"))
-    try:
-        assert member_page.open_oauth_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_oauth_edit_form"))
-        assert member_page.oauth_whalespace_click()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_whalespace_click"))
-        assert member_page.oauth_popup_open_close()    
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_popup_open_close"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
-
-#PHC-TS05-TC016
-def test_oauth_apple(member_page):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_oauth_apple"))
-    try:
-        assert member_page.open_oauth_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_oauth_edit_form"))
-        assert member_page.oauth_apple_click()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_apple_click"))
-        assert member_page.oauth_popup_open_close()    
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_popup_open_close"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
-
-#PHC-TS05-TC017
-def test_oauth_facebook(member_page):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_oauth_facebook"))
-    try:
-        assert member_page.open_oauth_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_oauth_edit_form"))
-        assert member_page.oauth_facebook_click()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_facebook_click"))
-        assert member_page.oauth_popup_open_close()    
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_popup_open_close"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
-
-#PHC-TS05-TC018
-def test_oauth_microsoft(member_page):
-    log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "test_oauth_microsoft"))
-    try:
-        assert member_page.open_oauth_edit_form()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_oauth_edit_form"))
-        assert member_page.oauth_microsoft_click()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_microsoft_click"))
-        assert member_page.oauth_popup_open_close()    
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "oauth_popup_open_close"))
-    except Exception as e:
-        elapsed = time.perf_counter() - start
-        log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))     
 @pytest.mark.parametrize("xpath_key, provider", MemberPage.OAUTH_PROVIDERS)
 def test_oauth_provider(member_page, xpath_key, provider):
-    member_page.open_oauth_edit_form()
     success = member_page.click_oauth_provider(xpath_key, provider)
     member_page.refresh_member_account_page()  # 괄호 추가!
     assert success, f"{provider} 실패"

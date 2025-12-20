@@ -463,7 +463,7 @@ class MemberPage(BasePage):
                 self.driver.execute_script("arguments[0].click();", certi_btn)
                 
                 # 🔑 점진적 대기 (초기 0.5s → 후반 1.2s)
-                wait_time = 1.8 + (click_attempts * 0.1)  # 0.5→1.2s 증가
+                wait_time = 1.3 + (click_attempts * 0.1)  # 0.5→1.2s 증가
                 time.sleep(wait_time)
                 
                 # 서버 응답 확인 (토스트/버튼 상태 변화)
@@ -843,124 +843,92 @@ class MemberPage(BasePage):
             return True
 
     #oauth 계정 연동 테스트 메서드
-    OAUTH_PROVIDERS = [
-    ("BTN_OAUTH_NAVER", "Naver"), 
-    ("BTN_OAUTH_KKO", "Kakao"),
-    ("BTN_OAUTH_GITHUB", "GitHub"),
-    ("BTN_OAUTH_WHALESPACE", "Whalespace"),
-    ("BTN_OAUTH_APPLE", "Apple"),
-    ("BTN_OAUTH_FACEBOOK", "Facebook"),
-    ("BTN_OAUTH_MICROSOFT", "Microsoft"),
-    ("BTN_OAUTH_GOOGLE", "Google"),
+    def open_oauth_edit_form(self, timeout=5) -> bool:
+            logger.info("open_oauth_edit_form 시작")
 
-]   
+            # 0) 선호언어 행 스크롤 위치 맞추기
+            social_row = self.get_element(
+                By.XPATH,
+                XPATH["SOCIAL_ROW"],
+                option="presence",
+                timeout=timeout,
+            )
+            if not social_row:
+                logger.info(" 소셜 계정 연동 행을 찾지 못함 (SOCIAL_ROW)")
+                return False
 
-    def click_oauth_provider(self, xpath_key: str, provider_name: str) -> bool:
-        """OAuth 버튼 클릭만 (스크롤 + 클릭 + 팝업)"""
-        logger.info(f"=== {provider_name} 전체 과정 추적 ===")
-        success = False  # 변수 초기화
+            self.driver.execute_script("""
+                const rect = arguments[0].getBoundingClientRect();
+                const y = rect.top + window.scrollY - 120;
+                window.scrollTo({top: y, behavior: 'instant'});
+            """, social_row)
+            self.driver.implicitly_wait(0.3)
+            logger.info("소셜 계정 연동 행 찾음")
+            return True
     
-        try:
-            #Window 복구
-            handles = self.driver.window_handles
-            if handles:
-                self.driver.switch_to.window(handles[0])
-            else:
-                logger.warning("빈 handles → 새로고침!")
-                self.driver.refresh()
-            
-            if "members/account" not in self.driver.current_url:
-                logger.info("계정관리페이지 재접속!")
-                self.driver.get("https://accounts.elice.io/members/account")  # 직접 URL
-                
-            # 소셜 영역
-            social_row = self.wait_for_element(By.XPATH, XPATH["SOCIAL_ROW"], timeout=10)
-            self.driver.execute_script("arguments[0].scrollIntoView();", social_row)
-            
-            # 버튼
-            btn_xpath = XPATH[xpath_key]
-            btn = self.wait_for_element(By.XPATH, btn_xpath, condition="clickable", timeout=15)
-            self.driver.execute_script("arguments[0].click();", btn)
-            def button_clicked(driver):
-                try:
-                    updated_btn = driver.find_element(By.XPATH, btn_xpath)
-                    # 클릭 후 disabled 또는 loading 상태 확인
-                    return (updated_btn.get_attribute("disabled") or 
-                        "loading" in updated_btn.get_attribute("class").lower() or
-                        not updated_btn.is_enabled())
-                except:
-                    return False
-            def popup_opened(driver):
-                return len(driver.window_handles) > 1
-            
-            # 🔥 병렬 대기: 버튼 변화 OR 팝업 열림
-            try:
-                WebDriverWait(self.driver, 15).until(
-                    lambda d: button_clicked(d) or popup_opened(d)
-                )
-                logger.info(f"클릭 성공! handles: {len(self.driver.window_handles)}")
-            except:
-                logger.warning(f"⚠️ {provider_name} 클릭 느림 - 계속 진행")
-            success = self.oauth_popup_open_close()
-            
-            logger.info(f"=== {provider_name} 종료 ===")
-        except Exception as e:
-            logger.error(f"팝업 오픈 실패: {e}")
-        return success
+        #oauth 계정 연동 테스트 메서드
+        OAUTH_PROVIDERS = [
+        ("BTN_OAUTH_GOOGLE", "Google"),
+        ("BTN_OAUTH_NAVER", "Naver"), 
+        ("BTN_OAUTH_KKO", "Kakao"),
+        ("BTN_OAUTH_GITHUB", "GitHub"),
+        ("BTN_OAUTH_WHALESPACE", "Whalespace"),
+        ("BTN_OAUTH_APPLE", "Apple"),
+        ("BTN_OAUTH_FACEBOOK", "Facebook"),
+        ("BTN_OAUTH_MICROSOFT", "Microsoft"),
+    ]
 
-    def oauth_popup_open_close(self) -> bool:
-        """OAuth 팝업 안전 정리 + 계정관리페이지 확실 복귀"""
-        logger.info("OAuth 팝업 정리 시작")
+        def click_oauth_provider(self, xpath_key: str, provider_name: str) -> bool:
+            """OAuth 버튼 클릭만 (스크롤 + 클릭 + 팝업)"""
+            logger.info(f"{provider_name} OAuth")
+            
+            # 1. 소셜 영역 스크롤
+            social_row = self.wait_for_element(
+                By.XPATH, XPATH["SOCIAL_ROW"], 
+                condition="presence", timeout=5
+            )
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", social_row)
+            
+            wait = WebDriverWait(self.driver, 5)
+            wait.until(lambda d: social_row.is_displayed()) 
+            
+            # 2. 버튼 클릭
+            btn_xpath = XPATH[xpath_key]
+            btn = self.wait_for_element(
+                By.XPATH, btn_xpath, 
+                condition="clickable", timeout=10
+            )
+            if not btn:
+                logger.error(f"{provider_name} 버튼 timeout: {btn_xpath}")
+                return False
+            
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", btn)
+            wait.until(EC.element_to_be_clickable(btn))
+            self.driver.execute_script("arguments[0].click();", btn)
+            wait.until(lambda d: len(d.window_handles) > 1) 
+            
+            success = self.oauth_popup_open_close()
+            return success
         
-        handles = self.driver.window_handles
-        
-        if len(handles) <= 1:
-            logger.warning("팝업 없음 - 정리 불필요")
-            return False
-        
-        try:
-            original_account_window = handles[0]  #항상 첫 번째 창!
-            self.driver.switch_to.window(original_account_window)
-            logger.info(f"원본 창 확보: {original_account_window[:8]}")
-        except:
-            logger.error(" 원본 창 접근 실패!")
-            return False
-        
-        #OAuth 팝업만 정리
-        oauth_patterns = ["login", "oauth", "signin", "auth", "nid.naver", "accounts.google", "kakao", "github", "facebook", "appleid", "microsoftonline", "worksmobile"]
-        current_handles = self.driver.window_handles[:]  # 복사본!
-        for handle in current_handles:
-            if handle == original_account_window:
-                continue
-                
-            try:
-                self.driver.switch_to.window(handle)
+        def oauth_popup_open_close(self) -> bool:
+            handles = self.driver.window_handles
+            original_account_window = handles[1] #계정관리창 순서 고정해서 찾기
+            # 연동 관련 페이지 URL 패턴
+            oauth_patterns = ["login", "oauth", "signin","auth"]
+            
+            for handle in handles:
+                self.driver.switch_to.window(handle) #팝업으로 전환
                 current_url = self.driver.current_url
                 
                 for pattern in oauth_patterns:
-                    if pattern in current_url.lower():
+                    if pattern in current_url:
                         logger.info(f"연동 팝업 발견: {current_url[:50]}")
+                        self.debug_current_window_safe()   #현재창 확인용 메서드
                         self.driver.close()
                         logger.info("팝업 창 종료")
                         break
-            except:
-                continue  # 안전하게 스킵
-        
-        #원본 창으로 복귀 + 검증
-        try:
-            self.driver.switch_to.window(original_account_window)
+                if len(self.driver.window_handles) < 3 : 
+                    break
             
-            # 🔑 4. 최종 검증
-            final_handles = len(self.driver.window_handles)
-            final_url_ok = "members/account" in self.driver.current_url
-            
-            if final_handles == 1 and final_url_ok:
-                logger.info("팝업 종료 완료")
-                return True
-            else:
-                logger.error(f"정리 실패 - handles: {final_handles}, URL: {self.driver.current_url[:50]}")
-                return False
-                
-        except Exception as e:
-            logger.error(f" 복귀 실패: {e}")
-            return False
+            self.driver.switch_to.window(original_account_window) 
+            return True   

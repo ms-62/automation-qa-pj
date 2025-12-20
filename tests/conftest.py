@@ -139,3 +139,4 @@ def logged_in_agent(driver, fm, login_page, main_page, member_page, agent_page, 
 @pytest.fixture(scope="session", autouse=True)
 def _setup_logging_once():
     setup_logging()
+

@@ -303,7 +303,7 @@ class MemberPage(BasePage):
                 timeout=3,
             )
 
-            # 🔹 1단계: tooltip 먼저 확보 (공백/형식 오류용)
+            # tooltip 먼저 확보 (공백/형식 오류용)
             tooltip_msg = self.driver.execute_script(
                 "return arguments[0].validationMessage;",
                 input_email,
@@ -315,7 +315,7 @@ class MemberPage(BasePage):
                 logger.info(tooltip_msg)
                 return False
 
-            # 🔹 2단계: helper-text 기반 (중복/횟수 제한용)
+            # helper-text 기반 (중복/횟수 제한용) 기본 문구가 지정되어 있고 인증버튼 클릭 후 변경되는 경우 있음
             base_invalid_elem = self.wait_for_element(
                 By.XPATH,
                 XPATH["INVALID_MSG"],
@@ -462,8 +462,8 @@ class MemberPage(BasePage):
                 
                 self.driver.execute_script("arguments[0].click();", certi_btn)
                 
-                # 🔑 점진적 대기 (초기 0.5s → 후반 1.2s)
-                wait_time = 1.8 + (click_attempts * 0.1)  # 0.5→1.2s 증가
+                # 점진적 대기 wait으로 서버 응답 대기 횟수가 차이나서 time.sleep() 사용
+                wait_time = 1.8 + (click_attempts * 0.1)  
                 time.sleep(wait_time)
                 
                 # 서버 응답 확인 (토스트/버튼 상태 변화)
@@ -836,7 +836,7 @@ class MemberPage(BasePage):
         try:
             social_row = self.wait_for_element(By.XPATH, XPATH["SOCIAL_ROW"], timeout=5)
             self.driver.execute_script("arguments[0].scrollIntoView();", social_row)
-            logger.info("✅ OAuth 영역 준비 완료 - revoke_lang_kor 성공!")
+            logger.info("revoke_lang_kor 성공")
             return True
         except:
             logger.warning("OAuth 영역 대기 실패 - 기본 페이지 로드만 완료")
@@ -919,7 +919,7 @@ class MemberPage(BasePage):
             return False
         
         try:
-            original_account_window = handles[0]  #항상 첫 번째 창!
+            original_account_window = handles[0]  #항상 첫 번째 창 고정
             self.driver.switch_to.window(original_account_window)
             logger.info(f"원본 창 확보: {original_account_window[:8]}")
         except:
@@ -928,7 +928,7 @@ class MemberPage(BasePage):
         
         #OAuth 팝업만 정리
         oauth_patterns = ["login", "oauth", "signin", "auth", "nid.naver", "accounts.google", "kakao", "github", "facebook", "appleid", "microsoftonline", "worksmobile"]
-        current_handles = self.driver.window_handles[:]  # 복사본!
+        current_handles = self.driver.window_handles[:]  # 복사본
         for handle in current_handles:
             if handle == original_account_window:
                 continue
@@ -950,7 +950,7 @@ class MemberPage(BasePage):
         try:
             self.driver.switch_to.window(original_account_window)
             
-            # 🔑 4. 최종 검증
+            # 최종 검증
             final_handles = len(self.driver.window_handles)
             final_url_ok = "members/account" in self.driver.current_url
             

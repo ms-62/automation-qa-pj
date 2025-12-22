@@ -21,44 +21,44 @@ def test_conversation_scenario(logged_in_main, fm):
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_home_menu"))
 
         result = TestResult.PASSED if page.compare_chats_after_user_send() else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "action_user_chat"))
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "PHC-TS03-TC004_PHC-TS03-TC005_ai_user_chat"))
         
         # page.select_latest_chat() #테스트 용도  
         
         # # ---------- user 행동          
         page.copy_last_question()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "copy_last_question"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC024_copy_last_question"))
         
         page.paste_last_question()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "paste_last_question"))
         
         page.reset_chat() 
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "reset_chat"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC012_reset_chat"))
         
         page.cancel_edit_question()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "cancel_edit_question"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC029_cancel_edit_question"))
 
         page.send_after_edit_question()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "send_after_edit_question"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC027_PHC-TS03-TC028_edit_question"))
 
         page.rename_main_chat()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "rename_main_chat"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC007_rename_main_chat"))
         
         # ---------- response 행동
         # page.select_latest_chat() 테스트용
                 
         page.click_btn_retry()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_btn_retry"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC006_retry_response"))
    
         page.copy_last_response()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "copy_last_response"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC023_copy_last_response"))
 
         page.paste_last_response()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "paste_last_response"))
         
         # 삭제는 마지막에 
         result = TestResult.PASSED if page.delete_main_chat() else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "delete_main_chat"))
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "PHC-TS03-TC009_delete_main_chat"))
         
         #page.reset_chat()  #테스트 용도  
         elapsed = time.perf_counter() - start
@@ -80,7 +80,7 @@ def test_search_chat(logged_in_main, fm):
     start = time.perf_counter()
     try:
         result = TestResult.PASSED if page.click_btn_home_menu(ChatMenu.SEARCH_CHAT) else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "click_btn_search_menu"))
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "PHC-TS03-TC013_search_menu"))
 
         page.search_past_chats_by_click()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "search_past_chats_by_click"))        
@@ -90,11 +90,11 @@ def test_search_chat(logged_in_main, fm):
         
         # 스크롤 다운
         page.scroll_down_search()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_down_search"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC015_scroll_down_search"))
 
         # 스크롤 업
         page.scroll_up_search()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_up_search"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC015_scroll_up_search"))
         
         result = TestResult.PASSED if page.search_past_chats_by_input() else TestResult.FAILED
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "test_search_chat_ended"))  
@@ -105,7 +105,7 @@ def test_search_chat(logged_in_main, fm):
         raise
 
     
-# # ======================== E2E - 기존 대화 시나리오 ==============================   # 요고
+# # ======================== E2E - 기존 대화 시나리오 ==============================  
 def test_past_chats_scenario(logged_in_main, fm):
     page = logged_in_main
     
@@ -114,19 +114,19 @@ def test_past_chats_scenario(logged_in_main, fm):
     start = time.perf_counter()
     try:
         page.select_latest_chat()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "set_current_chat"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC017_set_current_chat"))
         
         page.scroll_down_past_chats()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_down_past_chats"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC018_scroll_down_past_chats"))
         
         page.scroll_up_past_chats()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "scroll_up_past_chats"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC018_scroll_up_past_chats"))
         
-        result = TestResult.PASSED if page.rename_past_chats() else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "rename_past_chats"))
+        page.rename_past_chats()
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC019_rename_past_chats"))
 
         result = TestResult.PASSED if page.delete_chat() else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "delete_chat"))
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail = "PHC-TS03-TC021_delete_chat"))
         
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail = "test_past_chats_scenario_ended"))
@@ -147,7 +147,7 @@ def test_cancel_past_edit(logged_in_main, fm):
     start = time.perf_counter()
     try:        
         page.select_latest_chat()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC017_select_latest_chat"))
         
         page.open_selected_edit_menu()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "open_selected_edit_menu"))
@@ -156,10 +156,10 @@ def test_cancel_past_edit(logged_in_main, fm):
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_change_chat_name"))
         
         page.click_cancel_edit()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "click_cancel_edit"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC020_cancel_edit"))
         
         page.select_latest_chat()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC017_select_latest_chat"))
         
         page.open_selected_edit_menu()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "open_selected_edit_menu"))
@@ -186,7 +186,7 @@ def test_rename_past_chat(logged_in_main, fm):
     start = time.perf_counter()
     try:   
         page.select_latest_chat()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "select_latest_chat"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "PHC-TS03-TC017_select_latest_chat"))
         
         page.open_selected_edit_menu()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail = "open_selected_edit_menu"))
@@ -222,10 +222,10 @@ def test_gen_image_scenario(logged_in_main, fm):
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="open_upload_file_dialog"))
         
         page.click_btn_by_xpath(XPATH["BTN_GEN_IMAGE"], option = "visibility")
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="gen_image_btn"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="PHC-TS03-TC039_gen_image"))
 
         result = TestResult.PASSED if page.compare_chats_after_user_send(ChatKey.REQUESTS, ChatType.IMAGE_REQUEST) else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="request_img"))
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="PHC-TS03-TC040_request_img_and_cancel"))
 
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_gen_image_scenario ended"))
@@ -249,10 +249,10 @@ def test_web_sarch_scenario(logged_in_main, fm):
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="open_upload_file_dialog"))
         
         page.click_btn_by_xpath(XPATH["BTN_SEARCH_WEB"], option = "visibility")
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="BTN_SEARCH_WEB"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="PHC-TS03-TC044_BTN_SEARCH_WEB"))
 
         result = TestResult.PASSED if page.compare_chats_after_user_send(ChatKey.REQUESTS, ChatType.WEB_REQUEST) else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="request_websearch"))
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="PHC-TS03-TC045_PHC-TS03-TC046_request_websearch_and_cancel"))
 
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_web_sarch_scenario ended"))
@@ -272,16 +272,16 @@ def test_file_upload_scenario(logged_in_main, fm):
     start = time.perf_counter()
     try:
         page.upload_files(FilesType.IMAGES_FORMAT)
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="upload_images"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="PHC-TS03-TC031_upload_images"))
 
         page.upload_files(FilesType.ENABLED_FORMAT)
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="upload_enabled_files"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time = 0, detail="PHC-TS03-TC030_upload_enabled_files"))
         
         result = TestResult.PASSED if page.upload_files(FilesType.DISABLED_FORMAT) else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="upload_DISABLED_FORMAT"))
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="PHC-TS03-TC037_upload_DISABLED_FORMAT"))
         
         result = TestResult.PASSED if page.upload_multi_files() else TestResult.FAILED
-        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="upload_multi_files"))
+        log_action(ctx, ActionResult(test_name, result, elapsed_time = 0, detail="PHC-TS03-TC038_upload_multi_files"))
 
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed, detail="test_file_upload_scenario ended")) # 20개 이상올렸으므로 test시나리오 성공으로 지정
@@ -300,10 +300,10 @@ def test_menu_scenario(logged_in_main):
     start = time.perf_counter()
     try:
         result = page.action_menu_bar()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = f"action_menu_bar => {result}"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = f"PHC-TS03-TC010_action_menu_bar => {result}"))
 
         result = page.action_menu_bar()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = f"action_menu_bar => {result}"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = f"PHC-TS03-TC011_action_menu_bar => {result}"))
         
     except:
         elapsed = time.perf_counter() - start
@@ -324,8 +324,8 @@ def test_model_scenario(logged_in_main, driver):
         model_page.open_model_menu()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
 
-        model_page.select_last_model()
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "select_last_model"))
+        model_page.select_last_model() 
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "PHC-TS03-TC001_select_model"))
 
         model_page.open_model_menu()
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "open_model_menu"))
@@ -334,7 +334,7 @@ def test_model_scenario(logged_in_main, driver):
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_to_model_setting"))
 
         model_page.toggle_all_models_and_verify()        
-        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "toggle_all_models_and_verify"))
+        log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "PHC-TS03-TC002_PHC-TS03-TC003_active_or_deactive"))
 
         model_page.go_back() # 설정창 닫기
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "go_back"))

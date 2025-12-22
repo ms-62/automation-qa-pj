@@ -47,7 +47,6 @@ def test_signup_security_sql(security_signup_page,security_cases,case_key) :
         
     
 # #메인페이지 sqli PHC-TS07-TC003
-<<<<<<< HEAD
 def test_go_to_main_sqli(logged_in_main):
     page = logged_in_main
 
@@ -66,7 +65,6 @@ def test_main_security_sql(security_main_page,security_cases,case_key):
 def test_go_to_member_sqli(security_main_page):
      security_main_page.go_to_member_page()
      security_main_page.refresh_member_account_page()
-=======
 def test_go_to(logged_in_main):
     page = logged_in_main
 
@@ -153,7 +151,6 @@ def test_main_security_xss(security_main_page,security_cases,case_key):
 def test_go_to_member(security_main_page):
     security_main_page.go_to_member_page()
     security_main_page.refresh_member_account_page()
->>>>>>> master
         
 @pytest.mark.parametrize("case_key", ["sql_injection_a","sql_injection_b","sql_injection_c","sql_injection_d","sql_injection_e"])
 def test_member_security_sql(security_main_page, security_cases, case_key):

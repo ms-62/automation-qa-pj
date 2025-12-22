@@ -12,7 +12,6 @@ class BasePage:
         
     def go_to_page(self, url):
         self.driver.get(url)
-        time.sleep(1)
         
     def find_element_presence_by_xpath(self, xpath, timeout=TIMEOUT_MAX):
         try:

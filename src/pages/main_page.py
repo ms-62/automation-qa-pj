@@ -80,8 +80,6 @@ class MainPage(BasePage):
     def get_after_search_chat_items(self):
         input_search = self.get_element_by_xpath(XPATH["INPUT_SEARCH_CHAT"], option="clickable")
 
-        # 일단, 테스트를 위해서 검색 리스트에서 마지막 index로 지정
-        # 만약 기존에 대화한 내역이 없다면?? fail로 처리할 것인가? 생각해보기 
         chat_item = self.get_search_chat_items()[-1] if self.get_search_chat_items() else None
         if not chat_item:
             return False
@@ -131,12 +129,7 @@ class MainPage(BasePage):
         return True
     
 
-    # ---------------------------------- (12/19 회고용) 메인 챗 상단 햄버거메뉴 ----------------------------------- 
-    # 1. 강제로 클릭 (기존대화내역은 마우스 action change 필요)
-    # 2. rename_chat - 이전 메시지 이름과 '이름 편집' 기능 적용 후 이름 비교 -> 정확하게 바뀌었는지. 
-    # 3. delete_chat - 이전 대화 리스트와 현재 리스트 개수 비교 -> 정확하게 삭제 되었는지. 
-    # 4. cancel - 편집 중 취소, 삭제 중 취소 클릭 
-    # -----------------------------------------------------------------------------------------------------
+    # ---------------------------------- 메인 챗 상단 햄버거메뉴 ----------------------------------- 
     def click_main_chat_hamburger(self):
         self.select_latest_chat()
         btn = WebDriverWait(self.driver, WAIT_TIME).until(
@@ -155,13 +148,11 @@ class MainPage(BasePage):
         
     def delete_main_chat(self):
         self.click_main_chat_hamburger()
-        prev_chats_texts = [chat.text.strip() for chat in self.get_all_chats()]
-        #prev_chats = self.get_all_chats() 
+        prev_chats = len(self.get_all_chats()) 
         self.click_btn_by_xpath(XPATH["DELETE_NOWCHAT"], option="presence")
         self.click_delete_confirm()
-        #after_chats = self.get_all_chats()
-        after_chats = self.compare_prev_and_after_chats(prev_chats_texts)
-        return False if prev_chats_texts == after_chats else True
+        after_chats = len(self.get_all_chats())
+        return False if prev_chats == after_chats else True
     
     
     # ================ past_chat_page (기존 대화 내용 기록) ================ #
@@ -250,14 +241,12 @@ class MainPage(BasePage):
         return False if curname == prev_name else True
         
     def delete_chat(self):
-        #prev_chats = self.get_all_chats()
-        prev_chats_texts = [chat.text.strip() for chat in self.get_all_chats()]
+        prev_chats = len(self.get_all_chats())
         self.open_selected_edit_menu()
         self.click_delete_chat()
         self.click_delete_confirm()
-        # after_chats = self.get_all_chats()
-        after_chats = self.compare_prev_and_after_chats(prev_chats_texts)  #  * [회고] -> 이렇게 비교하니까 계속 after값이 같음. 
-        return False if prev_chats_texts == after_chats else True
+        after_chats = len(self.get_all_chats())
+        return False if prev_chats == after_chats else True
         
     def cancel_edit(self):
         self.select_latest_chat()
@@ -288,23 +277,33 @@ class MainPage(BasePage):
             return False
         ScrollController.scroll_down(self.driver, area)
         return True 
-        
-    def click_btn_scroll_to_bottom(self, timeout = TIMEOUT_MAX):
+    
+    def click_btn_scroll_to_bottom(self, timeout=TIMEOUT_MAX):
         start = time.time()
 
         while time.time() - start < timeout:
-            btn = self.get_element_by_css_selector(SELECTORS["BTN_SCROLL_TO_BOTTOM"])
-            if btn and btn.is_enabled():
-                try:
-                    btn.click()
-                    WebDriverWait(self.driver, WAIT_TIME).until(
-                        lambda d: not btn.is_enabled()
-                    )
-                    return True
-                except Exception:
-                    pass
+            try:
+                btn = self.get_element_by_css_selector(
+                    SELECTORS["BTN_SCROLL_TO_BOTTOM"],
+                    option="presence"
+                )
+            except Exception:
+                btn = None
 
-            #self.scroll_up_chat()
+            if btn and btn.is_displayed() and btn.is_enabled():
+                btn.click()
+
+                WebDriverWait(self.driver, WAIT_TIME).until(
+                    lambda d: not btn.is_displayed() or not btn.is_enabled()
+                )
+                return True
+
+            self.driver.execute_script("""
+                const el = document.scrollingElement || document.documentElement;
+                el.scrollTop = Math.max(0, el.scrollTop - 300);
+            """)
+
+        return False
     
     # ================  main Chat ================ 
     def input_chat(self, text: str):
@@ -322,33 +321,27 @@ class MainPage(BasePage):
             self.wait_for_chat(stop = True, target = "ai")
 
     # ----------------------- 채팅 메시지 기다리기 ---------------------------- 
-    # ResponseController 로는 안빼는 게 나을 것 같다.
-    # ResponseController 에는 단순한 기능만. 
-    # --------------------------------------------------------------------
-    def wait_for_ai_complete(self, stop, target, timeout): 
+    def wait_chat_idle(self, timeout=WAIT_TIME): # 중단 버튼이 안보일때까지 
+        WebDriverWait(self.driver, timeout, poll_frequency=0.3).until(
+        EC.invisibility_of_element_located((By.XPATH, XPATH["BTN_STOP"]))
+    )
+    
+    def wait_for_ai_complete(self, stop = False, target = "ai", timeout=CHAT_TIME):
         base_xpath = XPATH["MESSAGE_XPATH"][target]
         last_msg_xpath = f'({base_xpath}//div[@data-status])[last()]'
-        
-        start = time.time()
-        elem = None
-        while time.time() - start < timeout:            
-            elems = self.get_elements_by_xpath(last_msg_xpath)
 
-            if not elems:
-                continue
-            
-            elem = elems[-1]
-            if elem:
-                status = elem.get_attribute("data-status")
-                if status == "complete":
-                    self.fm.save_json_file("ai_response_completed.json", {elem.text})
-                    return AIresponse.COMPLETED
-            time.sleep(0.5) ###
-            
-        if stop:
-            # self.fm.save_json_file("ai_response_stopped.json", {elem.text}) -> [회고] element가 없으면?
-            return AIresponse.STOPPED
-        return AIresponse.TIMEOUT
+        try:
+            elem = WebDriverWait(self.driver, timeout, poll_frequency=0.3).until(
+                lambda d: (
+                    (els := self.get_elements_by_xpath(last_msg_xpath))
+                    and els[-1].get_attribute("data-status") == "complete"
+                    and els[-1]
+                )
+            )
+            self.fm.save_json_file("ai_response_completed.json", {elem.text})
+            return AIresponse.COMPLETED
+        except TimeoutException:
+            return AIresponse.STOPPED if stop else AIresponse.TIMEOUT
     
     def wait_for_chat(self, stop, target, timeout = CHAT_TIME):
         result = self.wait_for_ai_complete(stop, target, timeout)
@@ -358,11 +351,11 @@ class MainPage(BasePage):
                 btn = self.get_element_by_xpath(XPATH["BTN_STOP"])
                 if btn and btn.is_enabled():
                     btn.click()
-                    # 비활성화 되었는지 판별 후 return 또는 나중에 보내기 버튼이 활성화 되었는지 확인하는거로 바꿀것
-                    time.sleep(0.5)
-                    return True    
+                    self.wait_chat_idle()
+                    return True
             case AIresponse.COMPLETED:
-                return True
+                    self.wait_chat_idle()
+                    return True
             case AIresponse.TIMEOUT:
                 self.fm.save_screenshot_png(self.driver, "ai_response_timeout")
                 return False                
@@ -370,12 +363,10 @@ class MainPage(BasePage):
     # ------------------- 채팅 보내고 비교 ---------------------------- 
     def compare_chats_after_user_send(self, chatkey = ChatKey.INPUTS, chatype = ChatType.TEXT):
         prev_count = len(self.get_all_chats())
-        print(prev_count)
 
         self.action_user_chat(chatkey, chatype)
 
         after_count = len(self.get_all_chats())
-        print(after_count)
 
         return prev_count != after_count
     
@@ -391,14 +382,16 @@ class MainPage(BasePage):
         btns[-1].click()
         return self.wait_for_chat(stop = True, target = "ai")
     
-    
-    # =======================  Clipboard ==============================  
-    # ------------------- 12/18 (회고용) 마우스를 이용해 강제로 편집창 보이게 해서 동작하게 함 ---------------------- 
+
+    # ------------------- 마우스를 이용해 강제로 편집창 보이게 해서 동작하게 함 --------------------
     def get_last_user_message(self):
         xpath = f'({XPATH["MESSAGE_XPATH"]["user"]})[last()]'
-        elem = self.get_element_by_xpath(xpath)
-        return elem
- 
+        try:
+            return self.get_element_by_xpath(xpath)
+        except TimeoutException:
+            return None
+
+
     def force_hover(self, elem):
         self.driver.execute_script("""
             const el = arguments[0];
@@ -406,98 +399,130 @@ class MainPage(BasePage):
             el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
             el.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
         """, elem)
-        time.sleep(0.3)
 
-    def get_user_last_tooltip(self, timeout=TIMEOUT_MAX):
-        def _find_tooltip(driver):
-            user_msg = self.get_last_user_message()
-            if not user_msg:
-                return False
-            
-            self.force_hover(user_msg)
-            tooltips = self.get_elements_by_xpath(XPATH["TOOLTIP"])
-            if tooltips:
-                return tooltips[-1] 
-            return False  
-        return WebDriverWait(self.driver, timeout, poll_frequency=0.2).until(_find_tooltip)    
-            
-    def copy_last_question(self):  ## 질문쓰할것
-        tooltip = WebDriverWait(self.driver, CHAT_TIME).until(
-            lambda d: self.get_user_last_tooltip()  
-        )
-        copy_btn = self.get_tooltip_button(tooltip, "복사")
-        if copy_btn:
-            self.driver.execute_script("arguments[0].click();", copy_btn)
-        return ClipboardController.read()
-    
-    def paste_last_question(self):
-        textarea = WebDriverWait(self.driver, CHAT_TIME).until(
-            lambda d: self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
-        )
-        ChatInputController.paste_text(textarea, self.copy_last_question())
 
-    def get_tooltip_button(self, tooltip, aria_label, timeout=CHAT_TIME):
-        try:
-            btn = WebDriverWait(tooltip, timeout, poll_frequency=0.1).until(
-                lambda t: t.find_element(By.XPATH, f'.//button[@aria-label="{aria_label}"]')
-            )
-            return btn
-        except TimeoutException:
-            return None    
-
-    def smooth_scroll_into_view(self, elem):   # 굳이 안해도 진행은 되지만, 화면에 보이게 하기 위해서 씀
+    def smooth_scroll_into_view(self, elem):
         self.driver.execute_script("""
             arguments[0].scrollIntoView({
-                behavior: 'smooth',
+                behavior: 'instant',
                 block: 'center'
             });
         """, elem)
-        time.sleep(0.8)
-        
-    
-    def click_edit_last_question(self):
-        user_msg = self.get_last_user_message()
-        if not user_msg:
+
+
+    # ======================
+    # Tooltip 관련
+    # ======================
+
+    def get_user_last_tooltip(self, timeout=WAIT_TIME):
+        def _find(driver):
+            try:
+                user_msg = self.get_last_user_message()
+                if not user_msg:
+                    return False
+
+                self.smooth_scroll_into_view(user_msg)
+                self.force_hover(user_msg)
+
+                tooltips = self.get_elements_by_xpath(XPATH["TOOLTIP"])
+                if tooltips:
+                    return tooltips[-1]
+
+                return False
+            except StaleElementReferenceException:
+                return False
+
+        return WebDriverWait(self.driver, timeout, poll_frequency=0.2).until(_find)
+
+
+    def get_tooltip_button(self, tooltip, aria_label, timeout=WAIT_TIME):
+        def _find_btn(driver):
+            try:
+                return tooltip.find_element(
+                    By.XPATH, f'.//button[@aria-label="{aria_label}"]'
+                )
+            except StaleElementReferenceException:
+                return False
+
+        try:
+            return WebDriverWait(self.driver, timeout, poll_frequency=0.1).until(_find_btn)
+        except TimeoutException:
             return None
 
-        self.smooth_scroll_into_view(user_msg)
-        self.force_hover(user_msg)
-        tooltip = self.get_user_last_tooltip()
-        self.smooth_scroll_into_view(tooltip)
 
-        edit_btn = tooltip.find_element(By.XPATH, XPATH["BTN_TOOLTIP_EDIT"])
-        if edit_btn and edit_btn.is_enabled():
-            self.driver.execute_script("arguments[0].click();", edit_btn)
-        else:
-            return False
+    # ======================
+    # Tooltip 액션 통합 (핵심)
+    # ======================
 
-        
+    def click_user_tooltip_button(self, aria_label, timeout=WAIT_TIME):
+        def _click(driver):
+            try:
+                tooltip = self.get_user_last_tooltip()
+                btn = self.get_tooltip_button(tooltip, aria_label)
+                if not btn:
+                    return False
+
+                driver.execute_script("arguments[0].click();", btn)
+                return True
+            except StaleElementReferenceException:
+                return False
+
+        WebDriverWait(self.driver, timeout, poll_frequency=0.2).until(_click)
+
+
+    # ======================
+    # 질문 복사 / 붙여넣기
+    # ======================
+
+    def copy_last_question(self):
+        self.click_user_tooltip_button("복사")
+        return ClipboardController.read()
+
+
+    def paste_last_question(self):
+        textarea = WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, SELECTORS["TEXTAREA"]))
+        )
+        ChatInputController.paste_text(textarea, self.copy_last_question())
+
+
+    # ======================
+    # 편집 관련
+    # ======================
+
+    def click_edit_last_question(self):
+        self.click_user_tooltip_button("수정")
+
+
     def send_after_edit_question(self):
         self.click_edit_last_question()
+
+        textarea = WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.visibility_of_element_located((By.XPATH, XPATH["BTN_EDIT_AREA"]))
+        )
 
         ai_input_last = self.fm.read_json_file("ai_text_data.json")[ChatKey.RENAME][-1]
         content = ai_input_last["content"]
 
-        textarea = WebDriverWait(self.driver, WAIT_TIME).until(
-            lambda d: self.get_element_by_xpath(XPATH["BTN_EDIT_AREA"])
-        )
-
         ChatInputController.reset_text(textarea)
         ClipboardController.copy(content)
         ClipboardController.paste(textarea)
-        try:
-            btn_send = WebDriverWait(self.driver, WAIT_TIME).until(EC.element_to_be_clickable((By.XPATH, XPATH["BTN_EDIT_SEND"])))
-            self.driver.execute_script("arguments[0].click();", btn_send)
-        except TimeoutException:
-            print("Send button not clickable")
+
+        send_btn = WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_EDIT_SEND"]))
+        )
+        self.driver.execute_script("arguments[0].click();", send_btn)
+
         self.wait_for_chat(stop=True, target="ai")
-        
-        
+
+
     def cancel_edit_question(self):
         self.click_edit_last_question()
-        cancel_btn = self.get_element_by_xpath(XPATH["BTN_EDIT_CANCEL"])
-        if cancel_btn and cancel_btn.is_enabled():
-            self.driver.execute_script("arguments[0].click();", cancel_btn)   
+
+        cancel_btn = WebDriverWait(self.driver, WAIT_TIME).until(
+            EC.element_to_be_clickable((By.XPATH, XPATH["BTN_EDIT_CANCEL"]))
+        )
+        self.driver.execute_script("arguments[0].click();", cancel_btn)
             
     # ------------------- action ---------------------------- 
      
@@ -552,37 +577,17 @@ class MainPage(BasePage):
             return MenuStatus.CLOSED
         return MenuStatus.OPENED
 
-        # --------- (12/19) 사라진 기능 [회고용] ------------
-        # btn_menu = self.get_element_by_xpath(XPATH["BTN_MENU_HAMBURGER"])
-        # if btn_menu and btn_menu.is_displayed():
-        #     self.menu_status = MenuStatus.CLOSED
-        #     return
-        # # 메뉴 닫기 버튼이 보이면 OPENED 상태
-        # btn_close = self.get_element_by_xpath(XPATH["BTN_MENU_CLOSE"])
-        # if btn_close and btn_close.is_displayed():
-        #     self.menu_status = MenuStatus.OPENED   
-
     def toggle_menu(self, btn_element, staus):
         if not btn_element:
-            return
-        try:
-            WebDriverWait(self.driver, WAIT_TIME).until(lambda d: btn_element.is_enabled())
-            btn_element.click()
-            if staus == MenuStatus.CLOSED:
-                return MenuStatus.OPENED
-            else:
-                return MenuStatus.CLOSED
-        except TimeoutException:
-            print("버튼이 클릭 가능하지 않음")
+            return 
+        
+        WebDriverWait(self.driver, WAIT_TIME).until(lambda d: btn_element.is_enabled())
+        btn_element.click()
+        if staus == MenuStatus.CLOSED:
+            return MenuStatus.OPENED
+        else:
+            return MenuStatus.CLOSED
             
-        # --------- 사라진 기능 [회고용] ------------
-        # def action_menu_arrow(self):
-        #     if self.menu_status == MenuStatus.CLOSED: 
-        #         btn_arrow = self.get_element_by_xpath(XPATH["BTN_MENU_OPEN"])
-        #     else: 
-        #         btn_arrow = self.get_element_by_xpath(XPATH["BTN_MENU_CLOSE"])
-        #     self.toggle_menu(btn_arrow)
-
     def action_menu_bar(self):
         status = self.get_side_menu_status()
         btn = self.get_element_by_xpath(XPATH["BTN_MENU_HAMBURGER"])

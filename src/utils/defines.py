@@ -126,7 +126,7 @@ XPATH = {
     "BTN_DIFF_ACCOUNT" : "//a[normalize-space()='Sign in with a different account']",
     "BTN_REMOVE_HISTORY" : "//a[normalize-space()='Remove history']",
     "BTN_CREATE_ACCOUNT" : "//a[contains(@href, 'signup')]",
-    "BTN_CREATE_EMAIL" : "//button",
+    "BTN_CREATE_EMAIL" : "//button[contains(@class, 'css-znc1y4')]",
     "SIGNUP_AGREE" : "//input[contains(@class, 'PrivateSwitchBase')]",
     "CHECK_SIGNUP" : "//button[contains(@class, 'css-jgzpb4')]",
     "BTN_SIGNUP" : "//button[@type = 'submit']",
@@ -254,6 +254,7 @@ XPATH = {
     "CHECK_DELETE" : "//p[contains(@class, 'css-to37at')]",
     "DELETE_OPTIONS_IN_MY_AGENT" : "//div[contains(@class, 'css-xawzel')]//button",
     "DELETE_CHECK" : "//div[contains(@class, 'notistack')]",
+    "BTN_CHECK_DISABLE" : "//div[contains(@class, 'css-eg0l8k')]",
     
     
     # 업로드 버튼

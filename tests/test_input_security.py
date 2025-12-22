@@ -63,8 +63,8 @@ def test_main_security_sql(security_main_page,security_cases,case_key):
     
 #계정관리페이지 sqli PHC-TS07-TC004
 def test_go_to_member_sqli(security_main_page):
-     security_main_page.go_to_member_page()
-     security_main_page.refresh_member_account_page()
+    security_main_page.go_to_member_page()
+    security_main_page.refresh_member_account_page()
 def test_go_to(logged_in_main):
     page = logged_in_main
 

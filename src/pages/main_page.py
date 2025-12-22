@@ -152,7 +152,7 @@ class MainPage(BasePage):
         self.click_btn_by_xpath(XPATH["DELETE_NOWCHAT"], option="presence")
         self.click_delete_confirm()
         after_chats = len(self.get_all_chats())
-        return False if prev_chats == after_chats else True
+        return False if prev_chats == after_chats else True 
     
     
     # ================ past_chat_page (기존 대화 내용 기록) ================ #
@@ -329,7 +329,7 @@ class MainPage(BasePage):
     def wait_for_ai_complete(self, stop = False, target = "ai", timeout=CHAT_TIME):
         base_xpath = XPATH["MESSAGE_XPATH"][target]
         last_msg_xpath = f'({base_xpath}//div[@data-status])[last()]'
-
+        
         try:
             elem = WebDriverWait(self.driver, timeout, poll_frequency=0.3).until(
                 lambda d: (
@@ -351,10 +351,8 @@ class MainPage(BasePage):
                 btn = self.get_element_by_xpath(XPATH["BTN_STOP"])
                 if btn and btn.is_enabled():
                     btn.click()
-                    self.wait_chat_idle()
                     return True
             case AIresponse.COMPLETED:
-                    self.wait_chat_idle()
                     return True
             case AIresponse.TIMEOUT:
                 self.fm.save_screenshot_png(self.driver, "ai_response_timeout")

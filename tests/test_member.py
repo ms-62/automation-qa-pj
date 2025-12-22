@@ -204,7 +204,7 @@ def test_update_lang(member_page):
         elapsed = time.perf_counter() - start
         log_action(ctx, ActionResult(test_name, TestResult.FAILED, elapsed, detail = str(e)))
 
-#PHC-TS05-TC011 DOM 아닌 영역 새로고침 메서드 제외하고 진행
+#PHC-TS05-TC011~TC018 DOM 아닌 영역 새로고침 메서드 제외하고 진행
 @pytest.mark.parametrize("xpath_key, provider", MemberPage.OAUTH_PROVIDERS)
 def test_oauth_provider(member_page, xpath_key, provider):
     success = member_page.click_oauth_provider(xpath_key, provider)

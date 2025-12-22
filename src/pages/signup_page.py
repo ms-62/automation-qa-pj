@@ -8,53 +8,44 @@ logger = logging.getLogger()
 class SignupPage(BasePage):
     def go_to_signup_page(self):
         self.go_to_page(TARGET_URL["MAIN_URL"])
-        self.driver.implicitly_wait(5)
-        create_button = self.get_element_by_xpath(XPATH["BTN_CREATE_ACCOUNT"])
-        create_button.click()
-        self.driver.implicitly_wait(5)
-        create_withemail = self.get_element_by_xpath(XPATH["BTN_CREATE_EMAIL"])
-        create_withemail.click()
-        self.driver.implicitly_wait(5)
+        self.get_element_by_xpath(XPATH["BTN_CREATE_ACCOUNT"], option="clickable").click()
+        self.get_element_by_xpath(XPATH["BTN_CREATE_EMAIL"], option="clickable").click()
         logger.info("회원 가입 페이지로 이동")
         
     def signup_email(self, email) :
-        element = self.get_element_by_name(NAME["INPUT_ID"])
+        element = self.get_element_by_name(NAME["INPUT_ID"], option="clickable")
         element.click()
         element.clear()
         element.send_keys(email)
-        self.driver.implicitly_wait(0.5)
         logger.info("이메일 입력 완료")
         return element
         
     def signup_pw(self, password) :
-        element = self.get_element_by_name(NAME["INPUT_PW"])
+        element = self.get_element_by_name(NAME["INPUT_PW"], option="clickable")
         element.click()
         element.clear()
         element.send_keys(password)
-        self.driver.implicitly_wait(0.5)
         logger.info("비밀번호 입력 완료")
         return element
         
     def signup_name(self, name) :
-        element = self.get_element_by_name(NAME["INPUT_NAME"])
+        element = self.get_element_by_name(NAME["INPUT_NAME"], option="clickable")
         element.click()
         element.clear()
         element.send_keys(name)
-        self.driver.implicitly_wait(0.5)
         logger.info("이름 입력 완료")
         return element
         
     def checkbox_spread(self) :
-        header = self.get_element_by_id(ID["CHECKBOX_HEADER"])
+        header = self.get_element_by_id(ID["CHECKBOX_HEADER"], option="clickable")
         header.click()
-        self.driver.implicitly_wait(0.5)
         
     def signup_checkbox(self) :
         elements = self.get_elements_by_xpath(XPATH["SIGNUP_AGREE"])
         return elements
     
     def btn_create(self) :
-        btn = self.get_element_by_xpath(XPATH["BTN_SIGNUP"])
+        btn = self.get_element_by_xpath(XPATH["BTN_SIGNUP"], option="clickable")
         btn.click()
         
     def btn_element(self) :
@@ -67,7 +58,7 @@ class SignupPage(BasePage):
         return success
     
     def check_signup_fail(self) :
-        fail = self.get_element_by_xpath(XPATH["SIGNUP_FAIL"])
+        fail = self.get_element_by_xpath(XPATH["SIGNUP_FAIL"], option="visibility")
         return fail.text.strip()
     
     def iframe_element(self) :

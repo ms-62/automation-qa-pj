@@ -235,8 +235,10 @@ def test_agent_talk_expand_downsize_img(logged_in_agent, fm) :
         assert element, "PHC-TS06-TC013 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "upload_img_in_chat"))
         
-        result = agent_page.input_chat_stop("")
-        assert result == AIresponse.STOPPED, "PHC-TS06-TC013 : Test Fail"
+        data = fm.read_json_file("agent_text_data.json")
+        input = data["inputs"][2]["content"]
+        result = agent_page.ai_chat_complete(input)
+        assert result == AIresponse.COMPLETED, "PHC-TS06-TC013 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "agent_response"))
         
         result = agent_page.expand_img_in_chat()
@@ -294,8 +296,10 @@ def test_agent_talk_download_img(logged_in_agent, fm) :
         assert element, "PHC-TS06-TC015 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "upload_img_in_chat"))
         
-        result = agent_page.input_chat_stop("")
-        assert result == AIresponse.STOPPED, "PHC-TS06-TC015 : Test Fail"
+        data = fm.read_json_file("agent_text_data.json")
+        input = data["inputs"][2]["content"]
+        result = agent_page.ai_chat_complete(input)
+        assert result == AIresponse.COMPLETED, "PHC-TS06-TC015 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "agent_response"))
         
         result = agent_page.download_img_in_chat()

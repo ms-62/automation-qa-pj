@@ -7,6 +7,10 @@
     {
       "type": "text",
       "content": "깃랩 어떻게 들어가?"
+    },
+    {
+      "type": "text",
+      "content": "10자 이하로 설명"
     }
   ],
 

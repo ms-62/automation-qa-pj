@@ -1,7 +1,7 @@
 from utils.headers import *
 
 from pages.base_page import BasePage
-from utils.defines import TARGET_URL, NAME, XPATH, SELECTORS
+from utils.defines import TARGET_URL, NAME, XPATH, SELECTORS,ID
 
 from controllers.chat_input_controller import ChatInputController
 import logging
@@ -14,7 +14,7 @@ class SecurityPage(BasePage):
     def go_to_login_page(self):
         self.go_to_page(TARGET_URL["LOGIN_URL"])
     
-    # 입력값 제어 메서드
+     # 입력값 제어 메서드
     def input_id(self, username):
         element = self.get_element_by_name(NAME["INPUT_ID"])
         element.click()
@@ -28,13 +28,41 @@ class SecurityPage(BasePage):
         element.clear()
         element.send_keys(password)
         self.driver.implicitly_wait(0.3)
-    
+
+    def input_user_data(self, user_data):
+        # user_data가 리스트인 경우 첫 번째 원소 사용
+        if isinstance(user_data, list):
+            user_data = user_data[0]
+        self.input_id(user_data["username"])
+        self.input_pw(user_data["password"])
+        
+    def clear_id(self):
+        element = self.get_element_by_name(NAME["INPUT_ID"])
+        element.click()
+        element.clear()
+        self.driver.implicitly_wait(0.1)
+
+    def clear_pw(self):
+        element = self.get_element_by_name(NAME["INPUT_PW"])
+        element.click()
+        element.clear()
+        self.driver.implicitly_wait(0.1)
+
+    def clear_all_inputs(self):
+        self.clear_id()
+        self.clear_pw()
+
     # 버튼 제어 메서드
     def click_login_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_LOGIN"])
         btn.click()
-        self.driver.implicitly_wait(0.3)    
-        input_email = self.get_element_by_name(NAME["INPUT_ID"], option="visibility", timeout=3)
+        self.driver.implicitly_wait(0.3)
+        
+        input_email = self.wait_for_element(
+            By.NAME,
+            NAME["INPUT_ID"],
+            condition="clickable",
+            timeout=3)
         tooltip_msg = self.driver.execute_script("return arguments[0].validationMessage;", input_email)
         if tooltip_msg:
             logger.info(tooltip_msg)
@@ -44,10 +72,10 @@ class SecurityPage(BasePage):
     #회원가입 페이지에서 보안 테스트 진행
     def go_to_signup_page(self):
         self.go_to_page(TARGET_URL["MAIN_URL"])
-        self.driver.implicitly_wait(3)
+        self.driver.implicitly_wait(5)
         create_button = self.get_element_by_xpath(XPATH["BTN_CREATE_ACCOUNT"])
         create_button.click()
-        self.driver.implicitly_wait(10)
+        self.driver.implicitly_wait(5)
         create_withemail = self.get_element_by_xpath(XPATH["BTN_CREATE_EMAIL"])
         create_withemail.click()
         self.driver.implicitly_wait(5)
@@ -58,8 +86,7 @@ class SecurityPage(BasePage):
         element.click()
         element.clear()
         element.send_keys(data)
-        self.driver.implicitly_wait(5)
-        logger.info("이메일 sql 입력 완료")
+        logger.info("이메일 sql or xss 입력 완료")
         return element
     
     def signup_pw(self, data) :
@@ -67,8 +94,7 @@ class SecurityPage(BasePage):
         element.click()
         element.clear()
         element.send_keys(data)
-        self.driver.implicitly_wait(0.5)
-        logger.info("비밀번호 sql 입력 완료")
+        logger.info("비밀번호 sql or xss 입력 완료")
         return element
     
     def signup_name(self, data) :
@@ -76,14 +102,12 @@ class SecurityPage(BasePage):
         element.click()
         element.clear()
         element.send_keys(data)
-        self.driver.implicitly_wait(5)
-        logger.info("이름 sql 입력 완료")
+        logger.info("이름 sql or xss 입력 완료")
         return element
 
     def checkbox_spread(self) :
         header = self.get_element_by_id(ID["CHECKBOX_HEADER"])
         header.click()
-        self.driver.implicitly_wait(5)
         
     def signup_checkbox(self) :
         elements = self.get_elements_by_xpath(XPATH["SIGNUP_AGREE"])
@@ -110,16 +134,19 @@ class SecurityPage(BasePage):
         except:    
             return True
 
-    
+WAIT_TIME = 5    
 class SecurityMainPage(BasePage):
     # ================= main 공용 ===================== #
-    def click_btn_by_xpath(self, xpath, option):
+    def click_btn_by_xpath(self, xpath, option, timeout=WAIT_TIME):
         btn = self.get_element_by_xpath(xpath, option)
-        if btn and btn.is_enabled():
+        if not btn:
+            return False
+        try:
+            WebDriverWait(self.driver, timeout).until(lambda d: btn.is_enabled())
             btn.click()
-            self.driver.implicitly_wait(0.5)
             return True
-        return False
+        except:
+            return False
     
     def go_to_main_page(self):
         self.go_to_page(TARGET_URL["MAIN_URL"])
@@ -132,16 +159,23 @@ class SecurityMainPage(BasePage):
     
     def click_send(self):
         self.click_btn_by_xpath(XPATH["BTN_SEND"], option = "presence")
-        self.driver.implicitly_wait(0.5)
         
     #계정 관리
     def go_to_member_page(self):
-        modal_btn = self.get_element_by_css_selector(SELECTORS["MEMBER_MODAL"])
+        modal_btn = self.wait_for_element(
+            By.CSS_SELECTOR,
+            SELECTORS["MEMBER_MODAL"],
+            condition="clickable",
+            timeout=10)
         self.driver.execute_script("arguments[0].click();", modal_btn) #모달 무조건 스크립트로 클릭
-        self.driver.implicitly_wait(4)
-        member_btn = self.get_element_by_xpath(XPATH["BTN_MEMBER"])
+
+        member_btn = self.wait_for_element(
+            By.XPATH,
+            XPATH["BTN_MEMBER"],
+            condition="clickable",
+            timeout=10)
         self.driver.execute_script("arguments[0].click();", member_btn)
-        self.driver.implicitly_wait(4)
+
         
         self.ensure_account_window()
         return True
@@ -151,7 +185,6 @@ class SecurityMainPage(BasePage):
             if not self.go_to_member_page():
                 return False
         self.driver.refresh()
-        self.driver.implicitly_wait(3)
         return True
 
     #이름 관련 테스트 케이스를 위한 메서드
@@ -284,3 +317,12 @@ class SecurityMainPage(BasePage):
         except Exception as e:
             logger.error(f" 저장 버튼 JS 클릭 실패: {e}")
             return False
+    def safe_close(self):
+        """테스트 중 안전한 정리 (quit X)"""
+        try:
+            if len(self.driver.window_handles) > 1:
+                self.driver.close()
+                self.driver.switch_to.window(self.driver.window_handles[0])
+        except:
+            pass
+        return True

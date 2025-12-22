@@ -344,27 +344,21 @@ XPATH = {
     
     "BTN_SEARCH_CANCEL" : "button[data-testid='xmarkIcon']",
     
-    # ------------------------------------ (하드코딩 저장소) -----------------------------------
     "BTNS_HOME_MENU" : '//ul[contains(@class,"MuiList-root") and contains(@class,"EliceLayoutList-root")]',
     "MENU_ITEM_BY_TEXT" : './/li[.//span[normalize-space()="{text}"]]',
     "BTN_EACH_MENU" : './/*[self::a or @role="button"]',
 
-    # 코치님 팁 = 사용자 메시지를 색상값 같은 요소로 찾기 
     "MESSAGE_XPATH" : {
         "user": '//div[contains(@class,"css-12or7o0") and contains(@class,"eyhsuw33")]',
         "ai": '//div[contains(@class,"css-h9lp2s") and contains(@class,"e1qzu3c82")]'
     },
     "LATEST_MESSAGE_XPATH" : '({base_xpath}//div[@data-status="complete"])[last()]',
 
-    # 코치님 팁 = 기존내역 hamburger(왼쪽 사이드) 오른쪽 사이드 구별해서 예 - EliceLayoutSidenav-content
     "MAIN_CHAT_HAMBURGER" : "//div[@class='css-16qm689 eq52xil2']//button[.//svg[@data-testid='ellipsis-verticalIcon']]",
     "BTN_PLAN" : '//a[contains(@href, "/ai-helpy-chat/admin/general")]',
 
     "SCROLL_SEARCH_AREA" : "//div[contains(@class,'MuiBox-root') and contains(@class,'css-1xmno1m')]",
-    #  이미지 - 사용자 / ai 메시지 구별
-    #"BTN_IMG_ZOOM" : "//div[contains(@class, 'ai') or contains(@class, 'response')]//img",
-   
-    # ----------------------------------------------------------------------------------------
+
     
 }
 

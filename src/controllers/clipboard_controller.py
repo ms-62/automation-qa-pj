@@ -30,7 +30,7 @@ class ClipboardController:
     def paste_file_path(file_path):
         system = platform.system()   
         if system == "Darwin": # 맥용!
-            # ------- 코드 리뷰때 여쭤볼것 -------
+
             pyautogui.keyDown("command")
             pyautogui.keyDown("shift")
             pyautogui.press("g")

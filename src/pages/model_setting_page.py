@@ -16,7 +16,7 @@ class ModelSettingPage(BasePage):
         cur_model = self.get_current_model().strip()
         xpath = XPATH["BTN_MODEL_DROPDOWN"].format(model_name=cur_model)
         self.get_element_by_xpath(xpath, option="clickable").click()
-        time.sleep(0.5)
+        time.sleep(1)
 
     def is_dropdown_closed(self):
         el = self.get_element_by_xpath(XPATH["MENU_PAPER"], option="visibility")

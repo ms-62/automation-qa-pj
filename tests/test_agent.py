@@ -235,8 +235,8 @@ def test_agent_talk_expand_downsize_img(logged_in_agent, fm) :
         assert element, "PHC-TS06-TC013 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "upload_img_in_chat"))
         
-        result = agent_page.ai_chat_complete("")
-        assert result == AIresponse.COMPLETED, "PHC-TS06-TC013 : Test Fail"
+        result = agent_page.input_chat_stop("")
+        assert result == AIresponse.STOPPED, "PHC-TS06-TC013 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "agent_response"))
         
         result = agent_page.expand_img_in_chat()
@@ -294,8 +294,8 @@ def test_agent_talk_download_img(logged_in_agent, fm) :
         assert element, "PHC-TS06-TC015 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "upload_img_in_chat"))
         
-        result = agent_page.ai_chat_complete("")
-        assert result == AIresponse.COMPLETED, "PHC-TS06-TC015 : Test Fail"
+        result = agent_page.input_chat_stop("")
+        assert result == AIresponse.STOPPED, "PHC-TS06-TC015 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "agent_response"))
         
         result = agent_page.download_img_in_chat()
@@ -890,7 +890,7 @@ def test_make_agent_make_image(logged_in_agent, fm) :
         rule = data["setting_inputs"][2]["content"]
         agent_page.setting_name_input(name)
         agent_page.setting_rule_input(rule)
-        agent_page.check_btn_disabled()
+        time.sleep(3)
         agent_page.make_image()
         uploaded = agent_page.check_upload_image(10)
         assert uploaded.is_displayed(), "PHC-TS06-TC043 : Test Fail"

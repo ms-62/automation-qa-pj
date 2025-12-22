@@ -1047,9 +1047,9 @@ def test_agent_back_while_make(logged_in_agent, fm) :
     try :
         agent_page = logged_in_agent
         agent_page.go_to_agent_page()
-        agent_page.go_to_my_agent()
         agent_page.make_agent_screen()
         agent_page.back_in_agent_make_screen()
+        agent_page.go_to_my_agent()
         msg = agent_page.check_draft_msg()
         assert "초안" in msg.text.strip(), "PHC-TS06-TC051 : Test Fail"
         log_action(ctx, ActionResult(test_name, TestResult.PASSED, elapsed_time= 0, detail = "create_draft_agent"))

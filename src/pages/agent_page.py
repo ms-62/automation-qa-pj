@@ -308,14 +308,12 @@ class AgentPage(BasePage) :
     
     # 에이전트 만들기 뒤로가기 버튼
     def back_in_agent_make_screen(self) :
-        btn = self.get_element_by_xpath(XPATH["BTN_BACK_IN_MAKE_AGENT"])
-        btn.click()
+        self.get_element_by_xpath(XPATH["BTN_BACK_IN_MAKE_AGENT"], option="clickable").click()
         
     # 내 에이전트 창 이동
     def go_to_my_agent(self) :
         self.driver.implicitly_wait(1)
-        element = self.get_element_by_xpath(XPATH["MY_AGENT_BTN"])
-        element.click()
+        self.get_element_by_xpath(XPATH["MY_AGENT_BTN"], option="clickable").click()
         
     # 초안 메시지 확인
     def check_draft_msg(self) :

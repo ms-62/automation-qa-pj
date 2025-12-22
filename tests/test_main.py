@@ -311,7 +311,7 @@ def test_menu_scenario(logged_in_main):
         raise
     
     
-# # ======================== E2E - AI 모델 활성화 테스트 ============================== 
+# ======================== E2E - AI 모델 활성화 테스트 ============================== 
 def test_model_scenario(logged_in_main, driver):
     logged_in_main
     

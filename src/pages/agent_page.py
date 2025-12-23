@@ -148,15 +148,14 @@ class AgentPage(BasePage) :
         )
 
         btn.click()
-        print("복사 완성")
         return ClipboardController.read()
     
     def paste_last_response_in_chatmake(self):
         chat_area = self.get_chat_area()
-        self.driver.implicitly_wait(0.5)
-        textarea = chat_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
-        ClipboardController.paste(textarea)   # 클립보드에서만 붙여넣기
-        self.driver.implicitly_wait(0.5)
+        textarea = WebDriverWait(chat_area, 3).until(
+        lambda el: el.find_element(By.CSS_SELECTOR, "textarea[name='input']")
+        ) 
+        ClipboardController.paste(textarea)
         
     def check_paste_in_chatmake(self) :
         chat_area = self.get_chat_area()
@@ -312,7 +311,6 @@ class AgentPage(BasePage) :
         
     # 내 에이전트 창 이동
     def go_to_my_agent(self) :
-        self.driver.implicitly_wait(1)
         self.get_element_by_xpath(XPATH["MY_AGENT_BTN"], option="clickable").click()
         
     # 초안 메시지 확인
@@ -425,22 +423,20 @@ class AgentPage(BasePage) :
     # 미리보기 응답 부분 복사
     def copy_last_response_in_preview(self) :
         preview_area = self.get_preview_area()
-        self.driver.implicitly_wait(0.5)
-        btns = preview_area.find_elements(By.XPATH, '//button[@aria-label="복사"]')
+        btns = WebDriverWait(preview_area, 3).until(
+            lambda el: el.find_elements(By.XPATH, './/button[@aria-label="복사"]')
+        )
         if not btns:
             raise Exception("복사 버튼이 없음.")
-
         btns[-1].click()
-        self.driver.implicitly_wait(0.5)
-        print("복사 완성")
         return ClipboardController.read()
     
     def paste_last_response_in_preview(self):
         preview_area = self.get_preview_area()
-        self.driver.implicitly_wait(0.5)
-        textarea = preview_area.find_element(By.CSS_SELECTOR, "textarea[name='input']")
-        ClipboardController.paste(textarea)   # 클립보드에서만 붙여넣기
-        self.driver.implicitly_wait(0.5)
+        textarea = WebDriverWait(preview_area, 3).until(
+            lambda el: el.find_element(By.CSS_SELECTOR, "textarea[name='input']")
+        )
+        ClipboardController.paste(textarea)
         
     def check_paste_in_preview(self) :
         preview_area = self.get_preview_area()
@@ -533,21 +529,15 @@ class AgentPage(BasePage) :
     
     # AI 응답 내용 복사
     def copy_last_response(self):
-        self.driver.implicitly_wait(0.5)
         btns = self.get_elements_by_xpath(XPATH["BTN_COPY_RESPONE"])
         if not btns:
             raise Exception("복사 버튼이 없음.")
-
         btns[-1].click()
-        self.driver.implicitly_wait(0.5)
-        print("복사 완성")
         return ClipboardController.read()
     
     def paste_last_response(self):
-        self.driver.implicitly_wait(0.5)
         textarea = self.get_element_by_css_selector(SELECTORS["TEXTAREA"])
-        ClipboardController.paste(textarea)   # 클립보드에서만 붙여넣기
-        self.driver.implicitly_wait(0.5)
+        ClipboardController.paste(textarea)
         
     def check_paste(self) :
         text = self.get_element_by_css_selector(SELECTORS["TEXTAREA"]).text.strip()
@@ -557,11 +547,9 @@ class AgentPage(BasePage) :
         
     # 브라우저 파일 선택창 열기
     def open_upload_file_dialog(self):
-        self.driver.implicitly_wait(2)
-        plus = self.get_element_by_css_selector(SELECTORS["BTN_UPLOAD_PLUS_CSS"])
+        plus = self.get_element_by_css_selector(SELECTORS["BTN_UPLOAD_PLUS_CSS"], option="clickable")
         if plus and plus.is_enabled():
             plus.click()
-        self.driver.implicitly_wait(2)
         btn = self.get_element_by_xpath(XPATH["BTN_UPLOAD_FILE"], option = "visibility")
         if btn and btn.is_enabled() :
             btn.click()
@@ -653,18 +641,15 @@ class AgentPage(BasePage) :
 
     # 에이전트 수정
     def go_to_modify_in_agents(self) :
-        self.driver.implicitly_wait(2)
-        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"])
+        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"], option="clickable")
         if element and element.is_enabled():
             element.click()
-        self.driver.implicitly_wait(2)
-        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"])
+        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"], option="visibility")
         if btns :
             btns[0].click()
         
     def go_to_modify_in_my_agent(self) :
-        self.driver.implicitly_wait(2)
-        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"])
+        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"], option="clickable")
         btns[0].click()
             
     def modify_name(self, text: str) :
@@ -689,8 +674,7 @@ class AgentPage(BasePage) :
     
     def modify_and_check(self) :
         self.get_element_by_xpath(XPATH["BTN_AGENT_MAKE"], option="clickable").click()
-        self.driver.implicitly_wait(1)
-        self.get_element_by_xpath(XPATH["BTN_AGENT_PUBLISH"]).click()
+        self.get_element_by_xpath(XPATH["BTN_AGENT_PUBLISH"], option="visibility").click()
         element = self.get_element_by_css_selector(SELECTORS["UPDATE_CHECK"], timeout=5)
         return element
         
@@ -701,30 +685,24 @@ class AgentPage(BasePage) :
         return element
         
     def go_to_delete_in_agents(self) :
-        self.driver.implicitly_wait(1)
-        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"])
+        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"], option="clickable")
         if element and element.is_enabled():
             element.click()
-        self.driver.implicitly_wait(1)
-        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"])
+        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"], option="visibility")
         if btns :
             btns[1].click()
-        self.driver.implicitly_wait(1)
-        options = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_AGENTS"])
+        options = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_AGENTS"], option="visibility")
         if options :
             options[1].click()
         
     def go_to_not_delete_in_agents(self) :
-        self.driver.implicitly_wait(1)
-        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"])
+        element = self.get_element_by_xpath(XPATH["DOT_IN_AGENTS"], option="clickable")
         if element and element.is_enabled():
             element.click()
-        self.driver.implicitly_wait(1)
-        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"])
+        btns = self.get_elements_by_xpath(XPATH["MODIFY_AND_DELETE_IN_DOT"], option="visibility")
         if btns :
             btns[1].click()
-            self.driver.implicitly_wait(1)
-            options = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_AGENTS"])
+            options = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_AGENTS"], option="visibility")
         if options :
             options[0].click()
             
@@ -733,19 +711,15 @@ class AgentPage(BasePage) :
         return element
         
     def go_to_delete_in_my_agent(self) :
-        self.driver.implicitly_wait(1)
-        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"])
+        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"], option="clickable")
         btns[1].click()
-        self.driver.implicitly_wait(1)
-        btns = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_MY_AGENT"])
+        btns = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_MY_AGENT"], option="visibility")
         if btns :
             btns[1].click()
         
     def go_to_not_delete_in_my_agent(self) :
-        self.driver.implicitly_wait(1)
-        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"])
+        btns = self.get_elements_by_xpath(XPATH["BTNS_IN_MY_AGENT"], option="clickable")
         btns[1].click()
-        self.driver.implicitly_wait(1)
-        btns = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_MY_AGENT"])
+        btns = self.get_elements_by_xpath(XPATH["DELETE_OPTIONS_IN_MY_AGENT"], option="visibility")
         if btns :
             btns[0].click()

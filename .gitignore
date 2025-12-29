@@ -26,3 +26,7 @@ reports/screenshots/
 # 로그
 reports/logs/
 run.log
+
+#대용량 제외
+src/resources/assets/
+src/resources/downloads/

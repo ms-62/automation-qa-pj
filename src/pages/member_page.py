@@ -243,6 +243,7 @@ class MemberPage(BasePage):
         except Exception as e:
             logger.info(f"input 클릭 실패: {e}")
             self.driver.execute_script("arguments[0].focus();", input_email)
+            
         self.driver.execute_script("arguments[0].value = '';", input_email)
         input_email.send_keys(email)
 
@@ -893,7 +894,7 @@ class MemberPage(BasePage):
             def popup_opened(driver):
                 return len(driver.window_handles) > 1
             
-            # 🔥 병렬 대기: 버튼 변화 OR 팝업 열림
+            # 병렬 대기: 버튼 변화 OR 팝업 열림
             try:
                 WebDriverWait(self.driver, 15).until(
                     lambda d: button_clicked(d) or popup_opened(d)

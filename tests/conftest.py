@@ -140,3 +140,14 @@ def logged_in_agent(driver, fm, login_page, main_page, member_page, agent_page, 
 def _setup_logging_once():
     setup_logging()
 
+#스크린샷
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+    
+    # 테스트가 실패한 경우에만 스크린샷 저장
+    if rep.when == 'call' and rep.failed:
+        if not os.path.exists('reports/screenshots'):
+            os.makedirs('screenshots')
+        pyautogui.screenshot(f'reports/screenshots/{item.name}.png')

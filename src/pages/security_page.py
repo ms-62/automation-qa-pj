@@ -14,7 +14,7 @@ class SecurityPage(BasePage):
     def go_to_login_page(self):
         self.go_to_page(TARGET_URL["LOGIN_URL"])
     
-     # 입력값 제어 메서드
+    # 입력값 제어 메서드
     def input_id(self, username):
         element = self.get_element_by_name(NAME["INPUT_ID"])
         element.click()
@@ -40,13 +40,11 @@ class SecurityPage(BasePage):
         element = self.get_element_by_name(NAME["INPUT_ID"])
         element.click()
         element.clear()
-        self.driver.implicitly_wait(0.1)
 
     def clear_pw(self):
         element = self.get_element_by_name(NAME["INPUT_PW"])
         element.click()
         element.clear()
-        self.driver.implicitly_wait(0.1)
 
     def clear_all_inputs(self):
         self.clear_id()
@@ -56,7 +54,6 @@ class SecurityPage(BasePage):
     def click_login_button(self):
         btn = self.get_element_by_xpath(XPATH["BTN_LOGIN"])
         btn.click()
-        self.driver.implicitly_wait(0.3)
         
         input_email = self.wait_for_element(
             By.NAME,
@@ -72,13 +69,13 @@ class SecurityPage(BasePage):
     #회원가입 페이지에서 보안 테스트 진행
     def go_to_signup_page(self):
         self.go_to_page(TARGET_URL["MAIN_URL"])
-        self.driver.implicitly_wait(5)
+        
         create_button = self.get_element_by_xpath(XPATH["BTN_CREATE_ACCOUNT"])
         create_button.click()
-        self.driver.implicitly_wait(5)
+        
         create_withemail = self.get_element_by_xpath(XPATH["BTN_CREATE_EMAIL"])
         create_withemail.click()
-        self.driver.implicitly_wait(5)
+        
         logger.info("회원 가입 페이지로 이동")
     
     def signup_email(self,data) :
@@ -205,7 +202,6 @@ class SecurityMainPage(BasePage):
             const y = rect.top + window.scrollY - 120;
             window.scrollTo({top: y, behavior: 'instant'});
         """, name_row)
-        self.driver.implicitly_wait(0.3)
 
         # 1) '이름' 수정 버튼 찾기
         edit_btn = self.wait_for_element(
@@ -250,7 +246,6 @@ class SecurityMainPage(BasePage):
             const y = rect.top + window.scrollY - 100;
             window.scrollTo({top: y, behavior: 'instant'});
         """, input_name)
-        self.driver.implicitly_wait(0.3)
 
         try:
             input_name.click()
@@ -290,11 +285,9 @@ class SecurityMainPage(BasePage):
                 const y = rect.top + window.scrollY - 100;
                 window.scrollTo({top: y, behavior: 'instant'});
             """, submit_btn)
-            self.driver.implicitly_wait(0.3)
 
             # JS 클릭
             self.driver.execute_script("arguments[0].click();", submit_btn)
-            self.driver.implicitly_wait(0.8)
 
             # 저장 후 다시 '이름' 행으로 스크롤 복귀
             name_row = self.wait_for_element(

@@ -31,8 +31,18 @@ jobs:
         env:
           DISPLAY: :99
         run: |
-          # 가상 디스플레이 환경에서 pytest 실행
           xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" pytest tests/ --junitxml=results.xml
+
+      # 테스트 실패 시에만 스크린샷 및 로그 업로드
+      - name: Upload Screenshot on Failure
+        if: failure()  # 앞선 테스트 단계가 실패했을 때만 실행 [web:141]
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots
+          path: |
+            screenshots/*.png
+            logs/*.log
+          retention-days: 7  # 7일 동안 보관 [web:210]
 
       - name: Upload Test Results
         if: always()  # 테스트 실패 시에도 업로드

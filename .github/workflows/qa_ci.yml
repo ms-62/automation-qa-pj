@@ -22,12 +22,17 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb  # 가상 디스플레이 서버 설치 [web:189]
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run Tests
+        env:
+          DISPLAY: :99  # 가상 디스플레이 번호 설정 [web:179]
         run: |
-          pytest --junitxml=results.xml  # 테스트 실행 및 결과 저장 [web:149]
+          # xvfb-run을 통해 pytest 실행 (화면 크기 지정 가능)
+          xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" pytest --junitxml=results.xml [web:183][web:186]
 
       - name: Upload Test Results
         if: always()  # 테스트 실패 시에도 업로드

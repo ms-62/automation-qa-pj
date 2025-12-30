@@ -3,7 +3,9 @@ from utils.headers import *
 from utils.defines import TIMEOUT_MAX
 from managers.file_manager import FileManager
 from controllers.mouse_controller import MouseController
-
+import logging
+    
+logger = logging.getLogger()
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
@@ -33,7 +35,7 @@ class BasePage:
             elif option == "clickable":
                 return wait.until(EC.element_to_be_clickable((by, value)))
         except (TimeoutException, NoSuchElementException):
-            print(f"element를 {by} = {value} 로 찾을 수 없음.")
+            logger.error(f"element를 {by} = {value} 로 찾을 수 없음.")
             return None
 
     def get_element_by_id(self, id, option="presence", timeout = TIMEOUT_MAX):
@@ -63,7 +65,7 @@ class BasePage:
                 elements = self.driver.find_elements(by, value)
             return elements
         except TimeoutException:
-            print(f"elements를 {by} = {value} 로 찾을 수 없음.")
+            logger.error(f"elements를 {by} = {value} 로 찾을 수 없음.")
             return []
         
     def get_elements_by_id(self, id, option="presence", timeout = TIMEOUT_MAX):
@@ -80,12 +82,12 @@ class BasePage:
         current_handle = self.driver.current_window_handle
         all_handles = self.driver.window_handles
         
-        print(f"현재 활성: {current_handle[:8]}...")
-        print(f"창 목록 ({len(all_handles)}개):")
+        logger.info(f"현재 활성: {current_handle[:8]}...")
+        logger.info(f"창 목록 ({len(all_handles)}개):")
         
         for i, handle in enumerate(all_handles):
             is_active = "✅" if handle == current_handle else "  "
-            print(f"  {i}: {is_active} {handle[:8]}...")
+            logger.info(f"  {i}: {is_active} {handle[:8]}...")
         
         return current_handle, all_handles
     def ensure_account_window(self, timeout=10):
@@ -102,30 +104,33 @@ class BasePage:
             # 계정 페이지면 전환 완료
             for pattern in account_patterns:
                 if pattern in current_url:
-                    print(f"계정 창 발견: {current_url[:50]}")
+                    logger.info(f"계정 창 발견: {current_url[:50]}")
                     self.debug_current_window_safe()
                     return True
         
-        print("계정 창 없음")
+        logger.error("계정 창 없음")
         return False
 
-    #get_element 추가 보완 업데이트
+    #get_element 추가 보완 업데이트 - ci로 테스트 할 때 오류 발생 증가해서 보완
     def wait_for_element(self, by: By, value: str, timeout: float = 10, condition: str = "presence") -> object:
         wait = WebDriverWait(self.driver, timeout)
         locator = (by, value)
         
-        # EC 조건 매핑
-        conditions = {
-            "presence": EC.presence_of_element_located(locator),
-            "visibility": EC.visibility_of_element_located(locator),
-            "clickable": EC.element_to_be_clickable(locator), # clickable = visible + enabled
-            "enabled": EC.element_to_be_clickable(locator),  
-        }
-        
         try:
-            condition_func = conditions.get(condition, EC.presence_of_element_located(locator))
-            element = wait.until(condition_func)
+            # 1. 공통으로 '존재(Presence)'부터 먼저 확인 (가장 기본 단계)
+            # clickable이나 visibility를 체크하기 전, DOM에 요소가 생길 때까지 잠시 대기
+            element = wait.until(EC.presence_of_element_located(locator))
+
+            # 2. 추가 조건 수행
+            if condition == "visibility":
+                return wait.until(EC.visibility_of_element_located(locator))
+            elif condition in ["clickable", "enabled"]:
+                # 존재함이 확인된 element 객체를 직접 전달하여 효율성 증대
+                return wait.until(EC.element_to_be_clickable(element))
+            
+            # 기본값은 presence 결과 반환
             return element
+
         except TimeoutException:
-            print(f"요소 대기 실패: {by}={value} ({condition})")
+            logger.error(f"요소 대기 실패: {by}={value} ({condition})")
             return None

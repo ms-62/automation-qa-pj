@@ -36,26 +36,31 @@ class MemberPage(BasePage):
         self.driver.refresh()
         return True
 
+    def scroll_and_interact(self, locator, offset=120, timeout=5, condition="visibility"):
+        """
+        요소를 찾아 특정 오프셋으로 스크롤한 뒤 해당 요소를 반환합니다.
+        """
+        element = self.wait_for_element(*locator, condition=condition, timeout=timeout)
+        if not element:
+            logger.error(f"요소를 찾지 못함: {locator}")
+            return None
+
+        # 오프셋 조절 스크롤 실행 (제시해주신 JS 로직 활용)
+        self.driver.execute_script(f"""
+            const rect = arguments[0].getBoundingClientRect();
+            const y = rect.top + window.scrollY - {offset};
+            window.scrollTo({{top: y, behavior: 'instant'}});
+        """, element)
+        
+        return element
+
     #이름 관련 테스트 케이스를 위한 메서드
     def open_name_edit_form(self, timeout=5) -> bool:
         logger.info("open_name_edit_form 시작")
-
-        # 0) '이름' 행 스크롤 위치 맞추기
-        name_row = self.wait_for_element(
-            By.XPATH,
-            XPATH["NAME_ROW"],
-            condition="visibility",
-            timeout=timeout,
-        )
-        if not name_row:
-            logger.info(" '이름' 행을 찾지 못함 (NAME_ROW)")
+        
+        # 0) '이름' 행 스크롤 위치 맞추기 공통함수사용
+        if not self.scroll_and_interact((By.XPATH,XPATH["NAME_ROW"]), offset=120, timeout=timeout):
             return False
-
-        self.driver.execute_script("""
-            const rect = arguments[0].getBoundingClientRect();
-            const y = rect.top + window.scrollY - 120;
-            window.scrollTo({top: y, behavior: 'instant'});
-        """, name_row)
 
         # 1) '이름' 수정 버튼 찾기
         edit_btn = self.wait_for_element(
@@ -82,27 +87,17 @@ class MemberPage(BasePage):
         wait.until(lambda d: d.find_element(By.NAME, NAME["INPUT_NAME"]).get_attribute("value") is not None)
     
         logger.info("이름 수정 폼 완전 열림")
-        return True
+        return bool(input_name)
 
 
     def member_name(self, name) -> bool:
-        input_name = self.wait_for_element(
-            By.NAME,
-            NAME["INPUT_NAME"], 
-            condition="clickable", 
-            timeout=3
-            )
+        input_name = self.scroll_and_interact((By.NAME,
+            NAME["INPUT_NAME"]), offset=100, timeout=3,condition="clickable")
+        
+        # 0) '이름' 행 스크롤 위치 맞추기 공통함수사용
         if not input_name:
             logger.error("이름 입력란 못 찾음")
             return False
-
-        self.driver.execute_script("""
-            const rect = arguments[0].getBoundingClientRect();
-            const y = rect.top + window.scrollY - 100;
-            window.scrollTo({top: y, behavior: 'instant'});
-        """, input_name)
-        self.driver.implicitly_wait(0.3)
-
         try:
             input_name.click()
         except Exception as e:

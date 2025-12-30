@@ -146,8 +146,11 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     rep = outcome.get_result()
     
-    # 테스트가 실패한 경우에만 스크린샷 저장
-    # if rep.when == 'call' and rep.failed:
-    #     if not os.path.exists('reports/screenshots'):
-    #         os.makedirs('screenshots')
-    #     pyautogui.screenshot(f'reports/screenshots/{item.name}.png')
+    if rep.when == 'call' and rep.failed:
+        # 드라이버 인스턴스 가져오기 (fixture 이름에 따라 수정)
+        driver = item.funcargs.get('driver') 
+        if driver:
+            target_dir = 'reports/screenshots'
+            os.makedirs(target_dir, exist_ok=True)
+            file_path = f"{target_dir}/{item.name}.png"
+            driver.save_screenshot(file_path) # Headless 모드에서도 작동함

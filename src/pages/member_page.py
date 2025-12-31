@@ -115,47 +115,33 @@ class MemberPage(BasePage):
 
     def submit_name(self) -> bool:
         """저장 버튼 JS 클릭 + '이름' 행으로 스크롤 복귀 + enabled 상태로 성공/실패 판단."""
-        xpath = XPATH["SUBMIT_NAME"] 
-
-        submit_btn = self.wait_for_element(
-            By.XPATH,
-            xpath, 
-            condition="clickable", 
-            timeout=3)
+        submit_btn = self.scroll_and_interact(
+            (By.XPATH, XPATH["SUBMIT_NAME"]), 
+            offset=100, 
+            timeout=5, 
+            condition="clickable"
+        )
         
         if not submit_btn:
-            logger.error(" 저장 버튼 없음 (DOM에 없음)")
+            logger.error("저장 버튼을 찾지 못함")
             return False
 
-        #저장 버튼 활성화 여부 먼저 확인
         if not submit_btn.is_enabled():
-            logger.error("저장 버튼 비활성화 상태 (저장 불가)")
+            logger.error("저장 버튼 비활성화 상태")
             return False
 
         try:
-            # 위치 맞추기
-            self.driver.execute_script("""
-                const rect = arguments[0].getBoundingClientRect();
-                const y = rect.top + window.scrollY - 100;
-                window.scrollTo({top: y, behavior: 'instant'});
-            """, submit_btn)
-
             # JS 클릭
             self.driver.execute_script("arguments[0].click();", submit_btn)
 
             # 저장 후 다시 '이름' 행으로 스크롤 복귀
-            name_row = self.wait_for_element(
-                By.XPATH, 
-                XPATH["NAME_ROW"], 
-                condition="visibility", 
-                timeout=3)
-            if name_row:
-                self.driver.execute_script("""
-                    const rect = arguments[0].getBoundingClientRect();
-                    const y = rect.top + window.scrollY - 120;
-                    window.scrollTo({top: y, behavior: 'instant'});
-                """, name_row)
-            else:
+            name_row = self.scroll_and_interact(
+                (By.XPATH, XPATH["NAME_ROW"]), 
+                offset=120, 
+                timeout=3, 
+                condition="visibility"
+            )
+            if not name_row:
                 self.driver.execute_script("window.scrollTo({top: 0, behavior: 'instant'});")
 
             logger.info("저장 버튼 JS 클릭 + 이름 행으로 복귀")

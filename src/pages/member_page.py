@@ -36,14 +36,16 @@ class MemberPage(BasePage):
         self.driver.refresh()
         return True
 
-    def scroll_and_interact(self, locator, offset=120, timeout=5, condition="visibility"):
+    def scroll_and_interact(self, locator_or_element, offset=120, timeout=5, condition="visibility"):
         """
-        요소를 찾아 특정 오프셋으로 스크롤한 뒤 해당 요소를 반환합니다.
+        인자가 튜플(로케이터)이면 찾고, 이미 요소 객체면 그대로 사용
         """
-        element = self.wait_for_element(*locator, condition=condition, timeout=timeout)
-        if not element:
-            logger.error(f"요소를 찾지 못함: {locator}")
-            return None
+        if isinstance(locator_or_element, tuple):
+            element = self.wait_for_element(*locator_or_element, condition=condition, timeout=timeout)
+        else:
+            element = locator_or_element
+            
+        if not element: return None
 
         # 오프셋 조절 스크롤 실행 (제시해주신 JS 로직 활용)
         self.driver.execute_script(f"""
@@ -91,18 +93,13 @@ class MemberPage(BasePage):
 
 
     def member_name(self, name) -> bool:
-        input_name = self.wait_for_element(
-            By.NAME,
-            NAME["INPUT_NAME"], 
-            condition="clickable", 
-            timeout=3
-            )
+        input_name = self.scroll_and_interact((By.NAME,
+            NAME["INPUT_NAME"]),offset=100,timeout=5,condition="clickable")
+        
         if not input_name:
             logger.error("이름 입력란 못 찾음")
             return False
 
-        self.scroll_and_interact(input_name,offset=100,timeout=5)
-        
         try:
             input_name.click()
         except Exception as e:

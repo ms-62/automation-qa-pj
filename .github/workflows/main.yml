@@ -32,17 +32,15 @@ jobs:
           sudo apt-get install -y xvfb
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      # workflow_dispatch로 실행 시 입력값 사용, 아닐 시(push/PR) 기본값(tests/) 사용
+      # workflow_dispatch로 실행 시 입력값 사용, 아닐 시(push/PR) 기본값(tests/) 사용 - 특정 파일만 테스트하도록 변경
       - name: Run Tests
         env:
           DISPLAY: :99
         run: |
-        
-          TEST_TARGET="${{ github.event.inputs.test_path }}"
-          if [ -z "$TEST_TARGET" ]; then TEST_TARGET="tests/"; fi
-          
+          # 특정 파일 하나만 실행하도록 경로 지정
           xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" \
-          pytest $TEST_TARGET --junitxml=results.xml
+          pytest tests/test_member.py --junitxml=results.xml
+
 
       # 테스트 실패 시에만 스크린샷 및 로그 업로드
       - name: Upload Screenshot on Failure

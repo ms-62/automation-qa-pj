@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       test_path: 
-        description: 'tests/test_member.py'
+        description: '테스트 경로'
         required: true
         default: 'tests/' # 기본값은 전체 테스트
 

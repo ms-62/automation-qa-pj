@@ -40,8 +40,8 @@ jobs:
         with:
           name: failure-screenshots
           path: |
-            screenshots/*.png
-            logs/*.log
+            reports/screenshots/*.png
+            reports/logs/*.log
           retention-days: 7  # 7일 동안 보관 [web:210]
 
       - name: Upload Test Results

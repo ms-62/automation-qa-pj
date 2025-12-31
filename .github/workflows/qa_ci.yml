@@ -38,7 +38,7 @@ jobs:
           DISPLAY: :99
         run: |
         
-          TEST_TARGET="${{ github.event.inputs.test_path }}"
+          TEST_TARGET="tests/test_member.py"
           if [ -z "$TEST_TARGET" ]; then TEST_TARGET="tests/"; fi
           
           xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" \

@@ -1,0 +1,61 @@
+name: Automation QA CI
+
+on:
+  push:
+    branches: [ "demo" ]
+  pull_request:
+    branches: [ "demo" ]
+  # 수동 실행 기능 추가: 특정 파일만 테스트하고 싶을 때 사용
+  workflow_dispatch:
+    inputs:
+      test_path: 
+        description: '테스트 경로'
+        required: true
+        default: 'tests/' # 기본값은 전체 테스트
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      # workflow_dispatch로 실행 시 입력값 사용, 아닐 시(push/PR) 기본값(tests/) 사용 - 특정 파일만 테스트하도록 변경
+      - name: Run Tests
+        env:
+          DISPLAY: :99
+        run: |
+          # 특정 파일 하나만 실행하도록 경로 지정
+          xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" \
+          pytest tests/test_member.py --junitxml=results.xml
+
+
+      # 테스트 실패 시에만 스크린샷 및 로그 업로드
+      - name: Upload Screenshot on Failure
+        if: failure() 
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots
+          path: |
+            reports/screenshots/
+            reports/logs/
+          retention-days: 7
+
+      - name: Upload Test Results
+        if: always() 
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: results.xml

@@ -112,25 +112,25 @@ class BasePage:
         return False
 
     #get_element 추가 보완 업데이트 - ci로 테스트 할 때 오류 발생 증가해서 보완
-    def wait_for_element(self, by: By, value: str, timeout: float = 10, condition: str = "presence") -> object:
+    def wait_for_element(self, by: By, value: str, timeout: float = 10, condition: str = "presence", check_value=False) -> object:
         wait = WebDriverWait(self.driver, timeout)
         locator = (by, value)
         
         try:
-            # 1. 공통으로 '존재(Presence)'부터 먼저 확인 (가장 기본 단계)
-            # clickable이나 visibility를 체크하기 전, DOM에 요소가 생길 때까지 잠시 대기
-            element = wait.until(EC.presence_of_element_located(locator))
-
-            # 2. 추가 조건 수행
-            if condition == "visibility":
-                return wait.until(EC.visibility_of_element_located(locator))
-            elif condition in ["clickable", "enabled"]:
-                # 존재함이 확인된 element 객체를 직접 전달하여 효율성 증대
-                return wait.until(EC.element_to_be_clickable(element))
+            # 1) 기본 조건 대기 (기존 로직)
+            condition_func = {
+                "presence": EC.presence_of_element_located(locator),
+                "visibility": EC.visibility_of_element_located(locator),
+                "clickable": EC.element_to_be_clickable(locator)
+            }.get(condition, EC.presence_of_element_located(locator))
             
-            # 기본값은 presence 결과 반환
-            return element
+            element = wait.until(condition_func)
 
+            # 2) 추가 검증: value 속성이 로드될 때까지 대기 
+            if check_value and element:
+                wait.until(lambda d: element.get_attribute("value") is not None)
+                
+            return element
         except TimeoutException:
             logger.error(f"요소 대기 실패: {by}={value} ({condition})")
             return None

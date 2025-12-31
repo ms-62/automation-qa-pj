@@ -65,28 +65,34 @@ class MemberPage(BasePage):
             return False
 
         # 1) '이름' 수정 버튼 찾기
-        edit_btn = self.wait_for_element(
-            By.XPATH,
+        
+        edit_btn = self.scroll_and_interact(By.XPATH,
             XPATH["BTN_NAME_EDIT"],
+            offset=120,
             condition="clickable",
-            timeout=timeout,
-        )
+            timeout=timeout
+            )
         if not edit_btn:
             logger.error("'이름' 수정 버튼 못 찾음 (BTN_NAME_EDIT)")
             return False
 
         logger.info("'이름' 수정 버튼 찾음, 클릭 시도")
 
-        # 스크롤 + JS 클릭 
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
+        # JS 클릭 
         self.driver.execute_script("arguments[0].click();", edit_btn)
 
-        wait = WebDriverWait(self.driver, timeout)
-        # 2) 이름 입력 필드 대기
-        input_name = wait.until(EC.presence_of_element_located((
-        By.NAME, NAME["INPUT_NAME"])))
-        wait.until(EC.element_to_be_clickable(input_name))
-        wait.until(lambda d: d.find_element(By.NAME, NAME["INPUT_NAME"]).get_attribute("value") is not None)
+        #이름 입력 필드 대기
+        input_name = self.wait_for_element(
+            By.NAME, 
+            NAME["INPUT_NAME"], 
+            condition="clickable", 
+            check_value=True, # value 속성이 로드될 때까지 내부에서 대기
+            timeout=timeout
+        )
+        
+        if not input_name:
+            logger.error("이름 수정 폼 열기 실패 (입력 필드 미노출)")
+            return False
     
         logger.info("이름 수정 폼 완전 열림")
         return True
@@ -156,21 +162,9 @@ class MemberPage(BasePage):
         logger.info("open_mail_edit_form 시작")
 
         # 0) '이메일' 행 스크롤 위치 맞추기
-        email_row = self.wait_for_element(
-            By.XPATH,
-            XPATH["EMAIL_ROW"],
-            condition="presence",
-            timeout=timeout,
-        )
-        if not email_row:
+        if not self.scroll_and_interact((By.XPATH,XPATH["NAME_ROW"]), offset=120, timeout=timeout):
             logger.error(" 이메일 행을 찾지 못함 (EMAIL_ROW)")
             return False
-
-        self.driver.execute_script("""
-            const rect = arguments[0].getBoundingClientRect();
-            const y = rect.top + window.scrollY - 120;
-            window.scrollTo({top: y, behavior: 'instant'});
-        """, email_row)
 
         # 1) '이메일' 수정 버튼 찾기
         edit_btn = self.wait_for_element(

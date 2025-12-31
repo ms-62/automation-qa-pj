@@ -44,7 +44,7 @@ class MemberPage(BasePage):
         if not element:
             logger.error(f"요소를 찾지 못함: {locator}")
             return None
-    
+
         # 오프셋 조절 스크롤 실행 (제시해주신 JS 로직 활용)
         self.driver.execute_script(f"""
             const rect = arguments[0].getBoundingClientRect();
@@ -53,13 +53,6 @@ class MemberPage(BasePage):
         """, element)
         
         return element
-    
-    def smart_click(self, element):
-        try:
-            element.click()
-        except Exception:
-            # 일반 클릭 실패 시 포커스 후 JS 클릭 또는 엔터 등 대안 실행
-            self.driver.execute_script("arguments[0].focus(); arguments[0].click();", element)
 
     #이름 관련 테스트 케이스를 위한 메서드
     def open_name_edit_form(self, timeout=5) -> bool:
@@ -84,19 +77,17 @@ class MemberPage(BasePage):
 
         # 스크롤 + JS 클릭 
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
-        self.smart_click(edit_btn)
+        self.driver.execute_script("arguments[0].click();", edit_btn)
 
         wait = WebDriverWait(self.driver, timeout)
         # 2) 이름 입력 필드 대기
-        input_name = self.wait_for_element(
-            By.NAME,
-            NAME["INPUT_NAME"], 
-            condition="clickable", 
-            timeout=3
-        )
+        input_name = wait.until(EC.presence_of_element_located((
+        By.NAME, NAME["INPUT_NAME"])))
+        wait.until(EC.element_to_be_clickable(input_name))
+        wait.until(lambda d: d.find_element(By.NAME, NAME["INPUT_NAME"]).get_attribute("value") is not None)
     
         logger.info("이름 수정 폼 완전 열림")
-        return bool(input_name)
+        return True
 
 
     def member_name(self, name) -> bool:
@@ -106,10 +97,17 @@ class MemberPage(BasePage):
             condition="clickable", 
             timeout=3
             )
-        
-        # 0) '이름' 행 스크롤 위치 맞추기 공통함수사용
-        if not self.scroll_and_interact(input_name, offset=100, timeout=3,condition="clickable"):
+        if not input_name:
+            logger.error("이름 입력란 못 찾음")
             return False
+
+        self.driver.execute_script("""
+            const rect = arguments[0].getBoundingClientRect();
+            const y = rect.top + window.scrollY - 100;
+            window.scrollTo({top: y, behavior: 'instant'});
+        """, input_name)
+        self.driver.implicitly_wait(0.3)
+
         try:
             input_name.click()
         except Exception as e:
@@ -144,10 +142,14 @@ class MemberPage(BasePage):
 
         try:
             # 위치 맞추기
-            self.scroll_and_interact(submit_btn,offset=100,timeout=3)
+            self.driver.execute_script("""
+                const rect = arguments[0].getBoundingClientRect();
+                const y = rect.top + window.scrollY - 100;
+                window.scrollTo({top: y, behavior: 'instant'});
+            """, submit_btn)
 
             # JS 클릭
-            self.smart_click(submit_btn)
+            self.driver.execute_script("arguments[0].click();", submit_btn)
 
             # 저장 후 다시 '이름' 행으로 스크롤 복귀
             name_row = self.wait_for_element(
@@ -156,7 +158,11 @@ class MemberPage(BasePage):
                 condition="visibility", 
                 timeout=3)
             if name_row:
-                self.scroll_and_interact(name_row,offset=120,timeout=3)
+                self.driver.execute_script("""
+                    const rect = arguments[0].getBoundingClientRect();
+                    const y = rect.top + window.scrollY - 120;
+                    window.scrollTo({top: y, behavior: 'instant'});
+                """, name_row)
             else:
                 self.driver.execute_script("window.scrollTo({top: 0, behavior: 'instant'});")
 
@@ -181,9 +187,13 @@ class MemberPage(BasePage):
         if not email_row:
             logger.error(" 이메일 행을 찾지 못함 (EMAIL_ROW)")
             return False
-        
-        self.scroll_and_interact(email_row,offset=120,timeout=timeout)
-        
+
+        self.driver.execute_script("""
+            const rect = arguments[0].getBoundingClientRect();
+            const y = rect.top + window.scrollY - 120;
+            window.scrollTo({top: y, behavior: 'instant'});
+        """, email_row)
+
         # 1) '이메일' 수정 버튼 찾기
         edit_btn = self.wait_for_element(
             By.XPATH,
@@ -199,20 +209,20 @@ class MemberPage(BasePage):
 
         # 스크롤 + JS 클릭
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
-        self.smart_click(edit_btn)
+        self.driver.execute_script("arguments[0].click();", edit_btn)
 
-        input_email = self.wait_for_element(
-            By.NAME, 
-            NAME["INPUT_EMAIL"], 
-            condition="clickable", 
-            check_value=True,  # 속성 확인 로직 활성화
-            timeout=timeout
-        )
+        # 2) 이메일 입력 필드 대기
+        wait = WebDriverWait(self.driver, timeout)
 
-        if not input_email:
-            logger.error("이메일 수정 폼이 정상적으로 열리지 않음")
-            return False
-
+        input_email = wait.until(EC.presence_of_element_located((
+            By.NAME, NAME["INPUT_EMAIL"])))
+        
+        # 3-2) 입력란 clickable까지 (폼 완전 로딩)
+        wait.until(EC.element_to_be_clickable(input_email))
+        
+        # 3-3) 또는 텍스트/속성 로딩 완료 확인
+        wait.until(lambda d: d.find_element(By.NAME, NAME["INPUT_EMAIL"]).get_attribute("value") is not None)
+        
         logger.info("이메일 수정 폼 완전 열림")
         return True
     
@@ -224,12 +234,20 @@ class MemberPage(BasePage):
             timeout=3
         )
         if not input_email:
-            logger.error("이메일 수정 폼이 정상적으로 열리지 않음")
+            logger.info("이메일 입력란 못 찾음")
             return False
 
-        self.scroll_and_interact(input_email,offset=100,timeout=5)
+        self.driver.execute_script("""
+            const rect = arguments[0].getBoundingClientRect();
+            const y = rect.top + window.scrollY - 100;
+            window.scrollTo({top: y, behavior: 'instant'});
+        """, input_email)
 
-        self.smart_click(input_email)
+        try:
+            input_email.click()
+        except Exception as e:
+            logger.info(f"input 클릭 실패: {e}")
+            self.driver.execute_script("arguments[0].focus();", input_email)
             
         self.driver.execute_script("arguments[0].value = '';", input_email)
         input_email.send_keys(email)
@@ -263,7 +281,10 @@ class MemberPage(BasePage):
 
         # 3) 버튼 클릭 시도 (활성일 때만)
         if certi_btn:
-            self.smart_click(certi_btn)
+            try:
+                self.driver.execute_script("arguments[0].click();", certi_btn)
+            except Exception as e:
+                logger.warning(f"인증메일 버튼 JS 클릭 실패: {e}")
                 
         # 클릭 후 다시 이메일 행으로 스크롤 복귀
         email_row = self.wait_for_element(
@@ -273,7 +294,11 @@ class MemberPage(BasePage):
             timeout=3
         )
         if email_row:
-            self.scroll_and_interact(email_row,offset=120,timeout=5)
+            self.driver.execute_script("""
+                const rect = arguments[0].getBoundingClientRect();
+                const y = rect.top + window.scrollY - 120;
+                window.scrollTo({top: y, behavior: 'instant'});
+            """, email_row)
         else:
             self.driver.execute_script("window.scrollTo({top: 0, behavior: 'instant'});")
         try:
@@ -352,7 +377,12 @@ class MemberPage(BasePage):
         if not mobile_row:
             logger.info(" 휴대폰 번호 행을 찾지 못함 (MOBILE_ROW)")
             return False
-        self.scroll_and_interact(mobile_row,offset=120,timeout=timeout)
+
+        self.driver.execute_script("""
+            const rect = arguments[0].getBoundingClientRect();
+            const y = rect.top + window.scrollY - 120;
+            window.scrollTo({top: y, behavior: 'instant'});
+        """, mobile_row)
 
         # 1) 휴대폰번호 수정 버튼 찾기
         edit_btn = self.wait_for_element(
@@ -369,7 +399,7 @@ class MemberPage(BasePage):
 
         # 스크롤 + JS 클릭
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
-        self.smart_click(edit_btn)
+        self.driver.execute_script("arguments[0].click();", edit_btn)
 
         # 2) 휴대폰번호 입력 필드 대기
         input_mobile = self.wait_for_element(
@@ -396,7 +426,12 @@ class MemberPage(BasePage):
             logger.error("휴대폰 번호 입력란 못 찾음")
             return False
 
-        self.scroll_and_interact(input_mobile,offset=100,timeout=5)
+        self.driver.execute_script("""
+            const rect = arguments[0].getBoundingClientRect();
+            const y = rect.top + window.scrollY - 100;
+            window.scrollTo({top: y, behavior: 'instant'});
+        """, input_mobile)
+        self.driver.implicitly_wait(0.3)
 
         try:
             input_mobile.click()

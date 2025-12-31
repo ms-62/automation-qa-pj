@@ -101,13 +101,8 @@ class MemberPage(BasePage):
             logger.error("이름 입력란 못 찾음")
             return False
 
-        self.driver.execute_script("""
-            const rect = arguments[0].getBoundingClientRect();
-            const y = rect.top + window.scrollY - 100;
-            window.scrollTo({top: y, behavior: 'instant'});
-        """, input_name)
-        self.driver.implicitly_wait(0.3)
-
+        self.scroll_and_interact(input_name,offset=100,timeout=5)
+        
         try:
             input_name.click()
         except Exception as e:

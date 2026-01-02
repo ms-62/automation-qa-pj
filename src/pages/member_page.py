@@ -62,7 +62,6 @@ class MemberPage(BasePage):
         
         # 0) '이름' 행 스크롤 위치 맞추기 공통함수사용
         if not self.scroll_and_interact((By.XPATH,XPATH["NAME_ROW"]), offset=120, timeout=timeout):
-            logger.error(" 이름 행을 찾지 못함 (NAME_ROW)")
             return False
 
         # 1) '이름' 수정 버튼 찾기
@@ -82,7 +81,7 @@ class MemberPage(BasePage):
         # JS 클릭 
         self.driver.execute_script("arguments[0].click();", edit_btn)
 
-        #이름 입력 필드 대기
+        # 2) 이름 입력 필드 대기
         input_name = self.wait_for_element(
             By.NAME, 
             NAME["INPUT_NAME"], 
@@ -163,51 +162,58 @@ class MemberPage(BasePage):
         logger.info("open_mail_edit_form 시작")
 
         # 0) '이메일' 행 스크롤 위치 맞추기
-        if not self.scroll_and_interact((By.XPATH,XPATH["EMAIL_ROW"]), offset=120, timeout=timeout):
+        if not self.scroll_and_interact((By.XPATH,XPATH["NAME_ROW"]), offset=120, timeout=timeout):
             logger.error(" 이메일 행을 찾지 못함 (EMAIL_ROW)")
             return False
 
         # 1) '이메일' 수정 버튼 찾기
-        edit_btn = self.scroll_and_interact(By.XPATH,
+        edit_btn = self.wait_for_element(
+            By.XPATH,
             XPATH["BTN_EMAIL_EDIT"],
-            offset=120,
             condition="clickable",
-            timeout=timeout
-            )
-        
+            timeout=timeout,
+        )
         if not edit_btn:
             logger.info("'이메일' 수정 버튼 못 찾음 (BTN_EMAIL_EDIT)")
             return False
 
-        logger.error("'이메일' 수정 버튼 찾음, 클릭 시도")
+        logger.info("'이메일' 수정 버튼 찾음, 클릭 시도")
 
-        # JS 클릭
+        # 스크롤 + JS 클릭
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
         self.driver.execute_script("arguments[0].click();", edit_btn)
 
         # 2) 이메일 입력 필드 대기
         wait = WebDriverWait(self.driver, timeout)
 
-        input_email = self.wait_for_element(
-            By.NAME, 
-            NAME["INPUT_EMAIL"], 
-            condition="clickable", 
-            check_value=True, # value 속성이 로드될 때까지 내부에서 대기
-            timeout=timeout
-        )
+        input_email = wait.until(EC.presence_of_element_located((
+            By.NAME, NAME["INPUT_EMAIL"])))
         
-        if not input_email:
-            logger.error("이메일 수정 폼 열기 실패 (입력 필드 미노출)")
-            return False
-    
+        # 3-2) 입력란 clickable까지 (폼 완전 로딩)
+        wait.until(EC.element_to_be_clickable(input_email))
+        
+        # 3-3) 또는 텍스트/속성 로딩 완료 확인
+        wait.until(lambda d: d.find_element(By.NAME, NAME["INPUT_EMAIL"]).get_attribute("value") is not None)
+        
         logger.info("이메일 수정 폼 완전 열림")
         return True
     
     def member_email(self, email) -> bool:
-        input_email = self.scroll_and_interact((By.NAME,
-            NAME["INPUT_EMAIL"]),offset=100,timeout=3,condition="clickable")
+        input_email = self.wait_for_element(
+            By.NAME,
+            NAME["INPUT_EMAIL"], 
+            condition="clickable", 
+            timeout=3
+        )
         if not input_email:
             logger.info("이메일 입력란 못 찾음")
             return False
+
+        self.driver.execute_script("""
+            const rect = arguments[0].getBoundingClientRect();
+            const y = rect.top + window.scrollY - 100;
+            window.scrollTo({top: y, behavior: 'instant'});
+        """, input_email)
 
         try:
             input_email.click()
@@ -253,11 +259,20 @@ class MemberPage(BasePage):
                 logger.warning(f"인증메일 버튼 JS 클릭 실패: {e}")
                 
         # 클릭 후 다시 이메일 행으로 스크롤 복귀
-        email_row = self.scroll_and_interact((By.XPATH,XPATH["EMAIL_ROW"]),condition="clickable", offset=120, timeout=3)
-        
-        if not email_row:
+        email_row = self.wait_for_element(
+            By.XPATH, 
+            XPATH["EMAIL_ROW"], 
+            condition="presence", 
+            timeout=3
+        )
+        if email_row:
+            self.driver.execute_script("""
+                const rect = arguments[0].getBoundingClientRect();
+                const y = rect.top + window.scrollY - 120;
+                window.scrollTo({top: y, behavior: 'instant'});
+            """, email_row)
+        else:
             self.driver.execute_script("window.scrollTo({top: 0, behavior: 'instant'});")
-        logger.info("인증 버튼 JS 클릭 + 이메일 행으로 복귀")
         try:
             input_email = self.wait_for_element(
                 By.NAME,

@@ -66,7 +66,7 @@ class MemberPage(BasePage):
 
         # 1) '이름' 수정 버튼 찾기
         
-        edit_btn = self.scroll_and_interact(By.XPATH,
+        edit_btn = self.wait_for_element(By.XPATH,
             XPATH["BTN_NAME_EDIT"],
             offset=120,
             condition="clickable",

@@ -99,8 +99,13 @@ class MemberPage(BasePage):
 
 
     def member_name(self, name) -> bool:
-        input_name = self.scroll_and_interact((By.NAME,
-            NAME["INPUT_NAME"]),offset=100,timeout=5,condition="clickable")
+        input_name =  self.wait_for_element(
+            By.NAME, 
+            NAME["INPUT_NAME"], 
+            condition="clickable", 
+            check_value=True, # value 속성이 로드될 때까지 내부에서 대기
+            timeout=3
+        )
         
         if not input_name:
             logger.error("이름 입력란 못 찾음")

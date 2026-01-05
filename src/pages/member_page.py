@@ -185,21 +185,15 @@ class MemberPage(BasePage):
         logger.info("'이메일' 수정 버튼 찾음, 클릭 시도")
 
         # 스크롤 + JS 클릭
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
         self.driver.execute_script("arguments[0].click();", edit_btn)
 
-        # 2) 이메일 입력 필드 대기
-        wait = WebDriverWait(self.driver, timeout)
-
-        input_email = wait.until(EC.presence_of_element_located((
-            By.NAME, NAME["INPUT_EMAIL"])))
-        
-        # 3-2) 입력란 clickable까지 (폼 완전 로딩)
-        wait.until(EC.element_to_be_clickable(input_email))
-        
-        # 3-3) 또는 텍스트/속성 로딩 완료 확인
-        wait.until(lambda d: d.find_element(By.NAME, NAME["INPUT_EMAIL"]).get_attribute("value") is not None)
-        
+        input_email = self.wait_for_element(
+            By.NAME, 
+            NAME["INPUT_EMAIL"], 
+            condition="clickable", 
+            check_value=True, # value 속성이 로드될 때까지 내부에서 대기
+            timeout=timeout
+        )     
         logger.info("이메일 수정 폼 완전 열림")
         return True
     

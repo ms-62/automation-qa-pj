@@ -318,27 +318,17 @@ class MemberPage(BasePage):
         logger.info("open_mobile_edit_form 시작")
 
         # 0) 휴대폰번호 행 스크롤 위치 맞추기
-        mobile_row = self.wait_for_element(
-            By.XPATH,
-            XPATH["MOBILE_ROW"],
-            condition="presence",
-            timeout=timeout,
-        )
+        mobile_row = self.scroll_and_interact((By.XPATH,XPATH["MOBILE_ROW"]), condition="presence", offset=120, timeout=timeout)
+        
         if not mobile_row:
             logger.info(" 휴대폰 번호 행을 찾지 못함 (MOBILE_ROW)")
             return False
-
-        self.driver.execute_script("""
-            const rect = arguments[0].getBoundingClientRect();
-            const y = rect.top + window.scrollY - 120;
-            window.scrollTo({top: y, behavior: 'instant'});
-        """, mobile_row)
 
         # 1) 휴대폰번호 수정 버튼 찾기
         edit_btn = self.wait_for_element(
             By.XPATH,
             XPATH["BTN_MOBILE_EDIT"],
-            condition="visibility",
+            condition="clickable",
             timeout=timeout,
         )
         if not edit_btn:
@@ -348,15 +338,16 @@ class MemberPage(BasePage):
         logger.info("휴대폰 번호 수정 버튼 찾음, 클릭 시도")
 
         # 스크롤 + JS 클릭
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", edit_btn)
         self.driver.execute_script("arguments[0].click();", edit_btn)
 
         # 2) 휴대폰번호 입력 필드 대기
         input_mobile = self.wait_for_element(
             By.CSS_SELECTOR,
             SELECTORS["INPUT_MOBILE"], 
-            condition="visibility", 
-            timeout=timeout)
+            condition="clickable", 
+            check_value=True, # value 속성이 로드될 때까지 내부에서 대기
+            timeout=timeout
+            )
         
         if not input_mobile:
             logger.error("휴대폰 번호 입력란 안 나타남 (폼 안 열림)")

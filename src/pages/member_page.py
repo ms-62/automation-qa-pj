@@ -61,7 +61,8 @@ class MemberPage(BasePage):
         logger.info("open_name_edit_form 시작")
         
         # 0) '이름' 행 스크롤 위치 맞추기 공통함수사용
-        if not self.scroll_and_interact((By.XPATH,XPATH["NAME_ROW"]),condition="clickable", offset=120, timeout=timeout):
+        if not self.scroll_and_interact((By.XPATH,XPATH["NAME_ROW"]), offset=120, timeout=timeout):
+            logger.error(" 이름 행을 찾지 못함 (NAME_ROW)")
             return False
 
         # 1) '이름' 수정 버튼 찾기
@@ -167,7 +168,7 @@ class MemberPage(BasePage):
         logger.info("open_mail_edit_form 시작")
 
         # 0) '이메일' 행 스크롤 위치 맞추기
-        if not self.scroll_and_interact((By.XPATH,XPATH["NAME_ROW"]), offset=120, timeout=timeout):
+        if not self.scroll_and_interact((By.XPATH,XPATH["EMAIL_ROW"]), offset=120, timeout=timeout):
             logger.error(" 이메일 행을 찾지 못함 (EMAIL_ROW)")
             return False
 

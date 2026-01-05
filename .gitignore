@@ -30,3 +30,7 @@ run.log
 #대용량 제외
 src/resources/assets/
 src/resources/downloads/
+
+#allure reports 제외
+allure-report/
+allurereports/

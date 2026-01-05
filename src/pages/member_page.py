@@ -69,7 +69,6 @@ class MemberPage(BasePage):
         
         edit_btn = self.wait_for_element(By.XPATH,
             XPATH["BTN_NAME_EDIT"],
-            offset=120,
             condition="clickable",
             timeout=timeout
             )

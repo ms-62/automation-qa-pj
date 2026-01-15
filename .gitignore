@@ -36,5 +36,5 @@ allure-report/
 allurereports/
 
 #테스트 정보 파일 제외
-src/testdata/login_cookies.json
-src/testdata/user_data.json
+resources/testdata/login_cookies.json
+resources/testdata/user_data.json
